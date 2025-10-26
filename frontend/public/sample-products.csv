@@ -1,0 +1,12 @@
+Name,SKU,Description,Product Info,Category,Price,Original Price (optional),Quantity,Images,ingredients,variants,tags
+Organic Jaggery Cube,JAG001,Pure organic jaggery cubes,Rich in minerals and iron,plain-jaggery,120,150,50,https://picsum.photos/400/400?random=1,Sugarcane,"250g:80|500g:120|1kg:220|5kg:1000","Organic,Natural,Healthy"
+Palm Jaggery,JAG002,Jaggery made from palm sap,Good for digestion,plain-jaggery,140,170,30,https://picsum.photos/400/400?random=2,Palm sap,"250g:90|500g:140|1kg:260","Palm,Healthy,Natural"
+Liquid Jaggery,JAG003,Natural liquid jaggery syrup,Loaded with nutrients,plain-jaggery,100,120,20,https://picsum.photos/400/400?random=3,Sugarcane juice,"250ml:60|500ml:100|1L:180","Liquid,Organic,Syrup"
+Coconut Jaggery,JAG004,Traditional coconut jaggery,Helps in energy boost,plain-jaggery,160,190,25,https://picsum.photos/400/400?random=4,Coconut sap,"250g:100|500g:160|1kg:300|2kg:550","Coconut,Organic,Premium"
+Date Palm Jaggery,JAG005,Premium date palm jaggery,Rich in minerals and vitamins,plain-jaggery,180,210,40,https://picsum.photos/400/400?random=5,Date palm sap,"250g:110|500g:180|1kg:340","Date,Palm,Premium"
+Jaggery Powder,JAG006,Fine powdered jaggery,Easy to use and dissolve,jaggery-powder,90,110,60,https://picsum.photos/400/400?random=6,Sugarcane,"250g:50|500g:90|1kg:170|2kg:320","Powder,Organic,Convenient"
+Jaggery Block,JAG007,Traditional solid jaggery,Unrefined natural sweetener,plain-jaggery,130,160,55,https://picsum.photos/400/400?random=7,Sugarcane,"500g:130|1kg:240|2kg:450|5kg:2000","Block,Traditional,Pure"
+Herbal Jaggery,JAG008,Infused with herbal extracts,Immunity booster with herbs,flavoured-jaggery,150,180,35,https://picsum.photos/400/400?random=8,Herbal mix,"250g:90|500g:150|1kg:280","Herbal,Immunity,Premium"
+Jaggery with Sesame,JAG009,Crunchy jaggery sesame mix,Tasty and healthy snack,flavoured-jaggery,110,130,45,https://picsum.photos/400/400?random=9,Sesame seeds,"250g:70|500g:110|1kg:200","Sesame,Sweet,Crunchy"
+Jaggery Candy,JAG010,Bite-sized jaggery candies,Natural energy booster,flavoured-jaggery,80,100,70,https://picsum.photos/400/400?random=10,Sugarcane,"200g:80|400g:150|800g:280","Candy,Sweet,Kids"
+
