@@ -1,0 +1,12 @@
+Name,SKU,Description,Product Info,Category,Price,Original Price (optional),Quantity,Images,ingredients,variants,tags,inStock
+Organic Jaggery Cube,JAG001,Pure organic jaggery cubes,Rich in minerals and iron,plain-jaggery,80,150,50,https://picsum.photos/400/400?random=1,Sugarcane,250g:80|500g:120|1kg:220,"Organic,Natural",Yes
+Palm Jaggery,JAG002,Jaggery made from palm sap,Good for digestion,plain-jaggery,140,170,30,https://picsum.photos/400/400?random=2,Palm sap,1kg Pack,"Palm,Healthy",Yes
+Liquid Jaggery,JAG003,Natural liquid jaggery,Loaded with preservatives,plain-jaggery,100,120,20,https://picsum.photos/400/400?random=3,Sugarcane juice,500ml Bottle,"Liquid,Organic",Yes
+Coconut Jaggery,JAG004,Traditional jaggery made from coconut,Helps in energy boost,plain-jaggery,160,190,25,https://picsum.photos/400/400?random=4,Coconut sap,250g Pack,"Coconut,Organic",Yes
+Date Palm Jaggery,JAG005,Jaggery prepared from date palm,Rich in minerals,plain-jaggery,180,210,40,https://picsum.photos/400/400?random=5,Date palm sap,1kg Pack,"Date,Palm",Yes
+Jaggery Powder,JAG006,Fine powdered jaggery for easy use,Easy to use and dissolve,jaggery-powder,90,110,60,https://picsum.photos/400/400?random=6,Sugarcane,500g Pouch,"Powder,Organic",Yes
+Jaggery Block,JAG007,Traditional solid jaggery block,Unrefined natural sweetener,plain-jaggery,130,160,55,https://picsum.photos/400/400?random=7,Sugarcane,1kg Block,"Block,Traditional",Yes
+Herbal Jaggery,JAG008,Infused with herbal extracts,Immunity booster,flavoured-jaggery,150,180,35,https://picsum.photos/400/400?random=8,Herbal mix,250g Pack,"Herbal,Immunity",Yes
+Jaggery with Sesame,JAG009,Crunchy mix of jaggery and sesame,Tasty and healthy snack,flavoured-jaggery,110,130,45,https://picsum.photos/400/400?random=9,Sesame seeds,250g Pack,"Sesame,Sweet",Yes
+Jaggery Candy,JAG010,Small bite-sized jaggery candies,Natural energy booster,flavoured-jaggery,80,100,70,https://picsum.photos/400/400?random=10,Sugarcane,200g Jar,"Candy,Sweet",Yes
+jaggery abhihsehk,JAG011,Small bite-sized jaggery candies,Natural energy booster,flavoured-jaggery,80,100,40,https://picsum.photos/400/400?random=8,sugar,200g Jar,"Candy,Sweet",Yes

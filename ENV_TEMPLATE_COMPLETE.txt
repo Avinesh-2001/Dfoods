@@ -1,0 +1,102 @@
+# Dfoods E-Commerce Platform - Complete Environment Variables Template
+# Copy this file to .env in both backend and frontend directories
+
+# ===========================================
+# BACKEND ENVIRONMENT VARIABLES (.env)
+# ===========================================
+
+# Database Configuration
+MONGO_URI=mongodb://localhost:27017/dfoods
+# For MongoDB Atlas: mongodb+srv://username:password@cluster.mongodb.net/dfoods
+
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_here_change_in_production
+
+# CORS Configuration
+FRONTEND_URL=http://localhost:3000
+
+# Email Configuration (Gmail)
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password_here
+ADMIN_EMAIL=admin@dfoods.com
+
+# Payment Gateway Configuration
+
+# Stripe Configuration
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
+
+# Razorpay Configuration
+RAZORPAY_KEY_ID=rzp_test_your_razorpay_key_id_here
+RAZORPAY_SECRET_KEY=your_razorpay_secret_key_here
+
+# PayPal Configuration (Optional)
+PAYPAL_CLIENT_ID=your_paypal_client_id_here
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret_here
+PAYPAL_MODE=sandbox
+
+# ===========================================
+# FRONTEND ENVIRONMENT VARIABLES (.env.local)
+# ===========================================
+
+# API Configuration
+NEXT_PUBLIC_API_URL=http://localhost:5000
+
+# Payment Gateway Public Keys
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+NEXT_PUBLIC_RAZORPAY_KEY_ID=rzp_test_your_razorpay_key_id_here
+
+# PayPal Configuration (Optional)
+NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id_here
+
+# ===========================================
+# SETUP INSTRUCTIONS
+# ===========================================
+
+# 1. BACKEND SETUP:
+#    - Copy this file to backend/.env
+#    - Update MONGO_URI with your MongoDB connection string
+#    - Set JWT_SECRET to a secure random string
+#    - Configure email settings with Gmail app password
+#    - Add your payment gateway keys
+
+# 2. FRONTEND SETUP:
+#    - Copy this file to frontend/.env.local
+#    - Update NEXT_PUBLIC_API_URL to your backend URL
+#    - Add payment gateway public keys
+
+# 3. EMAIL SETUP (Gmail):
+#    - Enable 2-factor authentication on your Gmail account
+#    - Generate an App Password: https://myaccount.google.com/apppasswords
+#    - Use the App Password as EMAIL_PASSWORD
+
+# 4. PAYMENT GATEWAY SETUP:
+#    - Stripe: Get keys from https://dashboard.stripe.com/apikeys
+#    - Razorpay: Get keys from https://dashboard.razorpay.com/app/keys
+#    - PayPal: Get keys from https://developer.paypal.com/
+
+# 5. SECURITY NOTES:
+#    - Never commit .env files to version control
+#    - Use strong, unique JWT secrets in production
+#    - Enable HTTPS in production
+#    - Use environment-specific database URLs
+
+# ===========================================
+# PRODUCTION CHECKLIST
+# ===========================================
+
+# Before deploying to production:
+# [ ] Change JWT_SECRET to a secure random string
+# [ ] Update MONGO_URI to production database
+# [ ] Set NODE_ENV=production
+# [ ] Use production payment gateway keys
+# [ ] Configure production email settings
+# [ ] Enable HTTPS
+# [ ] Set up proper CORS origins
+# [ ] Configure webhook endpoints
+# [ ] Set up monitoring and logging
