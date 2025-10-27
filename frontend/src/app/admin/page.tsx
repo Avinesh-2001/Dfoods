@@ -583,7 +583,7 @@ export default function AdminDashboard() {
                 <label className="block text-[#8B4513] capitalize">
                   {field}
                 </label>
-                {productForm[field].map((item, index) => (
+                {(productForm[field as keyof ProductForm] as string[]).map((item, index) => (
                   <div key={index} className="flex items-center space-x-2 mb-2">
                     <input
                       type="text"
