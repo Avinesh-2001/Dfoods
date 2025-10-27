@@ -578,40 +578,42 @@ export default function AdminDashboard() {
             </div>
 
             {/* Array fields */}
-            {["ingredients", "variants", "tags"].map((field) => (
-              <div key={field}>
-                <label className="block text-[#8B4513] capitalize">
-                  {field}
-                </label>
-                {(productForm[field as keyof ProductForm] as string[]).map((item, index) => (
-                  <div key={index} className="flex items-center space-x-2 mb-2">
-                    <input
-                      type="text"
-                      value={item}
-                      onChange={(e) => handleInputChange(e, field as keyof ProductForm, index)}
-                      className="w-full p-2 border rounded"
-                      placeholder={field.slice(0, -1)}
-                    />
-                    {productForm[field].length > 1 && (
-                      <button
-                        type="button"
-                        onClick={() => removeArrayItem(field, index)}
-                        className="px-2 py-1 bg-red-500 text-white rounded"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => addArrayItem(field)}
-                  className="px-2 py-1 bg-[#E67E22] text-white rounded"
-                >
-                  Add {field.slice(0, -1)}
-                </button>
-              </div>
-            ))}
+           {["ingredients", "variants", "tags"].map((field) => (
+  <div key={field}>
+    <label className="block text-[#8B4513] capitalize">{field}</label>
+    {(productForm[field as keyof ProductForm] as string[]).map((item, index) => (
+      <div key={index} className="flex items-center space-x-2 mb-2">
+        <input
+          type="text"
+          value={item}
+          onChange={(e) =>
+            handleInputChange(e, field as keyof ProductForm, index)
+          }
+          className="w-full p-2 border rounded"
+          placeholder={field.slice(0, -1)}
+        />
+        {(productForm[field as keyof ProductForm] as string[]).length > 1 && (
+          <button
+            type="button"
+            onClick={() =>
+              removeArrayItem(field as keyof ProductForm, index)
+            }
+            className="px-2 py-1 bg-red-500 text-white rounded"
+          >
+            Remove
+          </button>
+        )}
+      </div>
+    ))}
+    <button
+      type="button"
+      onClick={() => addArrayItem(field as keyof ProductForm)}
+      className="px-2 py-1 bg-[#E67E22] text-white rounded"
+    >
+      Add {field.slice(0, -1)}
+    </button>
+  </div>
+))}
 
             <button
               type="submit"
