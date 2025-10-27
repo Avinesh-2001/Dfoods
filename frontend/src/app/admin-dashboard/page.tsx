@@ -12,7 +12,34 @@ import {
 } from '@heroicons/react/24/outline';
 import { adminApi } from '@/lib/api/api';
 
-const getStats = (statsData) => [
+// ----------------- TYPES -----------------
+interface DashboardStats {
+  totalProducts: number;
+  totalReviews: number;
+  totalRevenue: number;
+  totalUsers: number;
+  totalOrders: number;
+  pendingReviews: number;
+}
+
+interface RecentActivity {
+  id: number;
+  type: 'review' | 'product' | 'email' | 'user';
+  message: string;
+  time: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+interface StatCard {
+  name: string;
+  value: string;
+  change: string;
+  changeType: 'positive' | 'negative';
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+}
+
+// ----------------- DATA HELPERS -----------------
+const getStats = (statsData: DashboardStats): StatCard[] => [
   {
     name: 'Total Products',
     value: statsData.totalProducts.toString(),
@@ -43,7 +70,7 @@ const getStats = (statsData) => [
   },
 ];
 
-const recentActivities = [
+const recentActivities: RecentActivity[] = [
   {
     id: 1,
     type: 'review',
@@ -74,17 +101,18 @@ const recentActivities = [
   },
 ];
 
+// ----------------- COMPONENT -----------------
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<DashboardStats>({
     totalProducts: 0,
     totalUsers: 0,
     totalOrders: 0,
     totalReviews: 0,
     pendingReviews: 0,
-    totalRevenue: 0
+    totalRevenue: 0,
   });
-  const [recentOrders, setRecentOrders] = useState([]);
+  const [recentOrders, setRecentOrders] = useState<any[]>([]);
 
   useEffect(() => {
     fetchDashboardData();
@@ -97,14 +125,13 @@ export default function AdminDashboard() {
       setRecentOrders(response.data.recentOrders || []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
-      // Use mock data as fallback
       setStats({
         totalProducts: 0,
         totalUsers: 0,
         totalOrders: 0,
         totalReviews: 0,
         pendingReviews: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
       });
     } finally {
       setLoading(false);
@@ -157,7 +184,7 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts and Recent Activity */}
+      {/* Quick Actions & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Actions */}
         <div className="bg-white rounded-lg shadow p-6">

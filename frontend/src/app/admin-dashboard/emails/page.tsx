@@ -164,6 +164,7 @@ export default function EmailsPage() {
       toast.error('Failed to update template status');
     }
   };
+  
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

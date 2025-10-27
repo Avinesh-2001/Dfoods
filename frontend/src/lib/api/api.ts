@@ -1,5 +1,57 @@
 import axios from 'axios';
 
+// ---------------- TYPE DEFINITIONS ----------------
+interface UserLoginData {
+  email: string;
+  password: string;
+}
+
+interface UserRegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
+
+interface AdminLoginData {
+  email: string;
+  password: string;
+}
+
+interface GetUsersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+interface UpdateUserData {
+  name?: string;
+  email?: string;
+  role?: string;
+}
+
+interface GetProductsParams {
+  page?: number;
+  limit?: number;
+  category?: string;
+  search?: string;
+}
+
+interface ProductData {
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  stock: number;
+}
+
+// ----- UPDATED INTERFACE FOR EMAIL TEMPLATE -----
+export interface UpdateEmailTemplateData {
+  subject?: string;
+  body?: string;
+  isActive?: boolean; // ✅ Added this line
+}
+
+// ---------------- AXIOS INSTANCE ----------------
 const api = axios.create({
   baseURL: '/api',
   timeout: 3000,
@@ -8,23 +60,19 @@ const api = axios.create({
   },
 });
 
-console.log('Axios baseURL:', api.defaults.baseURL);
-
-// ---------------- REQUEST INTERCEPTOR ----------------
+// Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   if (process.env.NODE_ENV === 'development') {
     console.log(`🔵 ${config.method?.toUpperCase()} ${config.url}`);
   }
-
   return config;
 });
 
-// ---------------- RESPONSE INTERCEPTOR ----------------
+// Response interceptor
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -66,10 +114,10 @@ api.interceptors.response.use(
   }
 );
 
-// ---------------- AUTH API (User-side) ----------------
+// ---------------- AUTH API ----------------
 export const authApi = {
-  login: (data: any) => api.post('/users/login', data),
-  register: (data: any) => api.post('/users/register', data),
+  login: (data: UserLoginData) => api.post('/users/login', data),
+  register: (data: UserRegisterData) => api.post('/users/register', data),
   getProfile: () => api.get('/users/profile'),
   sendOTP: (email: string) => api.post('/auth/otp/send-otp', { email }),
   verifyOTP: (email: string, otp: string, name: string, password: string) =>
@@ -78,19 +126,24 @@ export const authApi = {
 
 // ---------------- ADMIN API ----------------
 export const adminApi = {
-  login: (data: any) => api.post('/admin/auth/login', data),
+  login: (data: AdminLoginData) => api.post('/admin/auth/login', data),
   logout: () => api.post('/admin/auth/logout'),
   getProfile: () => api.get('/admin/auth/profile'),
   getDashboardStats: () => api.get('/admin/dashboard'),
-  getUsers: (params?: any) => api.get('/admin/dashboard/users', { params }),
+  getUsers: (params?: GetUsersParams) => api.get('/admin/dashboard/users', { params }),
   getUserById: (userId: string) => api.get(`/admin/users/${userId}`),
-  updateUser: (userId: string, data: any) => api.put(`/admin/users/${userId}`, data),
+  updateUser: (userId: string, data: Partial<UpdateUserData>) => api.put(`/admin/users/${userId}`, data),
   deleteUser: (userId: string) => api.delete(`/admin/users/${userId}`),
+
+  getEmailTemplates: () => api.get('/admin/email-templates'),
+  updateEmailTemplate: (id: string, data: UpdateEmailTemplateData) =>
+    api.put(`/admin/email-templates/${id}`, data), // ✅ Updated type
+
   getCategories: () => api.get('/category'),
-  getProducts: (params?: any) => api.get('/admin/dashboard/products', { params }),
+  getProducts: (params?: GetProductsParams) => api.get('/admin/dashboard/products', { params }),
   getProductById: (id: string) => api.get(`/products/${id}`),
-  createProduct: (data: any) => api.post('/products', data),
-  updateProduct: (id: string, data: any) => api.put(`/products/${id}`, data),
+  createProduct: (data: ProductData) => api.post('/products', data),
+  updateProduct: (id: string, data: Partial<ProductData>) => api.put(`/products/${id}`, data),
   deleteProduct: (id: string) => api.delete(`/products/${id}`),
   uploadProducts: (formData: FormData) =>
     api.post('/products/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),

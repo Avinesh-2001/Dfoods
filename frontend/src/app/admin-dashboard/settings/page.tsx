@@ -7,8 +7,10 @@ import {
   ShieldCheckIcon,
   GlobeAltIcon,
   KeyIcon,
-  DatabaseIcon
+  // DatabaseIcon
 } from '@heroicons/react/24/outline';
+import { Database } from "lucide-react";
+
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState({
@@ -179,7 +181,7 @@ export default function SettingsPage() {
       <div className="bg-white rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200">
           <div className="flex items-center">
-            <DatabaseIcon className="h-5 w-5 text-gray-400 mr-2" />
+          <Database className="w-6 h-6 text-gray-500" />
             <h3 className="text-lg font-medium text-gray-900">System Settings</h3>
           </div>
         </div>
