@@ -160,6 +160,9 @@ export const adminApi = {
 
   // ✅ CONTACTS API (ADD THIS)
   getContacts: () => api.get('/admin/contacts'),
+  updateContactStatus: (id: string, status: string) =>
+  api.put(`/admin/contacts/${id}/status`, { status }),
+
 };
 
 
