@@ -150,15 +150,16 @@ export const adminApi = {
   uploadProducts: (formData: FormData) =>
     api.post('/products/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 
-  // ✅ ADD THESE ENDPOINTS
+  // ✅ REVIEWS API
   getAllReviews: (params?: { status?: string }) =>
     api.get('/admin/reviews', { params }),
-
   approveReview: (reviewId: string, isApproved: boolean) =>
     api.put(`/admin/reviews/${reviewId}/approve`, { isApproved }),
-
   deleteReview: (reviewId: string) =>
     api.delete(`/admin/reviews/${reviewId}`),
+
+  // ✅ CONTACTS API (ADD THIS)
+  getContacts: () => api.get('/admin/contacts'),
 };
 
 
