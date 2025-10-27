@@ -162,7 +162,7 @@ export const adminApi = {
   getContacts: () => api.get('/admin/contacts'),
   updateContactStatus: (id: string, status: string) =>
   api.put(`/admin/contacts/${id}/status`, { status }),
-
+deleteContact: (id: string) => api.delete(`/admin/contacts/${id}`),
 };
 
 
