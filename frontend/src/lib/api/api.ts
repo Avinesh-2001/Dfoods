@@ -130,6 +130,7 @@ export const adminApi = {
   logout: () => api.post('/admin/auth/logout'),
   getProfile: () => api.get('/admin/auth/profile'),
   getDashboardStats: () => api.get('/admin/dashboard'),
+
   getUsers: (params?: GetUsersParams) => api.get('/admin/dashboard/users', { params }),
   getUserById: (userId: string) => api.get(`/admin/users/${userId}`),
   updateUser: (userId: string, data: Partial<UpdateUserData>) => api.put(`/admin/users/${userId}`, data),
@@ -137,9 +138,10 @@ export const adminApi = {
 
   getEmailTemplates: () => api.get('/admin/email-templates'),
   updateEmailTemplate: (id: string, data: UpdateEmailTemplateData) =>
-    api.put(`/admin/email-templates/${id}`, data), // ✅ Updated type
+    api.put(`/admin/email-templates/${id}`, data),
 
   getCategories: () => api.get('/category'),
+
   getProducts: (params?: GetProductsParams) => api.get('/admin/dashboard/products', { params }),
   getProductById: (id: string) => api.get(`/products/${id}`),
   createProduct: (data: ProductData) => api.post('/products', data),
@@ -147,6 +149,17 @@ export const adminApi = {
   deleteProduct: (id: string) => api.delete(`/products/${id}`),
   uploadProducts: (formData: FormData) =>
     api.post('/products/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+
+  // ✅ ADD THESE ENDPOINTS
+  getAllReviews: (params?: { status?: string }) =>
+    api.get('/admin/reviews', { params }),
+
+  approveReview: (reviewId: string, isApproved: boolean) =>
+    api.put(`/admin/reviews/${reviewId}/approve`, { isApproved }),
+
+  deleteReview: (reviewId: string) =>
+    api.delete(`/admin/reviews/${reviewId}`),
 };
+
 
 export default api;
