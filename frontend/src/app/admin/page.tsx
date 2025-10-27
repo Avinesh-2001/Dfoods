@@ -127,16 +127,17 @@ export default function AdminDashboard() {
 
     try {
       const productData = {
-        ...productForm,
-        price: parseFloat(productForm.price as string) || 0,
-        originalPrice:
-          parseFloat(productForm.originalPrice as string) || undefined,
-        quantity: parseInt(productForm.quantity as string) || 0,
-        images,
-        ingredients: productForm.ingredients.filter((i) => i) || undefined,
-        variants: productForm.variants.filter((v) => v) || undefined,
-        tags: productForm.tags.filter((t) => t) || undefined,
-      };
+  ...productForm,
+  price: parseFloat(productForm.price as string) || 0,
+  originalPrice:
+    parseFloat(productForm.originalPrice as string) || undefined,
+  stock: parseInt(productForm.quantity as string) || 0, // ✅ changed
+  images,
+  ingredients: productForm.ingredients.filter((i) => i) || undefined,
+  variants: productForm.variants.filter((v) => v) || undefined,
+  tags: productForm.tags.filter((t) => t) || undefined,
+};
+
 
       if (editingProductId) {
         await adminApi.updateProduct(editingProductId, productData);
