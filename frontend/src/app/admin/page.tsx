@@ -588,7 +588,7 @@ export default function AdminDashboard() {
                     <input
                       type="text"
                       value={item}
-                      onChange={(e) => handleInputChange(e, field, index)}
+                      onChange={(e) => handleInputChange(e, field as keyof ProductForm, index)}
                       className="w-full p-2 border rounded"
                       placeholder={field.slice(0, -1)}
                     />
