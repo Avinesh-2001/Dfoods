@@ -59,17 +59,22 @@ export default function AdminDashboard() {
     fetchData();
   }, [user, router]);
 
-  const handleInputChange = (e, field, index = null) => {
-    if (index !== null) {
-      setProductForm(prev => {
-        const newArray = [...prev[field]];
-        newArray[index] = e.target.value;
-        return { ...prev, [field]: newArray };
-      });
-    } else {
-      setProductForm(prev => ({ ...prev, [field]: e.target.value }));
-    }
-  };
+const handleInputChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  field: keyof typeof productForm,
+  index: number | null = null
+) => {
+  if (index !== null) {
+    setProductForm(prev => {
+      const newArray = [...(prev[field] as string[])];
+      newArray[index] = e.target.value;
+      return { ...prev, [field]: newArray };
+    });
+  } else {
+    setProductForm(prev => ({ ...prev, [field]: e.target.value }));
+  }
+};
+
 
   const addArrayItem = (field) => {
     setProductForm(prev => ({ ...prev, [field]: [...prev[field], ''] }));
@@ -121,9 +126,12 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  if (e.target.files && e.target.files.length > 0) {
     setFile(e.target.files[0]);
-  };
+  }
+};
+
 
   const handleUpload = async () => {
     if (!file) {
