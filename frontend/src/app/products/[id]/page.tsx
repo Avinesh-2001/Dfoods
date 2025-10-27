@@ -72,7 +72,7 @@ export default function ProductDetailPage() {
           
           // Try to fetch reviews from API, fallback to localStorage and mock data
           try {
-            const reviewsResponse = await adminApi.getReviews(productId);
+            const reviewsResponse = await adminApi.getAllReviews(productId);
             setReviews(reviewsResponse.data.reviews || []);
           } catch (reviewError) {
             console.log('Failed to fetch reviews from API, using fallback');
