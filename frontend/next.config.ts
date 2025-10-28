@@ -12,18 +12,9 @@ const config: NextConfig = {
     ],
   },
   async rewrites() {
-    // Use environment variable for production API URL
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    console.log('Rewrites loaded for /api/:path* to', apiUrl);
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${apiUrl}/:path*`,
-      },
-    ];
-  },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    // For production, remove rewrites or use environment-specific config
+    // The API calls should go to deployed backend
+    return [];
   },
 };
 
