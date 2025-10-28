@@ -175,7 +175,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = parseInt(process.env.PORT) || 5000;
 
 const startServer = async () => {
   console.log('\n🔧 Starting Dfoods Backend...\n');
