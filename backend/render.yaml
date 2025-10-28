@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: dfoods-backend
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://Dfood_db:ZKVu30vgK03Hgajh@cluster0.ioqhxhx.mongodb.net/dfoods?retryWrites=true&w=majority&appName=Cluster0
+      - key: JWT_SECRET
+        value: 18040bda860f876b18c72db3f5d19522cb751b2a962e43b320ea1366935dbc49bf3461f5189a821abf3d923e9d0d861351876d69c215a0ff009c6452ece431dd
+      - key: PORT
+        value: 10000
+      - key: FRONTEND_URL
+        value: https://dfood-project.vercel.app
+      - key: EMAIL_USER
+        value: abhishek020621@gmail.com
+      - key: EMAIL_PASSWORD
+        value: exwwyhovmqfzuvrg
+      - key: ADMIN_EMAIL
+        value: abhishek020621@gmail.com
+

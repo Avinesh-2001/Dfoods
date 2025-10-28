@@ -52,9 +52,28 @@ export interface UpdateEmailTemplateData {
 }
 
 // ---------------- AXIOS INSTANCE ----------------
+// Dynamic API URL - works for both local and production
+const getApiBaseUrl = () => {
+  // If we're in the browser
+  if (typeof window !== 'undefined') {
+    // Check if we have a custom API URL set
+    const customUrl = localStorage.getItem('API_URL');
+    if (customUrl) return customUrl;
+    
+    // In production (Vercel), use the deployed backend
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+  }
+  
+  // Default to /api which will be proxied to localhost:5000 in development
+  // or to the configured backend in production
+  return '/api';
+};
+
 const api = axios.create({
-  baseURL: '/api',
-  timeout: 3000,
+  baseURL: getApiBaseUrl(),
+  timeout: 15000, // Increased timeout for production
   headers: {
     'Cache-Control': 'no-cache',
   },
