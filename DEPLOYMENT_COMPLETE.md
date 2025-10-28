@@ -30,19 +30,15 @@
    Click "Environment" and add these:
    
    ```
-   MONGO_URI = mongodb+srv://Dfood_db:ZKVu30vgK03Hgajh@cluster0.ioqhxhx.mongodb.net/dfoods?retryWrites=true&w=majority&appName=Cluster0
+   ⚠️ Add these environment variables (replace with your actual values):
    
-   JWT_SECRET = 18040bda860f876b18c72db3f5d19522cb751b2a962e43b320ea1366935dbc49bf3461f5189a821abf3d923e9d0d861351876d69c215a0ff009c6452ece431dd
-   
+   MONGO_URI = your_mongodb_connection_string
+   JWT_SECRET = your_secret_key
    PORT = 10000
-   
    FRONTEND_URL = https://dfood-project.vercel.app
-   
-   EMAIL_USER = abhishek020621@gmail.com
-   
-   EMAIL_PASSWORD = exwwyhovmqfzuvrg
-   
-   ADMIN_EMAIL = abhishek020621@gmail.com
+   EMAIL_USER = your-email@gmail.com
+   EMAIL_PASSWORD = your-gmail-app-password
+   ADMIN_EMAIL = your-admin-email@gmail.com
    ```
 
 5. **Deploy**
