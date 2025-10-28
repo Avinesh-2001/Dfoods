@@ -153,16 +153,19 @@ export const adminApi = {
   // ✅ REVIEWS API
   getAllReviews: (params?: { status?: string }) =>
     api.get('/admin/reviews', { params }),
+  getProductReviews: (productId: string) =>
+    api.get(`/reviews/product/${productId}`),
+  createReview: (data: any) => api.post('/reviews', data),
   approveReview: (reviewId: string, isApproved: boolean) =>
     api.put(`/admin/reviews/${reviewId}/approve`, { isApproved }),
   deleteReview: (reviewId: string) =>
     api.delete(`/admin/reviews/${reviewId}`),
 
-  // ✅ CONTACTS API (ADD THIS)
-  getContacts: () => api.get('/admin/contacts'),
+  // ✅ CONTACTS API
+  getContacts: () => api.get('/contact'),
   updateContactStatus: (id: string, status: string) =>
-  api.put(`/admin/contacts/${id}/status`, { status }),
-deleteContact: (id: string) => api.delete(`/admin/contacts/${id}`),
+    api.put(`/contact/${id}/status`, { status }),
+  deleteContact: (id: string) => api.delete(`/contact/${id}`),
 };
 
 

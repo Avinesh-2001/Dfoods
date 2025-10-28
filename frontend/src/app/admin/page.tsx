@@ -58,9 +58,9 @@ export default function AdminDashboard() {
       try {
         setLoading(true);
         const usersRes = await adminApi.getUsers();
-        setUsers(usersRes.data);
+        setUsers(usersRes.data.users || usersRes.data);
         const productsRes = await adminApi.getProducts();
-        setProducts(productsRes.data);
+        setProducts(productsRes.data.products || productsRes.data);
         const contactsRes = await adminApi.getContacts();
         setContacts(contactsRes.data.contacts || []);
       } catch (err) {

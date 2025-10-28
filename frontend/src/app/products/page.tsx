@@ -30,7 +30,7 @@ const categories = [
 ];
 
 export default function ProductsPage() {
-  const [allProducts, setAllProducts] = useState([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
   const [filters, setFilters] = useState({
     category: 'all',
     priceRange: [0, 2000],
@@ -129,7 +129,7 @@ export default function ProductsPage() {
     currentPage * itemsPerPage
   );
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = (key: string, value: any) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     setCurrentPage(1);
   };

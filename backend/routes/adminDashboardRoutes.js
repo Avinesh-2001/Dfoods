@@ -9,7 +9,7 @@ import Review from '../models/Review.js';
 const router = express.Router();
 
 // Dashboard overview
-router.get("/", async (req, res) => {
+router.get("/", authenticateAdmin, async (req, res) => {
   try {
     const [
       totalProducts,
@@ -50,7 +50,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get all users
-router.get("/users", async (req, res) => {
+router.get("/users", authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const users = await User.find()
@@ -74,7 +74,7 @@ router.get("/users", async (req, res) => {
 });
 
 // Get all products
-router.get("/products", async (req, res) => {
+router.get("/products", authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const products = await Product.find()
@@ -97,7 +97,7 @@ router.get("/products", async (req, res) => {
 });
 
 // Get all orders
-router.get("/orders", async (req, res) => {
+router.get("/orders", authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const orders = await Order.find()
@@ -121,7 +121,7 @@ router.get("/orders", async (req, res) => {
 });
 
 // Get all reviews
-router.get("/reviews", async (req, res) => {
+router.get("/reviews", authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10, status = 'all' } = req.query;
     
@@ -150,7 +150,7 @@ router.get("/reviews", async (req, res) => {
 });
 
 // Get all contacts
-router.get("/contacts", async (req, res) => {
+router.get("/contacts", authenticateAdmin, async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
     const contacts = await Contact.find()

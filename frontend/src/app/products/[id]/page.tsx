@@ -52,8 +52,8 @@ export default function ProductDetailPage() {
         console.error('Fetch error:', error);
         
         // Use mock data as fallback when API is blocked
-        const productId = parseInt(params.id as string);
-        const mockProduct = mockProducts.find(p => p.id === productId);
+        const productId = params.id as string;
+        const mockProduct = mockProducts.find(p => String(p.id) === productId);
         
         if (mockProduct) {
           console.log('Using mock data for product:', mockProduct.name);
@@ -72,8 +72,8 @@ export default function ProductDetailPage() {
           
           // Try to fetch reviews from API, fallback to localStorage and mock data
           try {
-            const reviewsResponse = await adminApi.getAllReviews(productId);
-            setReviews(reviewsResponse.data.reviews || []);
+            const reviewsResponse = await adminApi.getProductReviews(productId);
+            setReviews(reviewsResponse.data.reviews || reviewsResponse.data || []);
           } catch (reviewError) {
             console.log('Failed to fetch reviews from API, using fallback');
             // Try localStorage first

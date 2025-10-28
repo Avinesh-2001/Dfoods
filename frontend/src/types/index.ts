@@ -13,8 +13,11 @@ export interface Product {
   ingredients?: string[];
   storageConditions?: string[];
   inStock: boolean;
+  quantity?: number;
+  status?: string;
   flavor?: string;
   weight?: string;
+  _id?: string;
 }
 
 export interface CartItem {
