@@ -47,7 +47,7 @@ let isDbConnected = false;
 const connectDB = async () => {
   if (process.env.MOCK_MODE === 'true') {
     console.log('MOCK_MODE enabled - skipping MongoDB connection');
-    return;
+    return true;
   }
   try {
     await mongoose.connect(process.env.MONGO_URI, {
@@ -55,7 +55,7 @@ const connectDB = async () => {
       maxPoolSize: 10,
     });
     isDbConnected = true;
-    console.log('MongoDB Connected');
+    console.log('✅ MongoDB Connected');
 
     const defaultAdminEmail = 'admin@dfoods.com';
     const adminExists = await Admin.findOne({ email: defaultAdminEmail });
@@ -67,19 +67,15 @@ const connectDB = async () => {
         password: 'admin123',
         role: 'admin',
       });
-      console.log('Default admin created successfully:', {
-        email: newAdmin.email,
-        role: newAdmin.role,
-      });
+      console.log('✅ Default admin created successfully');
     } else {
-      console.log('Default admin already exists:', {
-        email: adminExists.email,
-        role: adminExists.role,
-      });
+      console.log('✅ Default admin already exists');
     }
+    return true;
   } catch (error) {
-    console.warn('MongoDB connection failed. Running in MOCK_MODE. Error:', error.message);
+    console.warn('⚠️ MongoDB connection failed. Running in MOCK_MODE. Error:', error.message);
     isDbConnected = false;
+    return false;
   }
 };
 
@@ -180,10 +176,24 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 5000;
-connectDB().then(() => {
+
+const startServer = async () => {
+  console.log('\n🔧 Starting Dfoods Backend...\n');
+  
+  // Start the server immediately
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`\n🚀 Server running on port ${PORT}`);
     console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`✅ Frontend URL: ${process.env.FRONTEND_URL}`);
+    console.log(`✅ API Health: http://0.0.0.0:${PORT}/api/health\n`);
   });
-});
+  
+  // Try to connect to database in background
+  try {
+    await connectDB();
+  } catch (error) {
+    console.log('⚠️ Server running without database');
+  }
+};
+
+startServer();
