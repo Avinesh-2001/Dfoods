@@ -33,6 +33,19 @@ router.get('/users', authenticateAdmin, async (req, res) => {
   }
 });
 
+// Delete user (admin only)
+router.delete('/users/:id', authenticateAdmin, async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // ✅ Get all reviews (filter by ?status=pending/approved)
 router.get('/reviews', authenticateAdmin, async (req, res) => {
   try {

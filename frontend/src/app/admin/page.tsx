@@ -283,6 +283,7 @@ export default function AdminDashboard() {
                 <th className="border p-3 text-left text-[#8B4513]">Name</th>
                 <th className="border p-3 text-left text-[#8B4513]">Email</th>
                 <th className="border p-3 text-left text-[#8B4513]">Blocked</th>
+                <th className="border p-3 text-left text-[#8B4513]">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -292,6 +293,24 @@ export default function AdminDashboard() {
                   <td className="border p-3 text-[#8B4513]">{user.email}</td>
                   <td className="border p-3 text-[#8B4513]">
                     {user.isBlocked ? "Yes" : "No"}
+                  </td>
+                  <td className="border p-3 text-[#8B4513]">
+                    <button
+                      onClick={async () => {
+                        if (confirm(`Delete user ${user.name}?`)) {
+                          try {
+                            await adminApi.deleteUser(user._id || user.id);
+                            setUsers(users.filter((u) => u._id !== user._id));
+                            toast.success("User deleted successfully!");
+                          } catch (err) {
+                            toast.error("Failed to delete user");
+                          }
+                        }
+                      }}
+                      className="px-2 py-1 bg-red-500 text-white rounded text-sm"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
