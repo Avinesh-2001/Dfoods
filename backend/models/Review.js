@@ -29,7 +29,7 @@ const reviewSchema = new mongoose.Schema({
   },
   isApproved: {
     type: Boolean,
-    default: true
+    default: false
   }
 }, {
   timestamps: true
