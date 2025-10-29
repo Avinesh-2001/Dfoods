@@ -286,8 +286,8 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user._id}>
+              {users.map((user, index) => (
+                <tr key={user._id || user.id || `user-${index}`}>
                   <td className="border p-3 text-[#8B4513]">{user.name}</td>
                   <td className="border p-3 text-[#8B4513]">{user.email}</td>
                   <td className="border p-3 text-[#8B4513]">
@@ -330,9 +330,9 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {contacts.map((contact) => (
+                {contacts.map((contact, index) => (
                   <tr
-                    key={contact._id}
+                    key={contact._id || contact.id || `contact-${index}`}
                     className={contact.status === "new" ? "bg-orange-50" : ""}
                   >
                     <td className="border p-3 text-[#8B4513]">
@@ -641,8 +641,8 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
-                <tr key={product._id}>
+              {products.map((product, index) => (
+                <tr key={product._id || product.id || `product-${index}`}>
                   <td className="border p-3 text-[#8B4513]">{product.name}</td>
                   <td className="border p-3 text-[#8B4513]">
                     ₹{product.price}
