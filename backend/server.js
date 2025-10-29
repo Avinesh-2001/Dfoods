@@ -174,25 +174,53 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Error handling for uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('❌ Uncaught Exception:', error);
+  // Don't exit - keep server running
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit - keep server running
+});
+
 // Start server
 const PORT = parseInt(process.env.PORT) || 5000;
 
 const startServer = async () => {
-  console.log('\n🔧 Starting Dfoods Backend...\n');
-  
-  // Start the server immediately
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`\n🚀 Server running on port ${PORT}`);
-    console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`✅ Frontend URL: ${process.env.FRONTEND_URL}`);
-    console.log(`✅ API Health: http://0.0.0.0:${PORT}/api/health\n`);
-  });
-  
-  // Try to connect to database in background
   try {
-    await connectDB();
+    console.log('\n🔧 Starting Dfoods Backend...\n');
+    console.log(`📍 Port: ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    
+    // Start the server immediately
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      console.log(`\n✅ Server running on port ${PORT}`);
+      console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`✅ Frontend URL: ${process.env.FRONTEND_URL || 'Not set'}`);
+      console.log(`✅ API Health: http://0.0.0.0:${PORT}/api/health\n`);
+    });
+    
+    // Handle server errors
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        console.error(`❌ Port ${PORT} is already in use`);
+      } else {
+        console.error('❌ Server error:', error);
+      }
+    });
+    
+    // Try to connect to database in background (non-blocking)
+    connectDB().catch((error) => {
+      console.log('⚠️ Database connection failed, server running in mock mode');
+      console.log('⚠️ Error:', error.message);
+    });
+    
   } catch (error) {
-    console.log('⚠️ Server running without database');
+    console.error('❌ Failed to start server:', error);
+    // Still try to start - don't exit
+    process.exit(1);
   }
 };
 
