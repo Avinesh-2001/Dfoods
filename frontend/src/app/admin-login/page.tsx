@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
 import { adminApi } from '@/lib/api/api';
+import { setUser } from '@/store';
 import toast from 'react-hot-toast';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 
@@ -14,6 +16,7 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,10 +30,22 @@ export default function AdminLogin() {
       if (response.data.token) {
         localStorage.setItem('adminToken', response.data.token);
         localStorage.setItem('adminUser', JSON.stringify(response.data.admin));
+        
+        // Update Redux state
+        dispatch(setUser({
+          user: { 
+            id: response.data.admin.id, 
+            name: response.data.admin.name, 
+            email: response.data.admin.email,
+            role: 'admin'
+          },
+          token: response.data.token
+        }));
+        
         console.log('Token stored:', response.data.token);
         console.log('Admin user stored:', response.data.admin);
         toast.success('Login successful!');
-        router.push('/admin-dashboard');
+        router.push('/admin');
       } else {
         console.error('No token in response:', response.data);
         toast.error('Login failed - no token received');
