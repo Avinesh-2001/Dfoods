@@ -74,9 +74,6 @@ const getApiBaseUrl = () => {
 const api = axios.create({
   baseURL: getApiBaseUrl(),
   timeout: 15000, // Increased timeout for production
-  headers: {
-    'Cache-Control': 'no-cache',
-  },
 });
 
 // Request interceptor
