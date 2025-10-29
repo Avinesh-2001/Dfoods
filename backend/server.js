@@ -188,15 +188,18 @@ process.on('unhandledRejection', (reason, promise) => {
 // Start server
 const PORT = parseInt(process.env.PORT) || 5000;
 
+// Start server - must not exit!
 const startServer = async () => {
+  console.log('\n🔧 Starting Dfoods Backend...\n');
+  console.log(`📍 Port: ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📍 MONGO_URI: ${process.env.MONGO_URI ? 'Set' : 'Not set'}`);
+  console.log(`📍 FRONTEND_URL: ${process.env.FRONTEND_URL || 'Not set'}\n`);
+  
+  // Start the server - this MUST succeed
   try {
-    console.log('\n🔧 Starting Dfoods Backend...\n');
-    console.log(`📍 Port: ${PORT}`);
-    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-    
-    // Start the server immediately
     const server = app.listen(PORT, '0.0.0.0', () => {
-      console.log(`\n✅ Server running on port ${PORT}`);
+      console.log(`\n✅✅✅ Server is RUNNING on port ${PORT} ✅✅✅\n`);
       console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`✅ Frontend URL: ${process.env.FRONTEND_URL || 'Not set'}`);
       console.log(`✅ API Health: http://0.0.0.0:${PORT}/api/health\n`);
@@ -204,24 +207,43 @@ const startServer = async () => {
     
     // Handle server errors
     server.on('error', (error) => {
+      console.error('❌ Server error:', error);
       if (error.code === 'EADDRINUSE') {
         console.error(`❌ Port ${PORT} is already in use`);
-      } else {
-        console.error('❌ Server error:', error);
       }
     });
-    
-    // Try to connect to database in background (non-blocking)
+  } catch (startError) {
+    console.error('❌ CRITICAL: Failed to start server:', startError);
+    // Keep trying - don't exit!
+    setTimeout(() => {
+      console.log('🔄 Retrying server start...');
+      startServer();
+    }, 5000);
+    return;
+  }
+  
+  // Try to connect to database in background (non-blocking)
+  setTimeout(() => {
     connectDB().catch((error) => {
       console.log('⚠️ Database connection failed, server running in mock mode');
       console.log('⚠️ Error:', error.message);
     });
-    
-  } catch (error) {
-    console.error('❌ Failed to start server:', error);
-    // Still try to start - don't exit
-    process.exit(1);
-  }
+  }, 1000);
 };
 
-startServer();
+// Start the server - wrapped in try-catch
+try {
+  startServer();
+} catch (error) {
+  console.error('❌ Fatal error starting server:', error);
+  // Don't exit - try again
+  setTimeout(() => {
+    console.log('🔄 Attempting to restart...');
+    startServer();
+  }, 3000);
+}
+
+// Keep process alive
+setInterval(() => {
+  // Heartbeat - keeps process alive
+}, 30000);
