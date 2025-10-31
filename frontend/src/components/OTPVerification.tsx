@@ -86,8 +86,9 @@ export default function OTPVerification({
           <CheckIcon className="w-8 h-8 text-green-600" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify Your Email</h2>
-        <p className="text-gray-600">We've sent a 6-digit verification code to</p>
-        <p className="font-medium text-gray-900">{email}</p>
+        <p className="text-gray-600">Enter the 6-digit verification code sent to</p>
+        <p className="font-medium text-gray-900 break-all">{email}</p>
+        <p className="text-xs text-gray-500 mt-2">Check your spam folder if you don't see it</p>
       </div>
 
       <form onSubmit={handleVerifyOTP} className="space-y-6">

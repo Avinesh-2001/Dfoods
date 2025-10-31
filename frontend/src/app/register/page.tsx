@@ -22,6 +22,8 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [showOTPVerification, setShowOTPVerification] = useState(false);
   const [registrationData, setRegistrationData] = useState<any>(null);
+  const [otpSent, setOtpSent] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -41,21 +43,47 @@ export default function RegisterPage() {
       toast.error('Passwords do not match');
       return;
     }
+    
+    setLoading(true);
     try {
       console.log('Sending OTP to:', formData.email);
-      await authApi.sendOTP(formData.email); // Change to adminApi
-      setRegistrationData({
+      
+      // Set registration data first so we can show OTP screen even if sending fails
+      const registrationInfo = {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
         password: formData.password
-      });
+      };
+      setRegistrationData(registrationInfo);
+      
+      // Try to send OTP with timeout handling
+      try {
+        const otpPromise = authApi.sendOTP(formData.email);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('OTP sending timeout. You can still verify manually or retry.')), 20000)
+        );
+        
+        await Promise.race([otpPromise, timeoutPromise]);
+        setOtpSent(true);
+        toast.success('OTP sent to your email!');
+      } catch (otpError: any) {
+        console.error('Send OTP error:', otpError);
+        const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
+        setError(message);
+        toast.error(message, { duration: 5000 });
+        setOtpSent(false);
+        // Still show OTP screen so user can manually enter or retry
+      }
+      
+      // Show OTP screen regardless of whether sending succeeded
       setShowOTPVerification(true);
-      toast.success('OTP sent to your email!');
     } catch (err: any) {
-      console.error('Send OTP error:', err);
-      const message = err.response?.data?.error || 'Failed to send OTP';
+      console.error('Registration error:', err);
+      const message = err.response?.data?.error || 'Registration failed. Please try again.';
       setError(message);
       toast.error(message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,10 +100,18 @@ export default function RegisterPage() {
 
   const handleResendOTP = async () => {
     try {
-      await authApi.sendOTP(formData.email); // Change to adminApi
+      const otpPromise = authApi.sendOTP(formData.email);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 20000)
+      );
+      
+      await Promise.race([otpPromise, timeoutPromise]);
+      setOtpSent(true);
       toast.success('OTP sent again!');
     } catch (err: any) {
-      toast.error('Failed to resend OTP');
+      console.error('Resend OTP error:', err);
+      toast.error(err.response?.data?.error || err.message || 'Failed to resend OTP. Please check your email or try again later.');
+      setOtpSent(false);
     }
   };
 
@@ -84,13 +120,25 @@ export default function RegisterPage() {
       <div className="min-h-screen bg-[#FDF6E3] py-12">
         <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
         <OTPVerification
-  email={formData.email}
-  name={`${formData.firstName} ${formData.lastName}`}
-  password={formData.password}
-  onVerificationSuccess={handleOTPVerificationSuccess}
-  onVerificationFailed={handleOTPVerificationFailed}
-  onResendOTP={handleResendOTP}
-/>
+          email={formData.email}
+          name={`${formData.firstName} ${formData.lastName}`}
+          password={formData.password}
+          onVerificationSuccess={handleOTPVerificationSuccess}
+          onVerificationFailed={handleOTPVerificationFailed}
+          onResendOTP={handleResendOTP}
+        />
+        {!otpSent && (
+          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800">
+              ⚠️ OTP email may not have been sent due to a timeout. You can:
+            </p>
+            <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
+              <li>Check your email spam folder</li>
+              <li>Wait a moment and click "Resend OTP"</li>
+              <li>Contact support if the issue persists</li>
+            </ul>
+          </div>
+        )}
         </div>
       </div>
     );
@@ -176,6 +224,7 @@ export default function RegisterPage() {
                 value={formData.password}
                 onChange={handleInputChange}
                 required
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E67E22] focus:border-transparent transition-colors"
                 placeholder="Create a password"
               />
@@ -192,6 +241,7 @@ export default function RegisterPage() {
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
                 required
+                autoComplete="new-password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E67E22] focus:border-transparent transition-colors"
                 placeholder="Confirm your password"
               />
@@ -218,10 +268,11 @@ export default function RegisterPage() {
 
             <motion.button
               type="submit"
-              className="w-full bg-[#E67E22] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#D35400] transition-colors"
-              whileTap={{ scale: 0.95 }}
+              disabled={loading}
+              className="w-full bg-[#E67E22] text-white py-3 px-4 rounded-lg font-semibold hover:bg-[#D35400] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              whileTap={{ scale: loading ? 1 : 0.95 }}
             >
-              Create Account
+              {loading ? 'Sending OTP...' : 'Create Account'}
             </motion.button>
           </form>
 

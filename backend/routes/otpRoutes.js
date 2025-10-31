@@ -1,5 +1,6 @@
 import express from 'express';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { sendEmail } from '../utils/mailers.js'; // Ensure this path is correct
 
@@ -75,20 +76,28 @@ router.post('/verify-otp', async (req, res) => {
     otpStore.delete(email);
     console.log(`✅ User created: ${email}`);
 
-    // Send welcome email
-    await sendEmail(
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user._id, role: 'user' },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '1d' }
+    );
+
+    // Send welcome email (non-blocking)
+    sendEmail(
       email,
       'Welcome to Dfood!',
       `<div style="font-family:Arial; text-align:center;">
         <h2>Welcome, ${name}!</h2>
         <p>Your account has been successfully verified.</p>
-        <a href="${process.env.FRONTEND_URL}" style="background:#f59e0b;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Start Shopping</a>
+        <a href="${process.env.FRONTEND_URL || 'https://dfoods.in'}" style="background:#f59e0b;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Start Shopping</a>
       </div>`
-    );
+    ).catch(err => console.error('Welcome email error:', err));
 
     res.status(201).json({
       message: 'Account created and verified successfully',
       user: { id: user._id, name: user.name, email: user.email },
+      token: token,
     });
   } catch (error) {
     console.error('❌ Error verifying OTP:', error);
