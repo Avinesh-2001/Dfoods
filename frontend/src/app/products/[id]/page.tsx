@@ -106,9 +106,10 @@ export default function ProductDetailPage() {
     setImageErrors(prev => new Map(prev).set(index, 'Failed to load image'));
   };
 
+  // Extract productId for dependency array
+  const productId = typeof params?.id === 'string' ? params.id : String(params?.id || '');
+
   useEffect(() => {
-    const productId = typeof params?.id === 'string' ? params.id : String(params?.id || '');
-    
     const fetchData = async () => {
       try {
         setLoading(true);
