@@ -34,6 +34,35 @@ export default function ProductDetailPage() {
   const [reviews, setReviews] = useState<any[]>([]);
   const [submittingReview, setSubmittingReview] = useState(false);
 
+  // Function to fetch reviews separately so we can refresh them
+  const fetchReviews = async (productId: string) => {
+    try {
+      console.log('🔄 Fetching reviews for product:', productId);
+      const reviewsResponse = await adminApi.getProductReviews(productId);
+      console.log('📦 Reviews API Response:', reviewsResponse);
+      
+      const reviewsData = reviewsResponse.data?.reviews || reviewsResponse.data || [];
+      console.log('📝 Parsed reviews data:', reviewsData);
+      console.log('📊 Number of reviews:', reviewsData.length);
+      
+      // Always set reviews array (empty or with data)
+      if (Array.isArray(reviewsData)) {
+        setReviews(reviewsData);
+        console.log('✅ Reviews set successfully:', reviewsData.length);
+        if (reviewsData.length > 0) {
+          console.log('📋 Review details:', reviewsData.map((r: any) => ({ name: r.name, rating: r.rating, isApproved: r.isApproved })));
+        }
+      } else {
+        console.warn('⚠️ Reviews data is not an array:', reviewsData);
+        setReviews([]);
+      }
+    } catch (reviewError: any) {
+      console.error('❌ Error fetching reviews:', reviewError);
+      console.error('Error details:', reviewError.response?.data || reviewError.message);
+      setReviews([]);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
