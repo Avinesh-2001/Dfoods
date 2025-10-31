@@ -1,92 +1,41 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import FlipCard from '@/components/ui/FlipCard';
+import { 
+  SparklesIcon, 
+  FireIcon, 
+  ShieldCheckIcon, 
+  TruckIcon 
+} from '@heroicons/react/24/outline';
 
 const whatWeDoItems = [
   {
     title: "Organic Farming",
-    front: (
-      <div className="w-full h-full bg-gradient-to-br from-amber-400 to-amber-500 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <div className="text-4xl mb-4">🌱</div>
-          <h3 className="text-xl font-bold">Organic Farming</h3>
-        </div>
-      </div>
-    ),
-    back: (
-      <div className="w-full h-full bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <h3 className="text-xl font-bold mb-3">Organic Farming</h3>
-          <p className="text-sm leading-relaxed">
-            We use traditional farming methods without any chemical fertilizers or pesticides, ensuring pure and natural jaggery production.
-          </p>
-        </div>
-      </div>
-    )
+    icon: SparklesIcon,
+    description: "We use traditional farming methods without any chemical fertilizers or pesticides, ensuring pure and natural jaggery production with authentic taste and maximum nutritional value.",
+    arcColor: "from-orange-400 via-orange-500 to-orange-600",
+    lineColor: "bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600"
   },
   {
     title: "Traditional Processing",
-    front: (
-      <div className="w-full h-full bg-gradient-to-br from-orange-400 to-orange-500 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <div className="text-4xl mb-4">🔥</div>
-          <h3 className="text-xl font-bold">Traditional Processing</h3>
-        </div>
-      </div>
-    ),
-    back: (
-      <div className="w-full h-full bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <h3 className="text-xl font-bold mb-3">Traditional Processing</h3>
-          <p className="text-sm leading-relaxed">
-            Our 40+ years of experience in traditional jaggery making ensures authentic taste and quality that has been passed down through generations.
-          </p>
-        </div>
-      </div>
-    )
+    icon: FireIcon,
+    description: "Our 40+ years of experience in traditional jaggery making ensures authentic taste and quality that has been passed down through generations using time-tested methods.",
+    arcColor: "from-orange-600 via-orange-700 to-orange-800",
+    lineColor: "bg-gradient-to-r from-orange-600 via-orange-700 to-orange-800"
   },
   {
     title: "Quality Assurance",
-    front: (
-      <div className="w-full h-full bg-gradient-to-br from-yellow-400 to-yellow-500 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <div className="text-4xl mb-4">✅</div>
-          <h3 className="text-xl font-bold">Quality Assurance</h3>
-        </div>
-      </div>
-    ),
-    back: (
-      <div className="w-full h-full bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <h3 className="text-xl font-bold mb-3">Quality Assurance</h3>
-          <p className="text-sm leading-relaxed">
-            Every batch undergoes rigorous quality testing to ensure purity, authenticity, and safety standards that exceed industry requirements.
-          </p>
-        </div>
-      </div>
-    )
+    icon: ShieldCheckIcon,
+    description: "Every batch undergoes rigorous quality testing to ensure purity, authenticity, and safety standards that exceed industry requirements for your complete satisfaction.",
+    arcColor: "from-orange-400 via-orange-500 to-orange-600",
+    lineColor: "bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600"
   },
   {
     title: "Farm-to-Table",
-    front: (
-      <div className="w-full h-full bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <div className="text-4xl mb-4">🚛</div>
-          <h3 className="text-xl font-bold">Farm-to-Table</h3>
-        </div>
-      </div>
-    ),
-    back: (
-      <div className="w-full h-full bg-gradient-to-br from-amber-600 to-amber-700 rounded-xl flex items-center justify-center p-6 shadow-lg">
-        <div className="text-center text-white">
-          <h3 className="text-xl font-bold mb-3">Farm-to-Table</h3>
-          <p className="text-sm leading-relaxed">
-            Direct from our farms to your table, ensuring fresh jaggery with minimal processing and maximum nutritional value.
-          </p>
-        </div>
-      </div>
-    )
+    icon: TruckIcon,
+    description: "Direct from our farms to your table, ensuring fresh jaggery with minimal processing and maximum nutritional value, delivered with care and dedication.",
+    arcColor: "from-orange-600 via-orange-700 to-orange-800",
+    lineColor: "bg-gradient-to-r from-orange-600 via-orange-700 to-orange-800"
   }
 ];
 
@@ -99,7 +48,7 @@ export default function WhatWeDoSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
           <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             What We Do
@@ -109,22 +58,45 @@ export default function WhatWeDoSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {whatWeDoItems.map((item, index) => (
-            <motion.div
-              key={item.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <FlipCard
-                front={item.front}
-                back={item.back}
-                className="h-48"
-              />
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {whatWeDoItems.map((item, index) => {
+            const IconComponent = item.icon;
+            return (
+              <motion.div
+                key={item.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="flex flex-col items-center text-center"
+              >
+                {/* Semi-circular Arc */}
+                <div className="relative w-full mb-6 flex items-start justify-center">
+                  <div 
+                    className={`w-28 h-14 bg-gradient-to-r ${item.arcColor} rounded-t-full`}
+                  ></div>
+                </div>
+
+                {/* Icon */}
+                <div className="mb-4 flex items-center justify-center">
+                  <IconComponent className="w-12 h-12 text-gray-900" />
+                </div>
+
+                {/* Title */}
+                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                  {item.title}
+                </h3>
+
+                {/* Description */}
+                <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-grow">
+                  {item.description}
+                </p>
+
+                {/* Bottom Line */}
+                <div className={`w-full h-1 ${item.lineColor} rounded-full mt-auto`}></div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
