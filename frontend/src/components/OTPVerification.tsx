@@ -88,7 +88,10 @@ export default function OTPVerification({
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Verify Your Email</h2>
         <p className="text-gray-600">Enter the 6-digit verification code sent to</p>
         <p className="font-medium text-gray-900 break-all">{email}</p>
-        <p className="text-xs text-gray-500 mt-2">Check your spam folder if you don't see it</p>
+        <div className="mt-2 space-y-1">
+          <p className="text-xs text-gray-500">📧 Check your spam/junk folder if you don't see it</p>
+          <p className="text-xs text-amber-600 font-medium">💡 Email delivery may take 1-2 minutes</p>
+        </div>
       </div>
 
       <form onSubmit={handleVerifyOTP} className="space-y-6">

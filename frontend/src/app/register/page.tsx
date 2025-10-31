@@ -63,15 +63,22 @@ export default function RegisterPage() {
           setTimeout(() => reject(new Error('Request timeout. OTP may still be sent. Please check your email.')), 10000)
         );
         
-        await Promise.race([otpPromise, timeoutPromise]);
+        const response = await Promise.race([otpPromise, timeoutPromise]) as any;
         setOtpSent(true);
-        toast.success('OTP sent to your email! Please check your inbox.');
+        
+        // Log OTP in development mode if provided (for testing)
+        if (response?.data?.debugOtp) {
+          console.log(`🔐 DEBUG OTP for ${formData.email}: ${response.data.debugOtp}`);
+          console.warn('⚠️ OTP shown in console for development only. Check email in production.');
+        }
+        
+        toast.success('OTP sent to your email! Please check your inbox and spam folder.');
       } catch (otpError: any) {
         console.error('Send OTP error:', otpError);
         // If timeout, assume OTP was sent (backend responds immediately now)
         if (otpError.message?.includes('timeout')) {
           setOtpSent(true);
-          toast.success('OTP request processed. Please check your email.', { duration: 5000 });
+          toast.success('OTP request processed. Please check your email and spam folder.', { duration: 5000 });
         } else {
           const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
           setError(message);
@@ -220,6 +227,7 @@ export default function RegisterPage() {
                 value={formData.email}
                 onChange={handleInputChange}
                 required
+                autoComplete="username"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E67E22] focus:border-transparent transition-colors"
                 placeholder="Enter your email"
               />

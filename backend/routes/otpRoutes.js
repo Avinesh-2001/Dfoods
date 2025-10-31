@@ -21,6 +21,7 @@ router.post('/send-otp', async (req, res) => {
     otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
 
     console.log(`✅ OTP generated for ${email}: ${otp}`); // Server log
+    console.log(`🔐 OTP stored in memory. Expires in 5 minutes.`);
 
     const html = `
       <div style="font-family: Arial; max-width:600px; margin:auto;">
@@ -32,19 +33,28 @@ router.post('/send-otp', async (req, res) => {
     `;
 
     // Send response immediately, email will be sent in background
-    res.json({ message: 'OTP sent successfully', expiresIn: 300 });
+    res.json({ 
+      message: 'OTP sent successfully', 
+      expiresIn: 300,
+      // Include OTP in response for development/testing (remove in production)
+      ...(process.env.NODE_ENV === 'development' && { debugOtp: otp })
+    });
 
     // Send email in background (non-blocking)
+    console.log(`📧 Attempting to send OTP email to ${email}...`);
     sendEmail(email, 'Verify Your Email - Dfood', html)
       .then((result) => {
         if (result.success) {
-          console.log(`📧 OTP email sent successfully to ${email}`);
+          console.log(`✅ OTP email sent successfully to ${email}`);
+          console.log(`📬 Message ID: ${result.info?.messageId || 'N/A'}`);
         } else {
           console.error(`❌ Failed to send OTP email to ${email}:`, result.error);
+          console.error(`📧 Email error details:`, JSON.stringify(result, null, 2));
         }
       })
       .catch((error) => {
         console.error(`❌ Error sending OTP email to ${email}:`, error.message);
+        console.error(`📧 Full error:`, error);
       });
   } catch (error) {
     console.error('❌ Error sending OTP:', error.message);
@@ -130,6 +140,7 @@ router.post('/resend-otp', async (req, res) => {
     otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
 
     console.log(`✅ OTP (Resend) generated for ${email}: ${otp}`);
+    console.log(`🔐 OTP stored in memory. Expires in 5 minutes.`);
 
     const html = `
       <div style="font-family: Arial; max-width:600px; margin:auto;">
@@ -140,19 +151,28 @@ router.post('/resend-otp', async (req, res) => {
     `;
 
     // Send response immediately, email will be sent in background
-    res.json({ message: 'OTP resent successfully', expiresIn: 300 });
+    res.json({ 
+      message: 'OTP resent successfully', 
+      expiresIn: 300,
+      // Include OTP in response for development/testing (remove in production)
+      ...(process.env.NODE_ENV === 'development' && { debugOtp: otp })
+    });
 
     // Send email in background (non-blocking)
+    console.log(`📧 Attempting to resend OTP email to ${email}...`);
     sendEmail(email, 'Resend OTP - Dfood', html)
       .then((result) => {
         if (result.success) {
-          console.log(`📧 Resend OTP email sent successfully to ${email}`);
+          console.log(`✅ Resend OTP email sent successfully to ${email}`);
+          console.log(`📬 Message ID: ${result.info?.messageId || 'N/A'}`);
         } else {
           console.error(`❌ Failed to resend OTP email to ${email}:`, result.error);
+          console.error(`📧 Email error details:`, JSON.stringify(result, null, 2));
         }
       })
       .catch((error) => {
         console.error(`❌ Error resending OTP email to ${email}:`, error.message);
+        console.error(`📧 Full error:`, error);
       });
   } catch (error) {
     console.error('❌ Error resending OTP:', error);
