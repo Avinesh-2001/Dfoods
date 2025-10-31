@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { adminApi } from '@/lib/api/api';
+import toast from 'react-hot-toast';
 import {
   UserGroupIcon,
   UserPlusIcon,
@@ -82,8 +83,42 @@ export default function UsersPage() {
       setUsers(users.map(user => 
         user._id === userId ? { ...user, status: newStatus } : user
       ));
+      toast.success(`User status updated to ${newStatus}`);
     } catch (error) {
       console.error('Error updating user status:', error);
+      toast.error('Failed to update user status');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string, userName: string, userRole: string) => {
+    // Prevent deleting admin users (optional safeguard)
+    if (userRole === 'admin') {
+      const proceed = confirm(`Warning: You are about to delete an admin user (${userName}). This action cannot be undone and will permanently remove the admin from the database. Are you absolutely sure?`);
+      if (!proceed) return;
+    } else {
+      if (!confirm(`Are you sure you want to delete ${userName}? This action cannot be undone and will permanently remove the user from the database.`)) {
+        return;
+      }
+    }
+
+    try {
+      await adminApi.deleteUser(userId);
+      setUsers(users.filter(user => user._id !== userId));
+      toast.success(`User "${userName}" deleted successfully from database`);
+      fetchUsers(); // Refresh the list to ensure consistency
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+      if (error.response?.status === 401) {
+        toast.error('Authentication failed. Please login again.');
+        window.location.href = '/admin-login';
+      } else if (error.response?.status === 404) {
+        toast.error('User not found. It may have already been deleted.');
+        fetchUsers(); // Refresh in case it was deleted elsewhere
+      } else if (error.response?.status === 403) {
+        toast.error('You cannot delete this user. ' + (error.response?.data?.message || ''));
+      } else {
+        toast.error(error.response?.data?.message || 'Failed to delete user');
+      }
     }
   };
 
@@ -263,7 +298,11 @@ export default function UsersPage() {
                       <button className="text-amber-600 hover:text-amber-900">
                         <PencilIcon className="h-4 w-4" />
                       </button>
-                      <button className="text-red-600 hover:text-red-900">
+                      <button
+                        onClick={() => handleDeleteUser(user._id, user.name, user.role)}
+                        className="text-red-600 hover:text-red-900 transition-colors"
+                        title="Delete user from database"
+                      >
                         <TrashIcon className="h-4 w-4" />
                       </button>
                     </div>
