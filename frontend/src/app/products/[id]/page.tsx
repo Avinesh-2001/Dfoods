@@ -107,11 +107,12 @@ export default function ProductDetailPage() {
   };
 
   useEffect(() => {
+    const productId = typeof params?.id === 'string' ? params.id : String(params?.id || '');
+    
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const productId = params.id as string;
         
         // Fetch product with timeout
         const productPromise = adminApi.getProductById(productId);
@@ -146,8 +147,8 @@ export default function ProductDetailPage() {
         
         // Use mock data as fallback when API is blocked
         try {
-          const productId = params.id as string;
-          const mockProduct = mockProducts.find(p => String(p.id) === productId);
+          const fallbackProductId = typeof params?.id === 'string' ? params.id : String(params?.id || '');
+          const mockProduct = mockProducts.find(p => String(p.id) === fallbackProductId);
           
           if (mockProduct) {
             console.log('Using mock data for product:', mockProduct.name);
@@ -165,7 +166,7 @@ export default function ProductDetailPage() {
             }
             
             // Fetch reviews from API (only approved reviews are returned)
-            fetchReviews(productId).catch(err => {
+            fetchReviews(fallbackProductId).catch(err => {
               console.warn('Failed to fetch reviews:', err);
             });
           } else {
@@ -179,13 +180,13 @@ export default function ProductDetailPage() {
       }
     };
     
-    if (params.id) {
+    if (productId) {
       fetchData();
     } else {
       setError('Invalid product ID');
       setLoading(false);
     }
-  }, [params.id]);
+  }, [productId]);
 
   if (loading) {
     return (
