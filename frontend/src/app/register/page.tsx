@@ -60,18 +60,24 @@ export default function RegisterPage() {
       try {
         const otpPromise = authApi.sendOTP(formData.email);
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('OTP sending timeout. You can still verify manually or retry.')), 20000)
+          setTimeout(() => reject(new Error('Request timeout. OTP may still be sent. Please check your email.')), 10000)
         );
         
         await Promise.race([otpPromise, timeoutPromise]);
         setOtpSent(true);
-        toast.success('OTP sent to your email!');
+        toast.success('OTP sent to your email! Please check your inbox.');
       } catch (otpError: any) {
         console.error('Send OTP error:', otpError);
-        const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
-        setError(message);
-        toast.error(message, { duration: 5000 });
-        setOtpSent(false);
+        // If timeout, assume OTP was sent (backend responds immediately now)
+        if (otpError.message?.includes('timeout')) {
+          setOtpSent(true);
+          toast.success('OTP request processed. Please check your email.', { duration: 5000 });
+        } else {
+          const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
+          setError(message);
+          toast.error(message, { duration: 5000 });
+          setOtpSent(false);
+        }
         // Still show OTP screen so user can manually enter or retry
       }
       
@@ -102,16 +108,22 @@ export default function RegisterPage() {
     try {
       const otpPromise = authApi.sendOTP(formData.email);
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Timeout')), 20000)
+        setTimeout(() => reject(new Error('Timeout')), 10000)
       );
       
       await Promise.race([otpPromise, timeoutPromise]);
       setOtpSent(true);
-      toast.success('OTP sent again!');
+      toast.success('OTP sent again! Please check your email.');
     } catch (err: any) {
       console.error('Resend OTP error:', err);
-      toast.error(err.response?.data?.error || err.message || 'Failed to resend OTP. Please check your email or try again later.');
-      setOtpSent(false);
+      // If timeout, assume OTP was sent (backend responds immediately now)
+      if (err.message?.includes('timeout')) {
+        setOtpSent(true);
+        toast.success('OTP request processed. Please check your email.', { duration: 5000 });
+      } else {
+        toast.error(err.response?.data?.error || err.message || 'Failed to resend OTP. Please check your email or try again later.');
+        setOtpSent(false);
+      }
     }
   };
 
