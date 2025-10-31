@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Poppins, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -7,9 +7,10 @@ import CartDrawer from "@/components/layout/CartDrawer";
 import ClientProvider from "@/components/providers/ClientProvider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
-const inter = Inter({
-  variable: "--font-inter",
+const poppins = Poppins({
+  variable: "--font-poppins",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -42,7 +43,7 @@ export default function RootLayout({
         <script src="https://js.stripe.com/v3/"></script>
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-[#FDF6E3]`}
+        className={`${poppins.variable} ${playfair.variable} font-sans antialiased bg-[#FDF6E3]`}
       >
         <ErrorBoundary>
           <ClientProvider>

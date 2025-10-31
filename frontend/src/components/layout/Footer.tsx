@@ -10,7 +10,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-gray-50 via-white to-gray-50 border-t border-gray-200">
+    <footer className="bg-gradient-to-b from-amber-50 via-orange-50/30 to-white border-t border-amber-200">
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -124,7 +124,7 @@ export default function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-gray-200 bg-white">
+      <div className="border-t border-amber-200 bg-gradient-to-r from-amber-50/50 to-orange-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Legal Links */}

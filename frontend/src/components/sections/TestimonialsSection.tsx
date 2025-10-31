@@ -29,8 +29,8 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-amber-50/20 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ export default function TestimonialsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 items-start max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-start max-w-[90rem] mx-auto">
           {testimonials.slice(0, 3).map((testimonial, index) => {
             const isCenter = index === 1;
             
