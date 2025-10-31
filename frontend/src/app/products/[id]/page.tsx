@@ -36,6 +36,8 @@ export default function ProductDetailPage() {
   const [showImageZoom, setShowImageZoom] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isDesktop, setIsDesktop] = useState(false);
+  const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
+  const [imageErrors, setImageErrors] = useState<Map<number, string>>(new Map());
 
   useEffect(() => {
     const checkDevice = () => {
@@ -75,56 +77,114 @@ export default function ProductDetailPage() {
     }
   };
 
+  // Helper function to get image URL with fallback
+  const getImageUrl = (imageUrl: string | undefined, index: number = 0): string => {
+    if (!imageUrl || imageUrl.trim() === '') {
+      return 'https://via.placeholder.com/500x500?text=No+Image';
+    }
+    // If image failed before, use placeholder
+    if (failedImages.has(index)) {
+      return 'https://via.placeholder.com/500x500?text=Image+Error';
+    }
+    // Validate URL format
+    try {
+      new URL(imageUrl);
+      return imageUrl;
+    } catch {
+      // If not a valid URL, treat as relative or return placeholder
+      if (imageUrl.startsWith('/') || imageUrl.startsWith('http')) {
+        return imageUrl;
+      }
+      return 'https://via.placeholder.com/500x500?text=Invalid+URL';
+    }
+  };
+
+  // Handle image load errors
+  const handleImageError = (index: number, imageUrl: string) => {
+    console.warn(`Image failed to load at index ${index}:`, imageUrl);
+    setFailedImages(prev => new Set(prev).add(index));
+    setImageErrors(prev => new Map(prev).set(index, 'Failed to load image'));
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError(null);
         const productId = params.id as string;
-        const productRes = await adminApi.getProductById(productId);
+        
+        // Fetch product with timeout
+        const productPromise = adminApi.getProductById(productId);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Request timeout')), 10000)
+        );
+        
+        const productRes = await Promise.race([productPromise, timeoutPromise]) as any;
         setProduct(productRes.data);
 
         if (productRes.data.variants && productRes.data.variants.length > 0) {
           setSelectedVariant(productRes.data.variants[0]);
         }
 
-        const allRes = await adminApi.getProducts();
-        // Handle both direct array and wrapped object formats
-        const productsData = allRes.data.products || allRes.data;
-        setAllProducts(Array.isArray(productsData) ? productsData : []);
+        // Fetch all products (non-blocking)
+        adminApi.getProducts()
+          .then((allRes) => {
+            const productsData = allRes.data?.products || allRes.data;
+            setAllProducts(Array.isArray(productsData) ? productsData : []);
+          })
+          .catch((err) => {
+            console.warn('Failed to fetch all products:', err);
+            setAllProducts([]);
+          });
         
-        // Fetch reviews for the product
-        await fetchReviews(productId);
+        // Fetch reviews for the product (non-blocking)
+        fetchReviews(productId).catch(err => {
+          console.warn('Failed to fetch reviews:', err);
+        });
       } catch (error: any) {
         console.error('Fetch error:', error);
         
         // Use mock data as fallback when API is blocked
-        const productId = params.id as string;
-        const mockProduct = mockProducts.find(p => String(p.id) === productId);
-        
-        if (mockProduct) {
-          console.log('Using mock data for product:', mockProduct.name);
-          setProduct(mockProduct);
-          setAllProducts(mockProducts);
+        try {
+          const productId = params.id as string;
+          const mockProduct = mockProducts.find(p => String(p.id) === productId);
           
-          // Set up mock variants if needed
-          if (mockProduct.sizes && mockProduct.sizes.length > 0) {
-            const mockVariants = mockProduct.sizes.map((size: string, index: number) => ({
-              size,
-              price: mockProduct.price + (index * 100), // Mock price variation
-              sku: `${mockProduct.id}-${size.toLowerCase()}`
-            }));
-            setSelectedVariant(mockVariants[0]);
+          if (mockProduct) {
+            console.log('Using mock data for product:', mockProduct.name);
+            setProduct(mockProduct);
+            setAllProducts(mockProducts);
+            
+            // Set up mock variants if needed
+            if (mockProduct.sizes && mockProduct.sizes.length > 0) {
+              const mockVariants = mockProduct.sizes.map((size: string, index: number) => ({
+                size,
+                price: mockProduct.price + (index * 100), // Mock price variation
+                sku: `${mockProduct.id}-${size.toLowerCase()}`
+              }));
+              setSelectedVariant(mockVariants[0]);
+            }
+            
+            // Fetch reviews from API (only approved reviews are returned)
+            fetchReviews(productId).catch(err => {
+              console.warn('Failed to fetch reviews:', err);
+            });
+          } else {
+            setError('Product not found. Please try again later.');
           }
-          
-          // Fetch reviews from API (only approved reviews are returned)
-          await fetchReviews(productId);
-        } else {
-          setError('Product not found');
-        }
+        } catch (fallbackError: any) {
+          console.error('Fallback error:', fallbackError);
+          setError(fallbackError.message || 'Failed to load product. Please refresh the page.');
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
+    
+    if (params.id) {
+      fetchData();
+    } else {
+      setError('Invalid product ID');
+      setLoading(false);
+    }
   }, [params.id]);
 
   if (loading) {
@@ -276,11 +336,13 @@ export default function ProductDetailPage() {
                   }`}
                 >
                   <Image
-                    src={image}
+                    src={getImageUrl(image, index)}
                     alt={`${product.name} ${index + 1}`}
                     fill
                     className="object-cover"
                     sizes="15vw"
+                    onError={() => handleImageError(index, image)}
+                    unoptimized={image?.startsWith('http') && !image?.includes('localhost')}
                   />
                 </button>
               ))}
@@ -314,7 +376,7 @@ export default function ProductDetailPage() {
                 }}
               >
                 <Image
-                  src={product.images?.[selectedImage] || '/placeholder.jpg'}
+                  src={getImageUrl(product.images?.[selectedImage], selectedImage)}
                   alt={product.name}
                   fill
                   className={`object-contain p-3 transition-transform duration-200 ease-out ${
@@ -325,6 +387,8 @@ export default function ProductDetailPage() {
                   }}
                   sizes="(max-width: 768px) 100vw, 50vw"
                   priority
+                  onError={() => handleImageError(selectedImage, product.images?.[selectedImage] || '')}
+                  unoptimized={product.images?.[selectedImage]?.startsWith('http') && !product.images?.[selectedImage]?.includes('localhost')}
                 />
                 {!inStock && (
                   <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-10 pointer-events-none">
@@ -350,11 +414,13 @@ export default function ProductDetailPage() {
                       }`}
                     >
                       <Image
-                        src={image}
+                        src={getImageUrl(image, index)}
                         alt={`${product.name} ${index + 1}`}
                         fill
                         className="object-cover"
                         sizes="20vw"
+                        onError={() => handleImageError(index, image)}
+                        unoptimized={image?.startsWith('http') && !image?.includes('localhost')}
                       />
                     </button>
                   ))}
