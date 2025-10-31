@@ -40,10 +40,10 @@ export default function OurProductsSection() {
 
   if (loading) {
     return (
-      <section className="py-20 bg-gradient-to-br from-green-50 via-orange-50 to-green-50">
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600 mx-auto"></div>
           </div>
         </div>
       </section>
@@ -51,7 +51,7 @@ export default function OurProductsSection() {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-br from-green-50 via-orange-50 to-green-50">
+    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -60,7 +60,7 @@ export default function OurProductsSection() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
             Our Products
           </h2>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">
@@ -85,7 +85,7 @@ export default function OurProductsSection() {
                       whileHover={{ y: -8, scale: 1.02 }}
                     >
                       {/* Product Image */}
-                      <div className="relative w-full h-64 bg-gradient-to-br from-green-100 to-orange-100 overflow-hidden">
+                      <div className="relative w-full h-64 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
                         {product.images && product.images.length > 0 ? (
                           <Image
                             src={product.images[0]}
@@ -109,15 +109,15 @@ export default function OurProductsSection() {
 
                       {/* Product Info */}
                       <div className="p-5">
-                        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-green-600 transition-colors">
+                        <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
                           {product.name}
                         </h3>
                         <div className="flex items-center justify-between">
-                          <span className="text-2xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent">
+                          <span className="text-2xl font-bold text-gray-900">
                             ₹{product.price}
                           </span>
                           {product.category && (
-                            <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full">
+                            <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-semibold">
                               {product.category}
                             </span>
                           )}
@@ -138,7 +138,7 @@ export default function OurProductsSection() {
             >
               <Link
                 href="/products"
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-green-500 to-orange-500 text-white rounded-full hover:from-green-600 hover:to-orange-600 transition-all duration-300 font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gray-900 text-white rounded-full hover:bg-gray-800 transition-all duration-300 font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105"
               >
                 View All Products
                 <ArrowRightIcon className="w-5 h-5" />
