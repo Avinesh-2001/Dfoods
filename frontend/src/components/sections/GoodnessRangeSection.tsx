@@ -55,7 +55,7 @@ export default function GoodnessRangeSection() {
           viewport={{ once: true }}
           className="mb-10 sm:mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#8B4513] mb-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#8B4513] mb-2">
             The Güdness Range
           </h2>
         </motion.div>
@@ -79,7 +79,11 @@ export default function GoodnessRangeSection() {
             >
               <Link href={category.href} className="group w-full flex flex-col items-center">
                 {/* Circular Image - Fixed equal size */}
-                <div className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-lg mb-3 sm:mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300">
+                <motion.div 
+                  className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-lg mb-3 sm:mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300"
+                  whileHover={{ scale: 1.1, rotate: 5 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
                   <Image
                     src={category.image}
                     alt={category.name}
@@ -88,10 +92,10 @@ export default function GoodnessRangeSection() {
                     sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 176px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
+                </motion.div>
                 
                 {/* Category Label */}
-                <h3 className="text-center text-[#8B4513] font-semibold text-sm sm:text-base group-hover:text-amber-600 transition-colors w-full">
+                <h3 className="text-center text-[#8B4513] font-semibold text-xs sm:text-sm group-hover:text-amber-600 transition-colors w-full">
                   {category.name}
                 </h3>
               </Link>

@@ -38,10 +38,10 @@ export default function TestimonialsSection() {
           viewport={{ once: true }}
           className="text-center mb-10 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 mb-2 sm:mb-3">
             What Our Customers Say
           </h2>
-          <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto px-4">
             Don't just take our word for it - hear from thousands of satisfied customers who love our authentic jaggery.
           </p>
         </motion.div>
@@ -88,16 +88,16 @@ export default function TestimonialsSection() {
                   </div>
 
                   {/* Comment */}
-                  <blockquote className="text-gray-700 mb-6 flex-grow text-center italic">
+                  <blockquote className="text-gray-700 mb-4 sm:mb-6 flex-grow text-center italic text-sm sm:text-base">
                     "{testimonial.comment}"
                   </blockquote>
 
                   {/* Customer Info */}
-                  <div className="border-t pt-4 text-center">
-                    <h4 className="font-bold text-lg text-gray-900 mb-1">
+                  <div className="border-t pt-3 sm:pt-4 text-center">
+                    <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-1">
                       {testimonial.name}
                     </h4>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-xs sm:text-sm text-gray-500">
                       {new Date(testimonial.date).toLocaleDateString('en-US', { 
                         month: 'long', 
                         year: 'numeric' 

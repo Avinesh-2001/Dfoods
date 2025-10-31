@@ -52,7 +52,7 @@ export default function HeroSection() {
         >
           <Link
             href="/products"
-            className="group inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-3 sm:py-4 bg-white text-gray-900 font-bold text-base sm:text-lg rounded-full shadow-2xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 backdrop-blur-sm border-2 border-white/50"
+            className="group inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 md:py-4 bg-white text-gray-900 font-bold text-sm sm:text-base rounded-full shadow-2xl hover:bg-gray-50 hover:scale-105 transition-all duration-300 backdrop-blur-sm border-2 border-white/50"
           >
             Shop Now
             <ArrowRightIcon className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />

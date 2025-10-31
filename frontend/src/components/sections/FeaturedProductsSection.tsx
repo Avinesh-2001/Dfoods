@@ -62,10 +62,10 @@ export default function FeaturedProductsSection() {
           viewport={{ once: true }}
           className="text-center mb-10 sm:mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 mb-2 sm:mb-3">
             Our Products
           </h2>
-          <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto">
             Discover our premium collection of authentic jaggery products
           </p>
         </motion.div>
@@ -75,15 +75,21 @@ export default function FeaturedProductsSection() {
           {products.map((product, index) => (
             <motion.div
               key={product._id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ 
+                duration: 0.6, 
+                delay: index * 0.15,
+                type: "spring",
+                stiffness: 100
+              }}
               viewport={{ once: true }}
+              whileHover={{ y: -5 }}
             >
               <Link href={`/products/${product._id}`}>
                 <motion.div
                   className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  whileHover={{ y: -8, scale: 1.02, rotate: 0.5 }}
                 >
                   {/* Product Image */}
                   <div className="relative w-full h-64 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
@@ -103,16 +109,16 @@ export default function FeaturedProductsSection() {
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-5">
-                    <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
+                  <div className="p-4 sm:p-5">
+                    <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-2 line-clamp-2 group-hover:text-amber-600 transition-colors">
                       {product.name}
                     </h3>
                     <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-gray-900">
+                      <span className="text-xl sm:text-2xl font-bold text-gray-900">
                         ₹{product.price}
                       </span>
                       {product.category && (
-                        <span className="text-xs bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-semibold">
+                        <span className="text-[10px] sm:text-xs bg-gray-100 text-gray-700 px-2 sm:px-3 py-1 rounded-full font-semibold">
                           {product.category}
                         </span>
                       )}
