@@ -29,24 +29,24 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             What Our Customers Say
           </h2>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto px-4">
             Don't just take our word for it - hear from thousands of satisfied customers who love our authentic jaggery.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-stretch">
           {testimonials.slice(0, 3).map((testimonial, index) => {
             const isCenter = index === 1;
             
@@ -118,18 +118,18 @@ export default function TestimonialsSection() {
           viewport={{ once: true }}
           className="text-center mt-16"
         >
-          <div className="inline-flex items-center bg-white rounded-2xl px-8 py-6 shadow-xl border-2 border-gray-200">
-            <div className="flex items-center mr-6">
+          <div className="inline-flex flex-col sm:flex-row items-center bg-white rounded-2xl px-6 sm:px-8 py-5 sm:py-6 shadow-xl border-2 border-gray-200">
+            <div className="flex items-center mb-4 sm:mb-0 sm:mr-6">
               <div className="flex">
                 {Array.from({ length: 5 }, (_, i) => (
-                  <span key={i} className="text-3xl text-yellow-400">⭐</span>
+                  <span key={i} className="text-2xl sm:text-3xl text-yellow-400">⭐</span>
                 ))}
               </div>
-              <span className="ml-3 text-2xl font-bold text-gray-900">4.8</span>
+              <span className="ml-2 sm:ml-3 text-xl sm:text-2xl font-bold text-gray-900">4.8</span>
             </div>
-            <div className="text-left border-l-2 border-gray-300 pl-6">
-              <p className="text-sm text-gray-600">Based on</p>
-              <p className="font-bold text-xl text-gray-900">500+ Reviews</p>
+            <div className="text-center sm:text-left sm:border-l-2 sm:border-gray-300 sm:pl-6">
+              <p className="text-xs sm:text-sm text-gray-600">Based on</p>
+              <p className="font-bold text-lg sm:text-xl text-gray-900">500+ Reviews</p>
             </div>
           </div>
         </motion.div>

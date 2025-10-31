@@ -51,16 +51,16 @@ export default function OurProductsSection() {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-white via-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-10 sm:mb-12"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             Our Products
           </h2>
           <p className="text-lg text-gray-700 max-w-2xl mx-auto">

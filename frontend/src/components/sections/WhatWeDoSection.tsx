@@ -41,24 +41,24 @@ const whatWeDoItems = [
 
 export default function WhatWeDoSection() {
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-12 md:mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-3 sm:mb-4">
             What We Do
           </h2>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-gray-700 max-w-2xl mx-auto px-4">
             Our commitment to quality and tradition drives everything we do, from farming to your table.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {whatWeDoItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
@@ -78,17 +78,17 @@ export default function WhatWeDoSection() {
                 </div>
 
                 {/* Icon */}
-                <div className="mb-4 flex items-center justify-center">
-                  <IconComponent className="w-12 h-12 text-gray-900" />
+                <div className="mb-3 sm:mb-4 flex items-center justify-center">
+                  <IconComponent className="w-10 h-10 sm:w-12 sm:h-12 text-gray-900" />
                 </div>
 
                 {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3 sm:mb-4">
                   {item.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-sm text-gray-600 leading-relaxed mb-6 flex-grow">
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed mb-4 sm:mb-6 flex-grow">
                   {item.description}
                 </p>
 

@@ -22,8 +22,8 @@ const whyChooseUsItems = [
     title: "100% Organic",
     icon: SparklesIcon,
     description: "Certified organic farming practices with no chemicals, pesticides, or artificial additives - pure nature in every bite.",
-    gradient: "from-green-400 via-emerald-500 to-green-600",
-    bgGradient: "from-green-50 via-emerald-50 to-green-50",
+    gradient: "from-amber-400 via-orange-500 to-amber-600",
+    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
     number: "100%",
     unit: "Organic"
   },
@@ -31,8 +31,8 @@ const whyChooseUsItems = [
     title: "No Chemicals",
     icon: ShieldCheckIcon,
     description: "Zero chemical processing, bleaching, or artificial enhancement. Only natural, traditional methods that preserve authentic taste.",
-    gradient: "from-blue-400 via-cyan-500 to-blue-600",
-    bgGradient: "from-blue-50 via-cyan-50 to-blue-50",
+    gradient: "from-amber-400 via-orange-500 to-amber-600",
+    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
     number: "0",
     unit: "Chemicals"
   },
@@ -40,8 +40,8 @@ const whyChooseUsItems = [
     title: "Farm Fresh",
     icon: TruckIcon,
     description: "Direct from our farms to your doorstep. Freshly harvested sugarcane processed within hours to ensure maximum freshness and nutrition.",
-    gradient: "from-orange-400 via-red-500 to-orange-600",
-    bgGradient: "from-orange-50 via-red-50 to-orange-50",
+    gradient: "from-amber-400 via-orange-500 to-amber-600",
+    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
     number: "24hr",
     unit: "Delivery"
   }
@@ -49,11 +49,11 @@ const whyChooseUsItems = [
 
 export default function WhyChooseUsSection() {
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-r from-green-200/20 to-emerald-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-20 right-10 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -62,17 +62,17 @@ export default function WhyChooseUsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 sm:mb-10 md:mb-12"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
             Why Choose Dfoods?
           </h2>
-          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto px-4">
             We stand out with our commitment to quality, tradition, and authenticity in every product we deliver.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           {whyChooseUsItems.map((item, index) => {
             const IconComponent = item.icon;
             return (
@@ -95,7 +95,7 @@ export default function WhyChooseUsSection() {
                 className="group relative"
               >
                 {/* Card */}
-                <div className={`relative h-full bg-gradient-to-br ${item.bgGradient} rounded-3xl p-8 shadow-xl border border-white/50 backdrop-blur-sm overflow-hidden transition-all duration-300 group-hover:shadow-2xl`}>
+                <div className={`relative h-full bg-gradient-to-br ${item.bgGradient} rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl border border-white/50 backdrop-blur-sm overflow-hidden transition-all duration-300 group-hover:shadow-2xl`}>
                   {/* Animated gradient overlay on hover */}
                   <motion.div
                     className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
@@ -118,10 +118,10 @@ export default function WhyChooseUsSection() {
                       scale: 1.2,
                       transition: { duration: 0.5 }
                     }}
-                    className="relative z-10 mb-6 flex justify-center"
+                    className="relative z-10 mb-3 sm:mb-4 flex justify-center"
                   >
-                    <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.gradient} shadow-lg`}>
-                      <IconComponent className="w-10 h-10 text-white" />
+                    <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-br ${item.gradient} shadow-lg`}>
+                      <IconComponent className="w-7 h-7 sm:w-9 sm:h-9 text-white" />
                     </div>
                   </motion.div>
 
@@ -134,15 +134,15 @@ export default function WhyChooseUsSection() {
                       delay: index * 0.15 + 0.2 
                     }}
                     viewport={{ once: true }}
-                    className="text-center mb-3 relative z-10"
+                    className="text-center mb-1.5 sm:mb-2 relative z-10"
                   >
                     <motion.span
-                      className={`text-5xl font-black bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}
+                      className={`text-3xl sm:text-4xl font-black bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}
                       whileHover={{ scale: 1.1 }}
                     >
                       {item.number}
                     </motion.span>
-                    <p className={`text-sm font-semibold mt-1 bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
+                    <p className={`text-[10px] sm:text-xs font-semibold mt-0.5 bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
                       {item.unit}
                     </p>
                   </motion.div>
@@ -153,7 +153,7 @@ export default function WhyChooseUsSection() {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: index * 0.15 + 0.3 }}
                     viewport={{ once: true }}
-                    className="text-xl font-bold text-gray-900 mb-4 text-center relative z-10"
+                    className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 text-center relative z-10"
                   >
                     {item.title}
                   </motion.h3>
@@ -164,7 +164,7 @@ export default function WhyChooseUsSection() {
                     whileInView={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: index * 0.15 + 0.4 }}
                     viewport={{ once: true }}
-                    className="text-sm text-gray-600 leading-relaxed text-center relative z-10"
+                    className="text-[10px] sm:text-xs text-gray-600 leading-relaxed text-center relative z-10"
                   >
                     {item.description}
                   </motion.p>
