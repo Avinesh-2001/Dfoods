@@ -11,31 +11,50 @@ router.get('/product/:productId', async (req, res) => {
     const { productId } = req.params;
     const { page = 1, limit = 10 } = req.query;
     
-    console.log('📝 Fetching reviews for productId:', productId);
+    console.log('📝 Fetching reviews for productId:', productId, 'Type:', typeof productId);
     
     const skip = (page - 1) * limit;
     
     // Only fetch approved reviews for public display
     // Handle both string and ObjectId formats
-    const query = {
+    let query = {
       isApproved: true
     };
     
     // Try to convert to ObjectId if it's a valid ObjectId string
     if (mongoose.Types.ObjectId.isValid(productId)) {
       query.productId = new mongoose.Types.ObjectId(productId);
+      console.log('✅ Using ObjectId format for query');
     } else {
       query.productId = productId;
+      console.log('✅ Using string format for query');
     }
     
-    const reviews = await Review.find(query)
+    // Also try querying with both formats to ensure we find the reviews
+    let reviews = await Review.find(query)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parseInt(limit));
+    
+    // If no reviews found with ObjectId, try with string
+    if (reviews.length === 0 && mongoose.Types.ObjectId.isValid(productId)) {
+      console.log('⚠️ No reviews found with ObjectId, trying string format...');
+      query.productId = productId;
+      reviews = await Review.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit));
+    }
 
     const total = await Review.countDocuments(query);
     
-    console.log(`✅ Found ${reviews.length} approved reviews out of ${total} total approved for product ${productId}`);
+    // Debug: Check all reviews for this product (approved and unapproved)
+    const allReviewsForProduct = await Review.find({ productId: mongoose.Types.ObjectId.isValid(productId) ? new mongoose.Types.ObjectId(productId) : productId });
+    const approvedCount = allReviewsForProduct.filter(r => r.isApproved === true).length;
+    console.log(`📊 Total reviews for product: ${allReviewsForProduct.length}, Approved: ${approvedCount}, Unapproved: ${allReviewsForProduct.length - approvedCount}`);
+    
+    console.log(`✅ Returning ${reviews.length} approved reviews for product ${productId}`);
+    console.log('Reviews data:', reviews.map(r => ({ id: r._id, name: r.name, isApproved: r.isApproved, productId: r.productId })));
 
     res.json({
       reviews,

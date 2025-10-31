@@ -73,18 +73,29 @@ router.put('/reviews/:id/approve', authenticateAdmin, async (req, res) => {
     
     console.log(`📝 Admin updating review ${id} approval status to: ${isApproved}`);
     
+    // First, find the review to see current state
+    const currentReview = await Review.findById(id);
+    if (!currentReview) {
+      console.log(`❌ Review ${id} not found`);
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    console.log(`📋 Current review state - isApproved: ${currentReview.isApproved}, productId: ${currentReview.productId}, name: ${currentReview.name}`);
+    
+    // Update the review
     const review = await Review.findByIdAndUpdate(
       id,
       { isApproved: Boolean(isApproved) },
       { new: true }
     );
     
-    if (!review) {
-      console.log(`❌ Review ${id} not found`);
-      return res.status(404).json({ message: 'Review not found' });
-    }
+    console.log(`✅ Review ${id} updated successfully. New isApproved: ${review.isApproved}`);
+    console.log(`📦 Review belongs to product: ${review.productId}`);
     
-    console.log(`✅ Review ${id} updated successfully. isApproved: ${review.isApproved}`);
+    // Verify the update was saved
+    const verifyReview = await Review.findById(id);
+    console.log(`🔍 Verification - Review ${id} isApproved in DB: ${verifyReview.isApproved}`);
+    
     res.json({ message: `Review ${isApproved ? 'approved' : 'rejected'} successfully`, review });
   } catch (error) {
     console.error('❌ Error updating review approval:', error);

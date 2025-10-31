@@ -72,19 +72,25 @@ export default function ProductDetailPage() {
           
           // Fetch reviews from API (only approved reviews are returned)
           try {
+            console.log('🔄 Fetching reviews for product:', productId);
             const reviewsResponse = await adminApi.getProductReviews(productId);
-            const reviewsData = reviewsResponse.data?.reviews || reviewsResponse.data || [];
-            console.log('Fetched reviews from API:', reviewsData);
+            console.log('📦 Reviews API Response:', reviewsResponse);
             
-            // Only set reviews if we got data from API
-            if (Array.isArray(reviewsData) && reviewsData.length > 0) {
+            const reviewsData = reviewsResponse.data?.reviews || reviewsResponse.data || [];
+            console.log('📝 Parsed reviews data:', reviewsData);
+            console.log('📊 Number of reviews:', reviewsData.length);
+            
+            // Always set reviews array (empty or with data)
+            if (Array.isArray(reviewsData)) {
               setReviews(reviewsData);
+              console.log('✅ Reviews set successfully:', reviewsData.length);
             } else {
-              // If no approved reviews yet, show empty array
+              console.warn('⚠️ Reviews data is not an array:', reviewsData);
               setReviews([]);
             }
           } catch (reviewError: any) {
-            console.error('Error fetching reviews:', reviewError);
+            console.error('❌ Error fetching reviews:', reviewError);
+            console.error('Error details:', reviewError.response?.data || reviewError.message);
             // If API fails, show empty reviews instead of mock data
             // This ensures only real approved reviews are shown
             setReviews([]);
