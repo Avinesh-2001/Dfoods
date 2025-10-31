@@ -37,7 +37,8 @@ export default function ProductDetailPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const productRes = await adminApi.getProductById(params.id as string);
+        const productId = params.id as string;
+        const productRes = await adminApi.getProductById(productId);
         setProduct(productRes.data);
 
         if (productRes.data.variants && productRes.data.variants.length > 0) {
@@ -48,6 +49,9 @@ export default function ProductDetailPage() {
         // Handle both direct array and wrapped object formats
         const productsData = allRes.data.products || allRes.data;
         setAllProducts(Array.isArray(productsData) ? productsData : []);
+        
+        // Fetch reviews for the product
+        await fetchReviews(productId);
       } catch (error: any) {
         console.error('Fetch error:', error);
         
