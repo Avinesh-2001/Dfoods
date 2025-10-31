@@ -62,14 +62,22 @@ export default function Header() {
     setIsOpen(false);
   };
 
+  const headerBackground = isScrolled 
+    ? 'radial-gradient(circle at center, rgba(251, 191, 36, 0.18) 0%, rgba(234, 179, 8, 0.22) 50%, rgba(217, 119, 6, 0.28) 100%)'
+    : 'radial-gradient(circle at center, rgba(251, 191, 36, 0.12) 0%, rgba(234, 179, 8, 0.18) 50%, rgba(217, 119, 6, 0.24) 100%)';
+
   return (
     <>
       <motion.header
         className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
           isScrolled 
-            ? 'bg-white/95 backdrop-blur-md shadow-lg' 
-            : 'bg-white'
+            ? 'shadow-lg' 
+            : ''
         }`}
+        style={{
+          background: headerBackground,
+          backdropFilter: 'blur(10px)',
+        }}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}

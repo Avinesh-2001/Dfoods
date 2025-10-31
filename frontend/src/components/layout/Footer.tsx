@@ -10,7 +10,12 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-amber-50 via-orange-50/30 to-white border-t border-amber-200">
+    <footer 
+      className="border-t border-amber-400/50"
+      style={{
+        background: 'radial-gradient(ellipse at center top, rgba(251, 191, 36, 0.2) 0%, rgba(234, 179, 8, 0.25) 40%, rgba(217, 119, 6, 0.3) 80%, rgba(194, 120, 3, 0.25) 100%)',
+      }}
+    >
       {/* Main Footer Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -124,7 +129,12 @@ export default function Footer() {
       </div>
 
       {/* Bottom Footer */}
-      <div className="border-t border-amber-200 bg-gradient-to-r from-amber-50/50 to-orange-50/30">
+      <div 
+        className="border-t border-amber-500/40"
+        style={{
+          background: 'radial-gradient(circle at center, rgba(234, 179, 8, 0.25) 0%, rgba(217, 119, 6, 0.3) 50%, rgba(194, 120, 3, 0.25) 100%)',
+        }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Legal Links */}
