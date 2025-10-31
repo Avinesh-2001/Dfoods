@@ -175,6 +175,7 @@ export default function ProductDetailPage() {
         } catch (fallbackError: any) {
           console.error('Fallback error:', fallbackError);
           setError(fallbackError.message || 'Failed to load product. Please refresh the page.');
+        }
       } finally {
         setLoading(false);
       }
