@@ -49,7 +49,7 @@ const whyChooseUsItems = [
 
 export default function WhyChooseUsSection() {
   return (
-    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
+    <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-b from-white via-gray-50 to-white relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse"></div>
