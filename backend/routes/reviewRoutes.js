@@ -1,4 +1,5 @@
 import express from 'express';
+import mongoose from 'mongoose';
 import Review from '../models/Review.js';
 import Product from '../models/Product.js';
 
@@ -10,21 +11,31 @@ router.get('/product/:productId', async (req, res) => {
     const { productId } = req.params;
     const { page = 1, limit = 10 } = req.query;
     
+    console.log('📝 Fetching reviews for productId:', productId);
+    
     const skip = (page - 1) * limit;
     
     // Only fetch approved reviews for public display
-    const reviews = await Review.find({ 
-      productId, 
-      isApproved: true 
-    })
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(parseInt(limit));
+    // Handle both string and ObjectId formats
+    const query = {
+      isApproved: true
+    };
+    
+    // Try to convert to ObjectId if it's a valid ObjectId string
+    if (mongoose.Types.ObjectId.isValid(productId)) {
+      query.productId = new mongoose.Types.ObjectId(productId);
+    } else {
+      query.productId = productId;
+    }
+    
+    const reviews = await Review.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
 
-    const total = await Review.countDocuments({ 
-      productId, 
-      isApproved: true 
-    });
+    const total = await Review.countDocuments(query);
+    
+    console.log(`✅ Found ${reviews.length} approved reviews out of ${total} total approved for product ${productId}`);
 
     res.json({
       reviews,
@@ -33,7 +44,7 @@ router.get('/product/:productId', async (req, res) => {
       total
     });
   } catch (error) {
-    console.error('Error fetching reviews:', error);
+    console.error('❌ Error fetching reviews:', error);
     res.status(500).json({ message: 'Error fetching reviews', error: error.message });
   }
 });

@@ -70,39 +70,24 @@ export default function ProductDetailPage() {
             setSelectedVariant(mockVariants[0]);
           }
           
-          // Try to fetch reviews from API, fallback to localStorage and mock data
+          // Fetch reviews from API (only approved reviews are returned)
           try {
             const reviewsResponse = await adminApi.getProductReviews(productId);
-            setReviews(reviewsResponse.data.reviews || reviewsResponse.data || []);
-          } catch (reviewError) {
-            console.log('Failed to fetch reviews from API, using fallback');
-            // Try localStorage first
-            const savedReviews = JSON.parse(localStorage.getItem(`reviews_${productId}`) || '[]');
-            if (savedReviews.length > 0) {
-              setReviews(savedReviews);
+            const reviewsData = reviewsResponse.data?.reviews || reviewsResponse.data || [];
+            console.log('Fetched reviews from API:', reviewsData);
+            
+            // Only set reviews if we got data from API
+            if (Array.isArray(reviewsData) && reviewsData.length > 0) {
+              setReviews(reviewsData);
             } else {
-              // Fallback to mock reviews
-              setReviews([
-                {
-                  name: 'Priya Sharma',
-                  rating: 5,
-                  text: 'Excellent quality jaggery! Very authentic taste and good packaging. Will definitely order again.',
-                  createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                  name: 'Rajesh Kumar',
-                  rating: 4,
-                  text: 'Good product, authentic flavor. Delivery was fast and packaging was secure.',
-                  createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                  name: 'Anita Singh',
-                  rating: 5,
-                  text: 'Amazing quality! This jaggery tastes exactly like the traditional one from my hometown. Highly recommended!',
-                  createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-                }
-              ]);
+              // If no approved reviews yet, show empty array
+              setReviews([]);
             }
+          } catch (reviewError: any) {
+            console.error('Error fetching reviews:', reviewError);
+            // If API fails, show empty reviews instead of mock data
+            // This ensures only real approved reviews are shown
+            setReviews([]);
           }
         } else {
           setError('Product not found');

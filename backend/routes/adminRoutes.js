@@ -69,14 +69,25 @@ router.get('/reviews', authenticateAdmin, async (req, res) => {
 router.put('/reviews/:id/approve', authenticateAdmin, async (req, res) => {
   try {
     const { isApproved } = req.body;
+    const { id } = req.params;
+    
+    console.log(`📝 Admin updating review ${id} approval status to: ${isApproved}`);
+    
     const review = await Review.findByIdAndUpdate(
-      req.params.id,
-      { isApproved },
+      id,
+      { isApproved: Boolean(isApproved) },
       { new: true }
     );
-    if (!review) return res.status(404).json({ message: 'Review not found' });
-    res.json({ message: 'Review approval updated', review });
+    
+    if (!review) {
+      console.log(`❌ Review ${id} not found`);
+      return res.status(404).json({ message: 'Review not found' });
+    }
+    
+    console.log(`✅ Review ${id} updated successfully. isApproved: ${review.isApproved}`);
+    res.json({ message: `Review ${isApproved ? 'approved' : 'rejected'} successfully`, review });
   } catch (error) {
+    console.error('❌ Error updating review approval:', error);
     res.status(500).json({ message: error.message });
   }
 });
