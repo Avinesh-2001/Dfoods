@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { adminApi } from '@/lib/api/api';
+import toast from 'react-hot-toast';
 import {
   StarIcon,
   CheckIcon,
@@ -35,20 +36,47 @@ export default function ReviewsPage() {
   const fetchReviews = async () => {
     try {
       const response = await adminApi.getAllReviews({ status: filterStatus });
-      const reviewsData = response.data.reviews || [];
+      const reviewsData = response.data.reviews || response.data || [];
       
       // Fetch product names for each review
       const reviewsWithProductNames = await Promise.all(
-        reviewsData.map(async (review: Review) => {
+        reviewsData.map(async (review: any) => {
           try {
-            const productResponse = await adminApi.getProductById(review.productId);
+            // Handle productId - it might be an object or a string
+            let productId: string;
+            let productName: string = 'Unknown Product';
+            
+            if (typeof review.productId === 'object' && review.productId !== null) {
+              // If productId is an object (populated), extract ID and name
+              productId = review.productId._id || review.productId.id || '';
+              productName = review.productId.name || 'Unknown Product';
+            } else {
+              // If productId is a string, use it to fetch product details
+              productId = String(review.productId || '');
+              
+              if (productId) {
+                try {
+                  const productResponse = await adminApi.getProductById(productId);
+                  productName = productResponse.data?.name || productResponse.data?.product?.name || 'Unknown Product';
+                } catch (error) {
+                  console.error('Error fetching product:', error);
+                  productName = 'Product Not Found';
+                }
+              }
+            }
+            
             return {
               ...review,
-              productName: productResponse.data.name || 'Unknown Product'
+              productId: productId || review.productId,
+              productName: productName
             };
           } catch (error) {
+            console.error('Error processing review:', error);
             return {
               ...review,
+              productId: typeof review.productId === 'object' 
+                ? (review.productId?._id || review.productId?.id || '') 
+                : String(review.productId || ''),
               productName: 'Product Not Found'
             };
           }
@@ -58,29 +86,7 @@ export default function ReviewsPage() {
       setReviews(reviewsWithProductNames);
     } catch (error) {
       console.error('Error fetching reviews:', error);
-      // Mock data for demonstration
-      setReviews([
-        {
-          _id: '1',
-          productId: '1',
-          productName: 'Organic Jaggery',
-          name: 'Priya Sharma',
-          rating: 5,
-          text: 'Excellent quality jaggery! Very authentic taste and good packaging.',
-          isApproved: true,
-          createdAt: new Date().toISOString()
-        },
-        {
-          _id: '2',
-          productId: '2',
-          productName: 'Coconut Jaggery',
-          name: 'Rajesh Kumar',
-          rating: 4,
-          text: 'Good product, authentic flavor. Delivery was fast.',
-          isApproved: false,
-          createdAt: new Date().toISOString()
-        }
-      ]);
+      setReviews([]);
     } finally {
       setLoading(false);
     }
@@ -92,8 +98,10 @@ export default function ReviewsPage() {
       setReviews(reviews.map(review => 
         review._id === reviewId ? { ...review, isApproved: true } : review
       ));
-    } catch (error) {
+      toast.success('Review approved successfully');
+    } catch (error: any) {
       console.error('Error approving review:', error);
+      toast.error(error.response?.data?.message || 'Failed to approve review');
     }
   };
 
@@ -103,17 +111,23 @@ export default function ReviewsPage() {
       setReviews(reviews.map(review => 
         review._id === reviewId ? { ...review, isApproved: false } : review
       ));
-    } catch (error) {
+      toast.success('Review rejected');
+    } catch (error: any) {
       console.error('Error rejecting review:', error);
+      toast.error(error.response?.data?.message || 'Failed to reject review');
     }
   };
 
   const handleDelete = async (reviewId: string) => {
+    if (!confirm('Are you sure you want to delete this review?')) return;
+    
     try {
       await adminApi.deleteReview(reviewId);
       setReviews(reviews.filter(review => review._id !== reviewId));
-    } catch (error) {
+      toast.success('Review deleted successfully');
+    } catch (error: any) {
       console.error('Error deleting review:', error);
+      toast.error(error.response?.data?.message || 'Failed to delete review');
     }
   };
 
@@ -202,7 +216,7 @@ export default function ReviewsPage() {
                 </div>
                 <p className="text-gray-700 mb-3">{review.text}</p>
                 <div className="text-sm text-gray-500">
-                  Product ID: {review.productId} • {new Date(review.createdAt).toLocaleDateString()}
+                  Product ID: {String(review.productId || 'N/A')} • {new Date(review.createdAt).toLocaleDateString()}
                 </div>
               </div>
               <div className="flex items-center space-x-2 ml-4">
