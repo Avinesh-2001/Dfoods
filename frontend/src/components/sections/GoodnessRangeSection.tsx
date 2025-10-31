@@ -75,23 +75,23 @@ export default function GoodnessRangeSection() {
               }}
               viewport={{ once: true }}
               whileHover={{ scale: 1.05, y: -5 }}
-              className="flex flex-col items-center"
+              className="flex flex-col items-center w-full"
             >
-              <Link href={category.href} className="group">
-                {/* Circular Image */}
-                <div className="relative w-full aspect-square rounded-full overflow-hidden shadow-lg mb-3 sm:mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300">
+              <Link href={category.href} className="group w-full flex flex-col items-center">
+                {/* Circular Image - Fixed equal size */}
+                <div className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-lg mb-3 sm:mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300">
                   <Image
                     src={category.image}
                     alt={category.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 16vw"
+                    sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 176px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
                 
                 {/* Category Label */}
-                <h3 className="text-center text-[#8B4513] font-semibold text-sm sm:text-base group-hover:text-amber-600 transition-colors">
+                <h3 className="text-center text-[#8B4513] font-semibold text-sm sm:text-base group-hover:text-amber-600 transition-colors w-full">
                   {category.name}
                 </h3>
               </Link>
