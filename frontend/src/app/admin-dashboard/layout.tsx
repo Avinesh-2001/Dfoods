@@ -12,7 +12,8 @@ import {
   UserGroupIcon,
   ChartBarIcon,
   CogIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  ChatBubbleBottomCenterTextIcon
 } from '@heroicons/react/24/outline';
 
 const navigation = [
@@ -20,6 +21,7 @@ const navigation = [
   { name: 'Products', href: '/admin-dashboard/products', icon: CubeIcon },
   { name: 'Reviews', href: '/admin-dashboard/reviews', icon: StarIcon },
   { name: 'Email Notifications', href: '/admin-dashboard/emails', icon: EnvelopeIcon },
+  { name: 'Contacts', href: '/admin-dashboard/contacts', icon: ChatBubbleBottomCenterTextIcon },
   { name: 'Users', href: '/admin-dashboard/users', icon: UserGroupIcon },
   { name: 'Analytics', href: '/admin-dashboard/analytics', icon: ChartBarIcon },
   { name: 'Settings', href: '/admin-dashboard/settings', icon: CogIcon },

@@ -47,7 +47,24 @@ export default function ProductsPage() {
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showAddModal, setShowAddModal] = useState(false);
   const [editForm, setEditForm] = useState({
+    name: '',
+    sku: '',
+    description: '',
+    ingredients: [''],
+    productInfo: '',
+    variants: [{ size: '', price: 0 }],
+    tags: [''],
+    category: '',
+    price: '',
+    originalPrice: '',
+    images: [''],
+    quantity: '',
+    status: 'in-stock' as 'in-stock' | 'out-of-stock' | 'limited'
+  });
+
+  const [addForm, setAddForm] = useState({
     name: '',
     sku: '',
     description: '',
@@ -322,7 +339,10 @@ export default function ProductsPage() {
             <DocumentArrowDownIcon className="h-5 w-5 mr-2" />
             Sample CSV
           </button>
-          <button className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors">
+          <button 
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+          >
             <PlusIcon className="h-5 w-5 mr-2" />
             Add Product
           </button>
@@ -797,6 +817,315 @@ export default function ProductsPage() {
                 className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
               >
                 Update Product
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Product Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">Add New Product</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Basic Information */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Basic Information</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Name *</label>
+                  <input
+                    type="text"
+                    value={addForm.name}
+                    onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">SKU *</label>
+                  <input
+                    type="text"
+                    value={addForm.sku}
+                    onChange={(e) => setAddForm({ ...addForm, sku: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                  <input
+                    type="text"
+                    value={addForm.category}
+                    onChange={(e) => setAddForm({ ...addForm, category: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                  <textarea
+                    value={addForm.description}
+                    onChange={(e) => setAddForm({ ...addForm, description: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Information</label>
+                  <textarea
+                    value={addForm.productInfo}
+                    onChange={(e) => setAddForm({ ...addForm, productInfo: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    rows={3}
+                  />
+                </div>
+              </div>
+
+              {/* Pricing & Inventory */}
+              <div className="space-y-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Pricing & Inventory</h4>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Base Price (₹) *</label>
+                  <input
+                    type="number"
+                    value={addForm.price}
+                    onChange={(e) => setAddForm({ ...addForm, price: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Original Price (₹)</label>
+                  <input
+                    type="number"
+                    value={addForm.originalPrice}
+                    onChange={(e) => setAddForm({ ...addForm, originalPrice: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                  <input
+                    type="number"
+                    value={addForm.quantity}
+                    onChange={(e) => setAddForm({ ...addForm, quantity: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <select
+                    value={addForm.status}
+                    onChange={(e) => setAddForm({ ...addForm, status: e.target.value as 'in-stock' | 'out-of-stock' | 'limited' })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  >
+                    <option value="in-stock">In Stock</option>
+                    <option value="limited">Limited Stock</option>
+                    <option value="out-of-stock">Out of Stock</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Variants */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Product Variants</h4>
+                <button
+                  onClick={() => setAddForm(prev => ({ ...prev, variants: [...prev.variants, { size: '', price: 0 }] }))}
+                  className="px-3 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                >
+                  Add Variant
+                </button>
+              </div>
+              <div className="space-y-3">
+                {addForm.variants.map((variant, index) => (
+                  <div key={index} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Size</label>
+                      <input
+                        type="text"
+                        value={variant.size}
+                        onChange={(e) => setAddForm(prev => ({ ...prev, variants: prev.variants.map((v, i) => i === index ? { ...v, size: e.target.value } : v) }))}
+                        placeholder="e.g., 250g, 500g, 1kg"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+                      <input
+                        type="number"
+                        value={variant.price}
+                        onChange={(e) => setAddForm(prev => ({ ...prev, variants: prev.variants.map((v, i) => i === index ? { ...v, price: parseFloat(e.target.value) || 0 } : v) }))}
+                        placeholder="0"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                      />
+                    </div>
+                    {addForm.variants.length > 1 && (
+                      <button
+                        onClick={() => setAddForm(prev => ({ ...prev, variants: prev.variants.filter((_, i) => i !== index) }))}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Ingredients */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Ingredients</h4>
+                <button
+                  onClick={() => setAddForm(prev => ({ ...prev, ingredients: [...prev.ingredients, ''] }))}
+                  className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                >
+                  Add Ingredient
+                </button>
+              </div>
+              <div className="space-y-2">
+                {addForm.ingredients.map((ingredient, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <input
+                      type="text"
+                      value={ingredient}
+                      onChange={(e) => setAddForm(prev => ({ ...prev, ingredients: prev.ingredients.map((ing, i) => i === index ? e.target.value : ing) }))}
+                      placeholder="Enter ingredient"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                    {addForm.ingredients.length > 1 && (
+                      <button
+                        onClick={() => setAddForm(prev => ({ ...prev, ingredients: prev.ingredients.filter((_, i) => i !== index) }))}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Tags */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Tags</h4>
+                <button
+                  onClick={() => setAddForm(prev => ({ ...prev, tags: [...prev.tags, ''] }))}
+                  className="px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm"
+                >
+                  Add Tag
+                </button>
+              </div>
+              <div className="space-y-2">
+                {addForm.tags.map((tag, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <input
+                      type="text"
+                      value={tag}
+                      onChange={(e) => setAddForm(prev => ({ ...prev, tags: prev.tags.map((t, i) => i === index ? e.target.value : t) }))}
+                      placeholder="Enter tag"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                    {addForm.tags.length > 1 && (
+                      <button
+                        onClick={() => setAddForm(prev => ({ ...prev, tags: prev.tags.filter((_, i) => i !== index) }))}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Images */}
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h4 className="font-medium text-gray-900 border-b pb-2">Images</h4>
+                <button
+                  onClick={() => setAddForm(prev => ({ ...prev, images: [...prev.images, ''] }))}
+                  className="px-3 py-1 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm"
+                >
+                  Add Image
+                </button>
+              </div>
+              <div className="space-y-2">
+                {addForm.images.map((image, index) => (
+                  <div key={index} className="flex items-center space-x-3">
+                    <input
+                      type="url"
+                      value={image}
+                      onChange={(e) => setAddForm(prev => ({ ...prev, images: prev.images.map((img, i) => i === index ? e.target.value : img) }))}
+                      placeholder="Enter image URL"
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                    {addForm.images.length > 1 && (
+                      <button
+                        onClick={() => setAddForm(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }))}
+                        className="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t">
+              <button
+                onClick={() => {
+                  setShowAddModal(false);
+                  setAddForm({
+                    name: '', sku: '', description: '', ingredients: [''], productInfo: '',
+                    variants: [{ size: '', price: 0 }], tags: [''], category: '', price: '', originalPrice: '', images: [''], quantity: '', status: 'in-stock'
+                  });
+                }}
+                className="px-6 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const adminToken = localStorage.getItem('adminToken');
+                  if (!adminToken) {
+                    toast.error('Please login as admin to add products');
+                    return;
+                  }
+                  try {
+                    const data = {
+                      ...addForm,
+                      price: parseFloat(addForm.price),
+                      originalPrice: addForm.originalPrice ? parseFloat(addForm.originalPrice) : undefined,
+                      quantity: parseInt(addForm.quantity) || 0,
+                      ingredients: addForm.ingredients.filter(ing => ing.trim() !== ''),
+                      variants: addForm.variants.filter(v => v.size.trim() !== '' && v.price > 0),
+                      tags: addForm.tags.filter(tag => tag.trim() !== ''),
+                      images: addForm.images.filter(img => img.trim() !== '')
+                    };
+                    await adminApi.createProduct(data as any);
+                    toast.success('Product created successfully!');
+                    setShowAddModal(false);
+                    setAddForm({
+                      name: '', sku: '', description: '', ingredients: [''], productInfo: '',
+                      variants: [{ size: '', price: 0 }], tags: [''], category: '', price: '', originalPrice: '', images: [''], quantity: '', status: 'in-stock'
+                    });
+                    fetchProducts();
+                  } catch (error: any) {
+                    console.error('Error creating product:', error);
+                    toast.error(error.response?.data?.message || 'Failed to create product');
+                  }
+                }}
+                className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+              >
+                Create Product
               </button>
             </div>
           </div>
