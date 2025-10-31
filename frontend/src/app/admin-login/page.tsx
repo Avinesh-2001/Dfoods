@@ -45,7 +45,7 @@ export default function AdminLogin() {
         console.log('Token stored:', response.data.token);
         console.log('Admin user stored:', response.data.admin);
         toast.success('Login successful!');
-        router.push('/admin');
+        router.push('/admin-dashboard');
       } else {
         console.error('No token in response:', response.data);
         toast.error('Login failed - no token received');

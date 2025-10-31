@@ -38,7 +38,7 @@ export default function LoginPage() {
         dispatch(setUser({ user: { ...data[type.toLowerCase()], role: type.toLowerCase() }, token: data.token }));
         localStorage.setItem('token', data.token);
         toast.success(`Logged in as ${type}!`);
-        router.push(type === 'Admin' ? '/admin' : '/');
+        router.push(type === 'Admin' ? '/admin-dashboard' : '/');
         return true;
       } catch (err: any) {
         console.log(`${type} login failed:`, err.response?.data?.message || err.message);
