@@ -71,30 +71,7 @@ export default function ProductDetailPage() {
           }
           
           // Fetch reviews from API (only approved reviews are returned)
-          try {
-            console.log('🔄 Fetching reviews for product:', productId);
-            const reviewsResponse = await adminApi.getProductReviews(productId);
-            console.log('📦 Reviews API Response:', reviewsResponse);
-            
-            const reviewsData = reviewsResponse.data?.reviews || reviewsResponse.data || [];
-            console.log('📝 Parsed reviews data:', reviewsData);
-            console.log('📊 Number of reviews:', reviewsData.length);
-            
-            // Always set reviews array (empty or with data)
-            if (Array.isArray(reviewsData)) {
-              setReviews(reviewsData);
-              console.log('✅ Reviews set successfully:', reviewsData.length);
-            } else {
-              console.warn('⚠️ Reviews data is not an array:', reviewsData);
-              setReviews([]);
-            }
-          } catch (reviewError: any) {
-            console.error('❌ Error fetching reviews:', reviewError);
-            console.error('Error details:', reviewError.response?.data || reviewError.message);
-            // If API fails, show empty reviews instead of mock data
-            // This ensures only real approved reviews are shown
-            setReviews([]);
-          }
+          await fetchReviews(productId);
         } else {
           setError('Product not found');
         }
@@ -582,13 +559,22 @@ export default function ProductDetailPage() {
             {activeTab === 'Reviews' && (
               <div>
                 <div className="flex justify-between items-center mb-4">
-                  <h4 className="font-semibold text-black text-sm">Customer Reviews</h4>
-                  <button
-                    onClick={() => setShowReviewModal(true)}
-                    className="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors"
-                  >
-                    Write a Review
-                  </button>
+                  <h4 className="font-semibold text-black text-sm">Customer Reviews ({reviews.length})</h4>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => product && fetchReviews(product._id || product.id || params.id as string)}
+                      className="px-3 py-2 bg-gray-200 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-300 transition-colors"
+                      title="Refresh reviews"
+                    >
+                      🔄 Refresh
+                    </button>
+                    <button
+                      onClick={() => setShowReviewModal(true)}
+                      className="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors"
+                    >
+                      Write a Review
+                    </button>
+                  </div>
                 </div>
                 
                 {reviews.length > 0 ? (

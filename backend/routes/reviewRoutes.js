@@ -49,12 +49,34 @@ router.get('/product/:productId', async (req, res) => {
     const total = await Review.countDocuments(query);
     
     // Debug: Check all reviews for this product (approved and unapproved)
-    const allReviewsForProduct = await Review.find({ productId: mongoose.Types.ObjectId.isValid(productId) ? new mongoose.Types.ObjectId(productId) : productId });
+    const productIdQuery = mongoose.Types.ObjectId.isValid(productId) ? new mongoose.Types.ObjectId(productId) : productId;
+    const allReviewsForProduct = await Review.find({ productId: productIdQuery });
     const approvedCount = allReviewsForProduct.filter(r => r.isApproved === true).length;
     console.log(`📊 Total reviews for product: ${allReviewsForProduct.length}, Approved: ${approvedCount}, Unapproved: ${allReviewsForProduct.length - approvedCount}`);
     
+    // Log all approved reviews to verify they exist
+    if (approvedCount > 0 && reviews.length === 0) {
+      console.log('⚠️ WARNING: There are approved reviews but query returned 0!');
+      console.log('All approved reviews:', allReviewsForProduct.filter(r => r.isApproved).map(r => ({
+        id: r._id,
+        name: r.name,
+        isApproved: r.isApproved,
+        productId: r.productId,
+        productIdType: typeof r.productId
+      })));
+    }
+    
     console.log(`✅ Returning ${reviews.length} approved reviews for product ${productId}`);
-    console.log('Reviews data:', reviews.map(r => ({ id: r._id, name: r.name, isApproved: r.isApproved, productId: r.productId })));
+    if (reviews.length > 0) {
+      console.log('Reviews data:', reviews.map(r => ({ 
+        id: r._id, 
+        name: r.name, 
+        rating: r.rating,
+        isApproved: r.isApproved, 
+        productId: r.productId,
+        productIdString: String(r.productId)
+      })));
+    }
 
     res.json({
       reviews,
