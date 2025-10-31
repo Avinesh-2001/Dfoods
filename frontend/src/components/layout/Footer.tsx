@@ -11,9 +11,9 @@ import {
 export default function Footer() {
   return (
     <footer 
-      className="border-t border-amber-500/50"
+      className="border-t border-orange-500/50"
       style={{
-        background: 'radial-gradient(ellipse at center top, rgba(251, 191, 36, 0.28) 0%, rgba(234, 179, 8, 0.33) 40%, rgba(217, 119, 6, 0.38) 80%, rgba(194, 120, 3, 0.33) 100%)',
+        background: 'radial-gradient(ellipse at center top, rgba(251, 146, 60, 0.38) 0%, rgba(249, 115, 22, 0.43) 40%, rgba(234, 88, 12, 0.48) 80%, rgba(194, 65, 12, 0.43) 100%)',
       }}
     >
       {/* Main Footer Content */}
@@ -130,9 +130,9 @@ export default function Footer() {
 
       {/* Bottom Footer */}
       <div 
-        className="border-t border-amber-600/50"
+        className="border-t border-orange-600/50"
         style={{
-          background: 'radial-gradient(circle at center, rgba(234, 179, 8, 0.3) 0%, rgba(217, 119, 6, 0.35) 50%, rgba(194, 120, 3, 0.3) 100%)',
+          background: 'radial-gradient(circle at center, rgba(249, 115, 22, 0.4) 0%, rgba(234, 88, 12, 0.45) 50%, rgba(194, 65, 12, 0.4) 100%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">

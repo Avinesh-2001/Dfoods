@@ -63,8 +63,8 @@ export default function Header() {
   };
 
   const headerBackground = isScrolled 
-    ? 'radial-gradient(circle at center, rgba(251, 191, 36, 0.25) 0%, rgba(234, 179, 8, 0.3) 50%, rgba(217, 119, 6, 0.35) 100%)'
-    : 'radial-gradient(circle at center, rgba(251, 191, 36, 0.2) 0%, rgba(234, 179, 8, 0.25) 50%, rgba(217, 119, 6, 0.3) 100%)';
+    ? 'radial-gradient(circle at center, rgba(251, 146, 60, 0.4) 0%, rgba(249, 115, 22, 0.45) 50%, rgba(234, 88, 12, 0.5) 100%)'
+    : 'radial-gradient(circle at center, rgba(251, 146, 60, 0.35) 0%, rgba(249, 115, 22, 0.4) 50%, rgba(234, 88, 12, 0.45) 100%)';
 
   return (
     <>
