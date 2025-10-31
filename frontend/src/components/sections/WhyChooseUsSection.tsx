@@ -96,7 +96,7 @@ const whyChooseUsItems = [
 
 export default function WhyChooseUsSection() {
   return (
-    <section className="py-16 bg-white">
+    <section className="py-20 bg-gradient-to-br from-orange-50 via-green-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -105,10 +105,10 @@ export default function WhyChooseUsSection() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-amber-800 mb-4">
+          <h2 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-green-600 to-orange-500 bg-clip-text text-transparent mb-4">
             Why Choose Dfoods?
           </h2>
-          <p className="text-lg text-amber-700 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-700 max-w-2xl mx-auto">
             We stand out with our commitment to quality, tradition, and authenticity in every product we deliver.
           </p>
         </motion.div>
