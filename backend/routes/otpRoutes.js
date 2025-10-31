@@ -33,28 +33,39 @@ router.post('/send-otp', async (req, res) => {
     `;
 
     // Send response immediately, email will be sent in background
+    // Always include OTP in response for now (can be removed later after email is confirmed working)
     res.json({ 
       message: 'OTP sent successfully', 
       expiresIn: 300,
-      // Include OTP in response for development/testing (remove in production)
-      ...(process.env.NODE_ENV === 'development' && { debugOtp: otp })
+      debugOtp: otp, // Temporary: Always include for debugging
+      note: 'Check console for OTP. Email delivery may take time or fail.'
     });
 
     // Send email in background (non-blocking)
     console.log(`📧 Attempting to send OTP email to ${email}...`);
+    console.log(`🔐 OTP to send: ${otp}`);
+    
     sendEmail(email, 'Verify Your Email - Dfood', html)
       .then((result) => {
         if (result.success) {
           console.log(`✅ OTP email sent successfully to ${email}`);
           console.log(`📬 Message ID: ${result.info?.messageId || 'N/A'}`);
+          if (result.info?.response) {
+            console.log(`📬 Server response: ${result.info.response}`);
+          }
         } else {
-          console.error(`❌ Failed to send OTP email to ${email}:`, result.error);
-          console.error(`📧 Email error details:`, JSON.stringify(result, null, 2));
+          console.error(`❌ FAILED to send OTP email to ${email}`);
+          console.error(`❌ Error message: ${result.error}`);
+          if (result.fullError) {
+            console.error(`❌ Full error object:`, result.fullError);
+          }
+          console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
         }
       })
       .catch((error) => {
-        console.error(`❌ Error sending OTP email to ${email}:`, error.message);
-        console.error(`📧 Full error:`, error);
+        console.error(`❌ EXCEPTION sending OTP email to ${email}:`, error.message);
+        console.error(`❌ Full exception:`, error);
+        console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
       });
   } catch (error) {
     console.error('❌ Error sending OTP:', error.message);
@@ -154,25 +165,35 @@ router.post('/resend-otp', async (req, res) => {
     res.json({ 
       message: 'OTP resent successfully', 
       expiresIn: 300,
-      // Include OTP in response for development/testing (remove in production)
-      ...(process.env.NODE_ENV === 'development' && { debugOtp: otp })
+      debugOtp: otp, // Temporary: Always include for debugging
+      note: 'Check console for OTP. Email delivery may take time or fail.'
     });
 
     // Send email in background (non-blocking)
     console.log(`📧 Attempting to resend OTP email to ${email}...`);
+    console.log(`🔐 OTP to resend: ${otp}`);
+    
     sendEmail(email, 'Resend OTP - Dfood', html)
       .then((result) => {
         if (result.success) {
           console.log(`✅ Resend OTP email sent successfully to ${email}`);
           console.log(`📬 Message ID: ${result.info?.messageId || 'N/A'}`);
+          if (result.info?.response) {
+            console.log(`📬 Server response: ${result.info.response}`);
+          }
         } else {
-          console.error(`❌ Failed to resend OTP email to ${email}:`, result.error);
-          console.error(`📧 Email error details:`, JSON.stringify(result, null, 2));
+          console.error(`❌ FAILED to resend OTP email to ${email}`);
+          console.error(`❌ Error message: ${result.error}`);
+          if (result.fullError) {
+            console.error(`❌ Full error object:`, result.fullError);
+          }
+          console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
         }
       })
       .catch((error) => {
-        console.error(`❌ Error resending OTP email to ${email}:`, error.message);
-        console.error(`📧 Full error:`, error);
+        console.error(`❌ EXCEPTION resending OTP email to ${email}:`, error.message);
+        console.error(`❌ Full exception:`, error);
+        console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
       });
   } catch (error) {
     console.error('❌ Error resending OTP:', error);

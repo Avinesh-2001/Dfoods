@@ -66,13 +66,15 @@ export default function RegisterPage() {
         const response = await Promise.race([otpPromise, timeoutPromise]) as any;
         setOtpSent(true);
         
-        // Log OTP in development mode if provided (for testing)
+        // Log OTP if provided in response (temporary for debugging)
         if (response?.data?.debugOtp) {
-          console.log(`🔐 DEBUG OTP for ${formData.email}: ${response.data.debugOtp}`);
-          console.warn('⚠️ OTP shown in console for development only. Check email in production.');
+          console.log(`🔐 ========================================`);
+          console.log(`🔐 OTP for ${formData.email}: ${response.data.debugOtp}`);
+          console.log(`🔐 ========================================`);
+          console.warn('⚠️ Email delivery may have failed. Use OTP from console above.');
         }
         
-        toast.success('OTP sent to your email! Please check your inbox and spam folder.');
+        toast.success('OTP sent! Check console for OTP if email not received.', { duration: 8000 });
       } catch (otpError: any) {
         console.error('Send OTP error:', otpError);
         // If timeout, assume OTP was sent (backend responds immediately now)

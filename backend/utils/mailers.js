@@ -26,6 +26,13 @@ transporter.verify((error, success) => {
  */
 export const sendEmail = async (to, subject, html) => {
   try {
+    // Validate email configuration
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      const error = 'EMAIL_USER or EMAIL_PASSWORD not configured';
+      console.error(`❌ ${error}`);
+      return { success: false, error };
+    }
+
     const mailOptions = {
       from: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
       to,
@@ -33,13 +40,21 @@ export const sendEmail = async (to, subject, html) => {
       html,
     };
 
+    console.log(`📧 Attempting to send email to: ${to}`);
+    console.log(`📧 From: ${mailOptions.from}`);
+    console.log(`📧 Subject: ${subject}`);
+
     const info = await transporter.sendMail(mailOptions);
-    console.log(`📧 Email sent successfully → To: ${to} | Subject: ${subject}`);
-    console.log('📬 Message ID:', info.messageId);
+    console.log(`✅ Email sent successfully → To: ${to} | Subject: ${subject}`);
+    console.log(`📬 Message ID: ${info.messageId}`);
+    console.log(`📬 Response: ${info.response}`);
     return { success: true, info };
   } catch (error) {
-    console.error('❌ Error sending email:', error.message);
-    return { success: false, error: error.message };
+    console.error(`❌ Error sending email to ${to}:`, error.message);
+    console.error(`❌ Full error:`, error);
+    if (error.code) console.error(`❌ Error code: ${error.code}`);
+    if (error.command) console.error(`❌ Failed command: ${error.command}`);
+    return { success: false, error: error.message, fullError: error };
   }
 };
 
