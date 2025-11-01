@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import ProductCard from '@/components/ui/ProductCard';
@@ -37,6 +38,7 @@ const availabilityOptions = [
 ];
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
   const [allProducts, setAllProducts] = useState<any[]>([]);
   const [filters, setFilters] = useState({
     category: 'all',
@@ -52,6 +54,26 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [gridCols, setGridCols] = useState({ desktop: 4, mobile: 2 }); // Default: 4 desktop, 2 mobile
   const itemsPerPage = 12;
+
+  // Get search query from URL parameter
+  useEffect(() => {
+    const searchParam = searchParams.get('search');
+    if (searchParam) {
+      setSearchQuery(decodeURIComponent(searchParam));
+    }
+  }, [searchParams]);
+
+  // Prevent body scroll when filter overlay is open
+  useEffect(() => {
+    if (showFilters) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showFilters]);
 
   useEffect(() => {
     const fetchProducts = async () => {

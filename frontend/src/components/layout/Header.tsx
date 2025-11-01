@@ -27,6 +27,8 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
   const { getTotalItems, toggleCart } = useCartStore();
   const { user } = useSelector((state: RootState) => state.user);
@@ -53,6 +55,28 @@ export default function Header() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isProfileOpen]);
+
+  // Prevent body scroll when search is open
+  useEffect(() => {
+    if (isSearchOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isSearchOpen]);
+
+  // Handle search navigation
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      window.location.href = `/products?search=${encodeURIComponent(searchQuery.trim())}`;
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   const totalItems = getTotalItems();
 
@@ -111,9 +135,14 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <Link href="/products" className="p-2 text-white/90 hover:text-white transition-colors" title="Search Products">
+              <button 
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 text-white/90 hover:text-white transition-colors relative" 
+                title="Search Products"
+                id="search-icon-button"
+              >
                 <MagnifyingGlassIcon className="w-5 h-5" />
-              </Link>
+              </button>
 
               <div className="relative z-[100] profile-dropdown">
                 <button 
@@ -302,6 +331,62 @@ export default function Header() {
       </motion.header>
 
       <div className="h-16" />
+
+      {/* Search Overlay */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setIsSearchOpen(false);
+                setSearchQuery('');
+              }}
+              className="fixed inset-0 bg-gray-700/95 z-[2000]"
+            />
+
+            {/* Search Bar with Arrow */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+              className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[2001] w-full max-w-2xl px-4"
+            >
+              {/* Arrow pointing up to search icon */}
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[12px] border-r-[12px] border-b-[12px] border-transparent border-b-white"></div>
+              
+              {/* Search Input */}
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <div className="bg-white rounded-lg shadow-2xl flex items-center px-4 py-4">
+                  <MagnifyingGlassIcon className="w-6 h-6 text-gray-400 mr-3 flex-shrink-0" />
+                  <input
+                    type="text"
+                    placeholder="I am looking for..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    autoFocus
+                    className="flex-1 text-gray-900 placeholder-gray-400 outline-none text-lg"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSearchOpen(false);
+                      setSearchQuery('');
+                    }}
+                    className="ml-4 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                  >
+                    <XMarkIcon className="w-6 h-6 text-gray-500" />
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }
