@@ -53,7 +53,7 @@ export default function CategoryGrid() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#F97316] mb-4">
             Our Product Range
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -79,7 +79,7 @@ export default function CategoryGrid() {
                   <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {category.image}
                   </div>
-                  <h3 className="text-sm font-semibold text-[#8B4513] text-center leading-tight">
+                  <h3 className="text-sm font-semibold text-[#F97316] text-center leading-tight">
                     {category.name}
                   </h3>
                 </motion.div>
@@ -100,7 +100,7 @@ export default function CategoryGrid() {
         >
           <Link
             href="/products"
-            className="inline-flex items-center justify-center px-8 py-4 bg-[#E67E22] text-white rounded-lg hover:bg-[#D35400] transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
+            className="inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white rounded-lg hover:from-[#F97316] hover:to-[#EA580C] transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
           >
             View All Products
           </Link>

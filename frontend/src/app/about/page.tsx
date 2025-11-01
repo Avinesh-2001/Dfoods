@@ -40,7 +40,7 @@ export default function AboutPage() {
               transition={{ duration: 0.8 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-6">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#F97316] mb-6">
                 Our Story
               </h2>
               <div className="space-y-4 text-gray-600 leading-relaxed">
@@ -70,10 +70,10 @@ export default function AboutPage() {
               <div className="relative w-full h-96 bg-[#FDF6E3] rounded-lg shadow-xl overflow-hidden">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-32 h-32 mx-auto mb-4 bg-[#E67E22] rounded-full flex items-center justify-center">
+                    <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-full flex items-center justify-center shadow-lg">
                       <span className="text-6xl text-white">🏭</span>
                     </div>
-                    <h3 className="text-2xl font-bold text-[#8B4513]">Traditional Processing</h3>
+                    <h3 className="text-2xl font-bold text-[#F97316]">Traditional Processing</h3>
                     <p className="text-gray-600 mt-2">Since 1983</p>
                   </div>
                 </div>
@@ -129,7 +129,7 @@ export default function AboutPage() {
                 className="bg-white rounded-lg p-6 shadow-lg text-center"
               >
                 <div className="text-4xl mb-4">{item.icon}</div>
-                <h3 className="text-xl font-bold text-[#8B4513] mb-3">{item.title}</h3>
+                <h3 className="text-xl font-bold text-[#F97316] mb-3">{item.title}</h3>
                 <p className="text-gray-600">{item.description}</p>
               </motion.div>
             ))}
@@ -224,10 +224,10 @@ export default function AboutPage() {
                 viewport={{ once: true }}
                 className="bg-white rounded-lg p-6 shadow-lg text-center"
               >
-                <div className="w-12 h-12 bg-[#E67E22] text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#F97316] text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-4 shadow-md">
                   {process.step}
                 </div>
-                <h3 className="text-xl font-bold text-[#8B4513] mb-3">{process.title}</h3>
+                <h3 className="text-xl font-bold text-[#F97316] mb-3">{process.title}</h3>
                 <p className="text-gray-600 text-sm">{process.description}</p>
               </motion.div>
             ))}
@@ -274,8 +274,8 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div className="p-6">
-                  <h4 className="text-xl font-bold text-[#8B4513] mb-2">{member.name}</h4>
-                  <p className="text-[#E67E22] font-semibold mb-3">{member.role}</p>
+                  <h4 className="text-xl font-bold text-[#F97316] mb-2">{member.name}</h4>
+                  <p className="text-[#F97316] font-semibold mb-3">{member.role}</p>
                   <p className="text-gray-600 text-sm leading-relaxed">{member.bio}</p>
                 </div>
               </motion.div>
@@ -285,7 +285,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-br from-[#8B4513] to-[#A0522D] text-white">
+      <section className="py-16 bg-gradient-to-br from-[#F59E0B] to-[#F97316] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -302,13 +302,13 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="inline-flex items-center justify-center px-8 py-4 bg-[#E67E22] text-white rounded-lg hover:bg-[#D35400] transition-colors font-semibold text-lg"
+                className="inline-flex items-center justify-center px-8 py-4 bg-white text-[#F97316] rounded-lg hover:bg-gray-50 transition-colors font-semibold text-lg shadow-lg hover:shadow-xl"
               >
                 Shop Now
               </Link>
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white hover:text-[#8B4513] transition-colors font-semibold text-lg"
+                className="inline-flex items-center justify-center px-8 py-4 border-2 border-white text-white rounded-lg hover:bg-white hover:text-[#F97316] transition-colors font-semibold text-lg"
               >
                 Contact Us
               </Link>

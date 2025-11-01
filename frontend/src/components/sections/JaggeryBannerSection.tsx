@@ -9,7 +9,7 @@ export default function JaggeryBannerSection() {
       {/* Full Width Image */}
       <div className="absolute inset-0 w-full h-full">
         <Image
-          src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1920&h=1080&fit=crop&q=80"
+          src="/images/jaggerybanner.png"
           alt="Premium Organic Jaggery"
           fill
           priority

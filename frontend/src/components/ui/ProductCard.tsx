@@ -21,73 +21,52 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
 
   return (
     <motion.div
-      className={`bg-white shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 border border-gray-200 ${className}`}
-      whileHover={{ y: -4 }}
+      className={`bg-white overflow-hidden transition-all duration-300 outline outline-1 outline-gray-200 rounded-lg ${className}`}
+      whileHover={{ y: -2 }}
       transition={{ duration: 0.3 }}
     >
       <Link href={`/products/${product._id || product.id}`}>
         {/* Product Image */}
-        <div className="relative h-64 w-full bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden group">
+        <div className="relative h-48 w-full bg-gray-50 overflow-hidden">
           <Image
             src={product.images?.[0] || '/placeholder.jpg'}
             alt={product.name}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-500"
+            className="object-cover"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
           />
-          
-          {/* Discount Badge */}
-          {discountPercent > 0 && (
-            <div className="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 text-xs font-bold shadow-lg">
-              {discountPercent}% OFF
-            </div>
-          )}
-
-          {/* Out of Stock Overlay */}
-          {!inStock && (
-            <div className="absolute inset-0 bg-black bg-opacity-70 flex items-center justify-center">
-              <span className="text-white font-bold text-sm px-3 py-1.5 bg-gray-900">
-                Out of Stock
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Product Info */}
-        <div className="p-4 bg-white">
-          {/* Category */}
+        <div className="p-3 space-y-1">
+          {/* Category - Round Orange Badge */}
           {product.category && (
-            <span className="text-xs text-amber-600 font-semibold uppercase tracking-wider block mb-2">
-              {product.category.replace(/-/g, ' ')}
-            </span>
+            <div className="flex justify-start">
+              <span className="inline-block bg-[#F97316] text-white text-[10px] font-medium px-2.5 py-0.5 rounded-full">
+                {product.category.replace(/-/g, ' ')}
+              </span>
+            </div>
           )}
 
           {/* Product Name */}
-          <h3 className="font-semibold text-gray-900 mb-3 line-clamp-2 text-base hover:text-amber-600 transition-colors">
+          <h3 className="text-sm font-medium text-gray-900 line-clamp-1">
             {product.name}
           </h3>
 
-          {/* Price and Stock Status */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl font-bold text-gray-900">₹{currentPrice}</span>
-              {product.originalPrice && product.originalPrice > currentPrice && (
-                <span className="text-sm text-gray-400 line-through">
-                  ₹{product.originalPrice}
-                </span>
-              )}
-            </div>
+          {/* Price */}
+          <div className="flex items-baseline">
+            <span className="text-sm font-semibold text-gray-900">₹{currentPrice}</span>
           </div>
 
-          {/* In Stock Badge */}
-          <div className="flex items-center gap-2 mt-2">
+          {/* In Stock Status */}
+          <div className="pt-0.5">
             {inStock ? (
-              <span className="inline-flex items-center text-xs font-medium text-green-700 bg-green-50 px-2 py-1">
-                ✓ In Stock
+              <span className="text-[10px] text-green-700 font-medium">
+                In Stock
               </span>
             ) : (
-              <span className="inline-flex items-center text-xs font-medium text-red-700 bg-red-50 px-2 py-1">
-                ✗ Out of Stock
+              <span className="text-[10px] text-red-700 font-medium">
+                Out of Stock
               </span>
             )}
           </div>

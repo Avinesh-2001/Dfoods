@@ -11,9 +11,9 @@ import {
 export default function Footer() {
   return (
     <footer 
-      className="border-t border-amber-500/50"
+      className="border-t border-[#F97316]/50"
       style={{
-        background: 'radial-gradient(ellipse at center top, rgba(250, 204, 21, 0.42) 0%, rgba(251, 191, 36, 0.47) 25%, rgba(245, 158, 11, 0.45) 50%, rgba(234, 179, 8, 0.48) 75%, rgba(217, 119, 6, 0.5) 100%)',
+        background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.85) 0%, rgba(249, 115, 22, 0.9) 100%)',
       }}
     >
       {/* Main Footer Content */}
@@ -24,30 +24,30 @@ export default function Footer() {
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Contact Information</h3>
             <div className="space-y-3">
               <div className="flex items-start space-x-3">
-                <MapPinIcon className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                <MapPinIcon className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-sm sm:text-base text-gray-900">Panchaganga Farm Solutions Pvt Ltd</p>
-                  <p className="text-xs sm:text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-700">
                     B-12, Part-2, MIDC, Waluj, UIT, 431136 Bhiwadi, India
                   </p>
                 </div>
               </div>
               
               <div className="flex items-center space-x-3">
-                <PhoneIcon className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <PhoneIcon className="w-5 h-5 text-[#F97316] flex-shrink-0" />
                 <a 
                   href="tel:+918010906093" 
-                  className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors"
+                  className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors"
                 >
                   +91 8010906093
                 </a>
               </div>
               
               <div className="flex items-center space-x-3">
-                <EnvelopeIcon className="w-5 h-5 text-amber-600 flex-shrink-0" />
+                <EnvelopeIcon className="w-5 h-5 text-[#F97316] flex-shrink-0" />
                 <a 
                   href="mailto:care@dfoods.in" 
-                  className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors"
+                  className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors"
                 >
                   care@dfoods.in
                 </a>
@@ -59,22 +59,22 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Quick Links</h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Home
               </Link>
-              <Link href="/about" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/about" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 About Us
               </Link>
-              <Link href="/products" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/products" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Products
               </Link>
-              <Link href="/contact" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/contact" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Contact Us
               </Link>
-              <Link href="/rewards" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/rewards" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Rewards
               </Link>
-              <Link href="/account" className="text-xs sm:text-sm text-gray-700 hover:text-amber-600 transition-colors">
+              <Link href="/account" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 My Account
               </Link>
             </div>
@@ -91,10 +91,10 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                className="flex-1 px-3 py-2 rounded-lg border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#F97316] focus:border-transparent text-sm"
               />
               <motion.button
-                className="px-4 py-2 bg-gradient-to-r from-amber-600 to-amber-700 text-white rounded-lg hover:from-amber-700 hover:to-amber-800 transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg"
+                className="px-4 py-2 bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white rounded-lg hover:from-[#F97316] hover:to-[#EA580C] transition-all duration-300 font-medium text-sm shadow-md hover:shadow-lg"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -108,7 +108,7 @@ export default function Footer() {
               <div className="flex space-x-4">
                 <motion.a
                   href="#"
-                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors text-gray-700"
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-gray-700"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -116,7 +116,7 @@ export default function Footer() {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-amber-600 hover:text-white transition-colors text-gray-700"
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-gray-700"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -130,25 +130,25 @@ export default function Footer() {
 
       {/* Bottom Footer */}
       <div 
-        className="border-t border-amber-600/50"
+        className="border-t border-[#F97316]/50"
         style={{
-          background: 'radial-gradient(circle at center, rgba(245, 158, 11, 0.45) 0%, rgba(234, 179, 8, 0.48) 40%, rgba(217, 119, 6, 0.5) 70%, rgba(202, 138, 4, 0.45) 100%)',
+          background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(249, 115, 22, 0.95) 100%)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Legal Links */}
             <div className="flex flex-wrap justify-center md:justify-start space-x-6 text-xs sm:text-sm">
-              <Link href="/privacy" className="text-gray-600 hover:text-amber-600 transition-colors">
+              <Link href="/privacy" className="text-gray-700 hover:text-[#F97316] transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-600 hover:text-amber-600 transition-colors">
+              <Link href="/terms" className="text-gray-700 hover:text-[#F97316] transition-colors">
                 Terms of Use
               </Link>
-              <Link href="/shipping" className="text-gray-600 hover:text-amber-600 transition-colors">
+              <Link href="/shipping" className="text-gray-700 hover:text-[#F97316] transition-colors">
                 Shipping & Return Policy
               </Link>
-              <Link href="/disclaimer" className="text-gray-600 hover:text-amber-600 transition-colors">
+              <Link href="/disclaimer" className="text-gray-700 hover:text-[#F97316] transition-colors">
                 Disclaimer
               </Link>
             </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 import ProductCard from '@/components/ui/ProductCard';
 import { 
   FunnelIcon, 
@@ -194,30 +195,36 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 pt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-2">
+    <div className="min-h-screen bg-white pt-16">
+      {/* Banner Image with Text */}
+      <div className="relative w-full h-[300px] md:h-[400px] overflow-hidden">
+        <Image
+          src="/images/bannerimage.png"
+          alt="Products Banner"
+          fill
+          className="object-cover"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 text-right">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 drop-shadow-lg">
             Our Products
           </h1>
-          <p className="text-base text-gray-600">
+          <p className="text-sm sm:text-base md:text-lg text-white/90 drop-shadow-md">
             Discover our premium collection of organic jaggery products
           </p>
-        </motion.div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
         {/* Toolbar */}
-        <div className="bg-white shadow-sm border border-gray-200 p-4 mb-6">
+        <div className="bg-transparent p-4 mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowFilters(true)}
-                className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-50 transition-colors font-medium text-sm"
+                className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50/50 transition-colors font-medium text-sm"
               >
                 <FunnelIcon className="w-5 h-5" />
                 Filters
@@ -235,7 +242,7 @@ export default function ProductsPage() {
 
             <div className="flex items-center gap-4 w-full sm:w-auto">
               {/* Grid View Toggle */}
-              <div className="flex items-center gap-2 border-r border-gray-300 pr-4">
+              <div className="flex items-center gap-2 pr-4">
                 <span className="text-sm text-gray-600 font-medium mr-2">View:</span>
                 {/* Desktop Grid Options */}
                 <div className="hidden lg:flex items-center gap-1 bg-gray-100 p-1">
@@ -286,7 +293,7 @@ export default function ProductsPage() {
                   id="sort"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  className="bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:ring-[#F97316] focus:bg-white rounded-lg"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -309,7 +316,7 @@ export default function ProductsPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 bg-gray-50 focus:ring-2 focus:ring-[#F97316] focus:bg-white text-sm rounded-lg"
               />
               <svg className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -344,11 +351,11 @@ export default function ProductsPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex justify-center items-center gap-2 mt-8">
+              <div className="flex justify-center items-center gap-2 mt-8 flex-wrap">
                 <button
                   onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="px-4 py-2 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors text-sm font-medium rounded-lg"
                 >
                   Previous
                 </button>
@@ -357,10 +364,10 @@ export default function ProductsPage() {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-4 py-2 border transition-colors text-sm font-medium ${
+                    className={`px-4 py-2 transition-colors text-sm font-medium rounded-lg ${
                       page === currentPage
-                        ? 'bg-amber-600 text-white border-amber-600'
-                        : 'border-gray-300 hover:bg-gray-50'
+                        ? 'bg-[#F97316] text-white'
+                        : 'bg-gray-50 hover:bg-gray-100'
                     }`}
                   >
                     {page}
@@ -370,7 +377,7 @@ export default function ProductsPage() {
                 <button
                   onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                   disabled={currentPage === totalPages}
-                  className="px-4 py-2 border border-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition-colors text-sm font-medium"
+                  className="px-4 py-2 bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 transition-colors text-sm font-medium rounded-lg"
                 >
                   Next
                 </button>
@@ -404,7 +411,7 @@ export default function ProductsPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowFilters(false)}
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="fixed inset-0 bg-transparent z-40"
             />
             
             {/* Filter Panel */}
@@ -413,16 +420,16 @@ export default function ProductsPage() {
               animate={{ x: 0 }}
               exit={{ x: -320 }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-50 overflow-y-auto"
+              className="fixed top-16 bottom-0 left-0 w-80 bg-white/95 backdrop-blur-sm z-50 overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+                <div className="flex items-center justify-between mb-6 pb-4">
                   <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
                   <button
                     onClick={() => setShowFilters(false)}
-                    className="p-2 hover:bg-gray-100 transition-colors"
+                    className="p-2 hover:bg-gray-50 transition-colors"
                   >
                     <XMarkIcon className="w-5 h-5" />
                   </button>
@@ -430,7 +437,7 @@ export default function ProductsPage() {
 
                 {/* Active Filters */}
                 {hasActiveFilters && (
-                  <div className="mb-6 pb-4 border-b border-gray-200">
+                  <div className="mb-6 pb-4">
                     <h3 className="text-sm font-semibold text-gray-700 mb-3">Applied Filters:</h3>
                     <div className="flex flex-wrap gap-2">
                       {filters.category !== 'all' && (
@@ -496,7 +503,7 @@ export default function ProductsPage() {
                   <div className="relative">
                     <button
                       onClick={() => setShowAvailability(!showAvailability)}
-                      className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 hover:bg-gray-50 transition-colors"
+                      className="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg"
                     >
                       <span className="text-sm text-gray-700">
                         {filters.availability.length > 0 
@@ -507,7 +514,7 @@ export default function ProductsPage() {
                     </button>
                     
                     {showAvailability && (
-                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 shadow-lg">
+                      <div className="absolute z-10 w-full mt-1 bg-white/95 backdrop-blur-sm shadow-lg rounded-lg overflow-hidden">
                         {availabilityOptions.map((option) => (
                           <label
                             key={option.value}
@@ -553,7 +560,7 @@ export default function ProductsPage() {
                 {/* Clear Filters */}
                 <button
                   onClick={clearFilters}
-                  className="w-full py-3 px-4 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors font-medium text-sm"
+                  className="w-full py-3 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors font-medium text-sm rounded-lg"
                 >
                   Clear All Filters
                 </button>

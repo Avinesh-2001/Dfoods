@@ -49,9 +49,9 @@ export default function CartDrawer() {
             className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[1002] flex flex-col"
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-orange-50 to-amber-50">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-[#F59E0B]/10 to-[#F97316]/10">
               <div>
-                <h2 className="text-2xl font-bold text-[#8B4513]">Shopping Cart</h2>
+                <h2 className="text-2xl font-bold text-[#F97316]">Shopping Cart</h2>
                 <p className="text-sm text-gray-600 mt-1">
                   {getTotalItems()} {getTotalItems() === 1 ? 'item' : 'items'}
                 </p>
@@ -68,15 +68,15 @@ export default function CartDrawer() {
             <div className="flex-1 overflow-y-auto p-6">
               {items.length === 0 ? (
                 <div className="text-center py-16">
-                  <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-orange-100 to-amber-100 rounded-full flex items-center justify-center">
-                    <ShoppingBagIcon className="w-16 h-16 text-[#E67E22]" />
+                  <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-br from-[#F59E0B]/20 to-[#F97316]/20 rounded-full flex items-center justify-center">
+                    <ShoppingBagIcon className="w-16 h-16 text-[#F97316]" />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h3>
                   <p className="text-gray-500 mb-8">Add some delicious products to get started!</p>
                   <Link
                     href="/products"
                     onClick={toggleCart}
-                    className="inline-block bg-gradient-to-r from-[#E67E22] to-[#D35400] text-white px-8 py-3 rounded-lg hover:shadow-lg transition-all font-semibold"
+                    className="inline-block bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white px-8 py-3 rounded-lg hover:shadow-lg transition-all font-semibold"
                   >
                     Shop Now
                   </Link>
@@ -90,10 +90,10 @@ export default function CartDrawer() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: 100 }}
                       transition={{ delay: index * 0.05 }}
-                      className="flex items-center gap-4 p-4 border-2 border-gray-100 rounded-xl hover:border-[#E67E22] transition-colors bg-white shadow-sm"
+                      className="flex items-center gap-4 p-4 border-2 border-gray-100 rounded-xl hover:border-[#F97316] transition-colors bg-white shadow-sm"
                     >
                       {/* Product Image */}
-                      <div className="relative w-20 h-20 bg-gradient-to-br from-orange-50 to-amber-50 rounded-lg flex-shrink-0 overflow-hidden">
+                      <div className="relative w-20 h-20 bg-gradient-to-br from-[#F59E0B]/10 to-[#F97316]/10 rounded-lg flex-shrink-0 overflow-hidden">
                         {item.image ? (
                           <Image
                             src={item.image}
@@ -116,10 +116,10 @@ export default function CartDrawer() {
                         </h3>
                         {item.variant && (
                           <p className="text-xs text-gray-500 mb-1">
-                            Size: <span className="font-medium text-[#E67E22]">{item.variant}</span>
+                            Size: <span className="font-medium text-[#F97316]">{item.variant}</span>
                           </p>
                         )}
-                        <p className="text-sm font-bold text-[#E67E22]">
+                        <p className="text-sm font-bold text-[#F97316]">
                           ₹{item.price ? item.price.toLocaleString() : 0}
                         </p>
                       </div>
@@ -165,7 +165,7 @@ export default function CartDrawer() {
 
             {/* Footer */}
             {items.length > 0 && (
-              <div className="border-t-2 border-gray-200 p-6 space-y-4 bg-gradient-to-br from-orange-50 to-amber-50">
+              <div className="border-t-2 border-gray-200 p-6 space-y-4 bg-gradient-to-br from-[#F59E0B]/10 to-[#F97316]/10">
                 {/* Subtotal */}
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-sm text-gray-600">
@@ -180,15 +180,15 @@ export default function CartDrawer() {
 
                 {/* Total */}
                 <div className="flex justify-between items-center text-xl font-bold pt-3 border-t-2 border-gray-300">
-                  <span className="text-[#8B4513]">Total:</span>
-                  <span className="text-[#E67E22]">₹{getTotalPrice().toLocaleString()}</span>
+                  <span className="text-[#F97316]">Total:</span>
+                  <span className="text-[#F97316]">₹{getTotalPrice().toLocaleString()}</span>
                 </div>
 
                 {/* Checkout Button */}
                 <Link
                   href="/checkout"
                   onClick={toggleCart}
-                  className="block w-full bg-gradient-to-r from-[#E67E22] to-[#D35400] text-white text-center py-4 rounded-xl hover:shadow-2xl transition-all font-bold text-lg"
+                  className="block w-full bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white text-center py-4 rounded-xl hover:shadow-2xl transition-all font-bold text-lg"
                 >
                   Proceed to Checkout
                 </Link>
@@ -196,7 +196,7 @@ export default function CartDrawer() {
                 {/* Continue Shopping */}
                 <button
                   onClick={toggleCart}
-                  className="w-full text-sm text-gray-600 hover:text-[#E67E22] transition-colors font-medium"
+                  className="w-full text-sm text-gray-600 hover:text-[#F97316] transition-colors font-medium"
                 >
                   Continue Shopping
                 </button>

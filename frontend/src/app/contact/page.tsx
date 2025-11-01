@@ -73,7 +73,7 @@ export default function ContactPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#F97316] mb-4">
             Contact Us
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -91,15 +91,15 @@ export default function ContactPage() {
             className="space-y-8"
           >
             <div>
-              <h2 className="text-2xl font-bold text-[#8B4513] mb-6">Get in Touch</h2>
+              <h2 className="text-2xl font-bold text-[#F97316] mb-6">Get in Touch</h2>
               <div className="space-y-6">
                 {/* Address */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[#E67E22] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                     <MapPinIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#8B4513] mb-2">Address</h3>
+                    <h3 className="font-semibold text-[#F97316] mb-2">Address</h3>
                     <p className="text-gray-600 leading-relaxed">
                       Panchaganga Farm Solutions Pvt Ltd<br />
                       B-12, Part-2, MIDC, Waluj, UIT<br />
@@ -110,14 +110,14 @@ export default function ContactPage() {
 
                 {/* Phone */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[#E67E22] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                     <PhoneIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#8B4513] mb-2">Phone</h3>
+                    <h3 className="font-semibold text-[#F97316] mb-2">Phone</h3>
                     <a 
                       href="tel:+918010906093" 
-                      className="text-gray-600 hover:text-[#E67E22] transition-colors"
+                      className="text-gray-600 hover:text-[#F97316] transition-colors"
                     >
                       +91 8010906093
                     </a>
@@ -126,14 +126,14 @@ export default function ContactPage() {
 
                 {/* Email */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[#E67E22] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                     <EnvelopeIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#8B4513] mb-2">Email</h3>
+                    <h3 className="font-semibold text-[#F97316] mb-2">Email</h3>
                     <a 
                       href="mailto:care@dfoods.in" 
-                      className="text-gray-600 hover:text-[#E67E22] transition-colors"
+                      className="text-gray-600 hover:text-[#F97316] transition-colors"
                     >
                       care@dfoods.in
                     </a>
@@ -142,11 +142,11 @@ export default function ContactPage() {
 
                 {/* Business Hours */}
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-[#E67E22] rounded-lg flex items-center justify-center flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-lg flex items-center justify-center flex-shrink-0 shadow-md">
                     <ClockIcon className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-[#8B4513] mb-2">Business Hours</h3>
+                    <h3 className="font-semibold text-[#F97316] mb-2">Business Hours</h3>
                     <div className="text-gray-600 space-y-1">
                       <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
                       <p>Saturday: 9:00 AM - 4:00 PM</p>
@@ -159,11 +159,11 @@ export default function ContactPage() {
 
             {/* Social Media */}
             <div>
-              <h3 className="font-semibold text-[#8B4513] mb-4">Follow Us</h3>
+              <h3 className="font-semibold text-[#F97316] mb-4">Follow Us</h3>
               <div className="flex gap-4">
                 <motion.a
                   href="#"
-                  className="w-10 h-10 bg-[#E67E22] rounded-full flex items-center justify-center text-white hover:bg-[#D35400] transition-colors"
+                  className="w-10 h-10 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-full flex items-center justify-center text-white hover:from-[#F97316] hover:to-[#EA580C] transition-colors shadow-md"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -171,7 +171,7 @@ export default function ContactPage() {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="w-10 h-10 bg-[#E67E22] rounded-full flex items-center justify-center text-white hover:bg-[#D35400] transition-colors"
+                  className="w-10 h-10 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-full flex items-center justify-center text-white hover:from-[#F97316] hover:to-[#EA580C] transition-colors shadow-md"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -190,7 +190,7 @@ export default function ContactPage() {
             className="lg:col-span-2"
           >
             <div className="bg-white rounded-lg shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-[#8B4513] mb-6">Send us a Message</h2>
+              <h2 className="text-2xl font-bold text-[#F97316] mb-6">Send us a Message</h2>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -253,7 +253,7 @@ export default function ContactPage() {
                     onChange={handleInputChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E67E22] focus:border-transparent transition-colors resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#F97316] focus:border-transparent transition-colors resize-none"
                     placeholder="Tell us how we can help you..."
                   />
                 </div>
@@ -261,7 +261,7 @@ export default function ContactPage() {
                 <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-[#E67E22] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-[#D35400] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="w-full bg-gradient-to-r from-[#F59E0B] to-[#F97316] text-white py-4 px-6 rounded-lg font-semibold text-lg hover:from-[#F97316] hover:to-[#EA580C] transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                   whileTap={{ scale: 0.95 }}
                 >
                   {isSubmitting ? 'Sending...' : 'Send Message'}
@@ -279,11 +279,11 @@ export default function ContactPage() {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <h2 className="text-2xl font-bold text-[#8B4513] mb-6 text-center">Find Us</h2>
+          <h2 className="text-2xl font-bold text-[#F97316] mb-6 text-center">Find Us</h2>
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="h-96 bg-gray-200 flex items-center justify-center">
               <div className="text-center text-gray-500">
-                <MapPinIcon className="w-16 h-16 mx-auto mb-4 text-[#E67E22]" />
+                <MapPinIcon className="w-16 h-16 mx-auto mb-4 text-[#F97316]" />
                 <p className="text-lg font-semibold">Interactive Map</p>
                 <p className="text-sm">B-12, Part-2, MIDC, Waluj, UIT, 431136 Bhiwadi, India</p>
               </div>

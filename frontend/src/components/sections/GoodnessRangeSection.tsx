@@ -55,7 +55,7 @@ export default function GoodnessRangeSection() {
           viewport={{ once: true }}
           className="mb-10 sm:mb-12"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#8B4513] mb-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#F97316] mb-2">
             The Güdness Range
           </h2>
         </motion.div>
@@ -95,7 +95,7 @@ export default function GoodnessRangeSection() {
                 </motion.div>
                 
                 {/* Category Label */}
-                <h3 className="text-center text-[#8B4513] font-semibold text-xs sm:text-sm group-hover:text-amber-600 transition-colors w-full">
+                <h3 className="text-center text-[#F97316] font-semibold text-xs sm:text-sm group-hover:text-[#F59E0B] transition-colors w-full">
                   {category.name}
                 </h3>
               </Link>

@@ -5,6 +5,7 @@ import TestimonialsSection from '@/components/sections/TestimonialsSection';
 import JaggeryBannerSection from '@/components/sections/JaggeryBannerSection';
 import GoodnessRangeSection from '@/components/sections/GoodnessRangeSection';
 import FeaturedProductsSection from '@/components/sections/FeaturedProductsSection';
+import BannerImageSection from '@/components/sections/BannerImageSection';
 
 export default function Home() {
   return (
@@ -13,8 +14,9 @@ export default function Home() {
       <GoodnessRangeSection />
       <JaggeryBannerSection />
       <FeaturedProductsSection />
-      <WhyChooseUsSection />
       <WhatWeDoSection />
+      <BannerImageSection />
+      <WhyChooseUsSection />
       <TestimonialsSection />
     </div>
   );

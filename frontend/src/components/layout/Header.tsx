@@ -63,8 +63,8 @@ export default function Header() {
   };
 
   const headerBackground = isScrolled 
-    ? 'radial-gradient(circle at center, rgba(250, 204, 21, 0.45) 0%, rgba(251, 191, 36, 0.5) 30%, rgba(245, 158, 11, 0.48) 60%, rgba(217, 119, 6, 0.5) 100%)'
-    : 'radial-gradient(circle at center, rgba(250, 204, 21, 0.4) 0%, rgba(251, 191, 36, 0.45) 30%, rgba(245, 158, 11, 0.43) 60%, rgba(217, 119, 6, 0.45) 100%)';
+    ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.85) 0%, rgba(249, 115, 22, 0.9) 100%)'
+    : 'linear-gradient(135deg, rgba(245, 158, 11, 0.8) 0%, rgba(249, 115, 22, 0.85) 100%)';
 
   return (
     <>
@@ -85,12 +85,12 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-[#E67E22] rounded-full flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#F59E0B] to-[#F97316] rounded-full flex items-center justify-center shadow-md">
                 <span className="text-white font-bold text-lg">D</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#8B4513]">Dfoods</h1>
-                <p className="text-xs text-[#C0392B] -mt-1">Pure Traditional Sweetness</p>
+                <h1 className="text-2xl font-bold text-white">Dfoods</h1>
+                <p className="text-xs text-white/90 -mt-1">Pure Traditional Sweetness</p>
               </div>
             </Link>
 
@@ -99,10 +99,10 @@ export default function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`text-sm font-medium transition-colors hover:text-[#E67E22] ${
+                  className={`text-sm font-medium transition-colors hover:text-white ${
                     pathname === item.href 
-                      ? 'text-[#E67E22]' 
-                      : 'text-[#8B4513]'
+                      ? 'text-white font-semibold' 
+                      : 'text-white/90'
                   }`}
                 >
                   {item.name}
@@ -111,14 +111,14 @@ export default function Header() {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <Link href="/products" className="p-2 text-[#8B4513] hover:text-[#E67E22] transition-colors" title="Search Products">
+              <Link href="/products" className="p-2 text-white/90 hover:text-white transition-colors" title="Search Products">
                 <MagnifyingGlassIcon className="w-5 h-5" />
               </Link>
 
               <div className="relative z-[100] profile-dropdown">
                 <button 
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="p-2 text-[#8B4513] hover:text-[#E67E22] transition-colors"
+                  className="p-2 text-white/90 hover:text-white transition-colors"
                 >
                   <UserIcon className="w-5 h-5" />
                 </button>
@@ -126,7 +126,7 @@ export default function Header() {
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-2xl border border-gray-200 z-[200] animate-fadeIn">
                   <div className="py-2">
                     <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-[#8B4513]">
+                      <p className="text-sm font-semibold text-[#F97316]">
                         {user ? `Hi, ${user.name}` : 'Welcome!'}
                       </p>
                       <p className="text-xs text-gray-500">
@@ -197,12 +197,12 @@ export default function Header() {
 
               <button
                 onClick={toggleCart}
-                className="relative p-2 text-[#8B4513] hover:text-[#E67E22] transition-colors"
+                className="relative p-2 text-white/90 hover:text-white transition-colors"
               >
                 <ShoppingCartIcon className="w-5 h-5" />
                 {totalItems > 0 && (
                   <motion.span
-                    className="absolute -top-1 -right-1 bg-[#C0392B] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
+                    className="absolute -top-1 -right-1 bg-white text-[#F97316] text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold shadow-lg"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
@@ -214,7 +214,7 @@ export default function Header() {
 
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-2 text-[#8B4513] hover:text-[#E67E22] transition-colors"
+                className="md:hidden p-2 text-white/90 hover:text-white transition-colors"
               >
                 {isOpen ? (
                   <XMarkIcon className="w-6 h-6" />
@@ -242,8 +242,8 @@ export default function Header() {
                     onClick={() => setIsOpen(false)}
                     className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
                       pathname === item.href
-                        ? 'text-[#E67E22] bg-[#FDF6E3]'
-                        : 'text-[#8B4513] hover:text-[#E67E22] hover:bg-[#FDF6E3]'
+                        ? 'text-[#F97316] bg-white/20'
+                        : 'text-gray-800 hover:text-[#F97316] hover:bg-white/10'
                     }`}
                   >
                     {item.name}
@@ -255,8 +255,8 @@ export default function Header() {
                     onClick={() => setIsOpen(false)}
                     className={`block px-3 py-2 text-base font-medium rounded-md transition-colors ${
                       pathname === '/admin'
-                        ? 'text-[#E67E22] bg-[#FDF6E3]'
-                        : 'text-[#8B4513] hover:text-[#E67E22] hover:bg-[#FDF6E3]'
+                        ? 'text-[#F97316] bg-white/20'
+                        : 'text-gray-800 hover:text-[#F97316] hover:bg-white/10'
                     }`}
                   >
                     Admin Dashboard
@@ -265,7 +265,7 @@ export default function Header() {
                 {user ? (
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 text-base font-medium rounded-md transition-colors text-[#8B4513] hover:text-[#E67E22] hover:bg-[#FDF6E3]"
+                    className="block w-full text-left px-3 py-2 text-base font-medium rounded-md transition-colors text-gray-800 hover:text-[#F97316] hover:bg-white/10"
                   >
                     Sign Out
                   </button>

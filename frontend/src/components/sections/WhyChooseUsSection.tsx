@@ -1,187 +1,240 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { 
-  TrophyIcon, 
-  SparklesIcon, 
-  ShieldCheckIcon, 
-  TruckIcon 
-} from '@heroicons/react/24/solid';
+import { useEffect, useRef } from 'react';
+import Script from 'next/script';
 
-const whyChooseUsItems = [
+const features = [
   {
-    title: "40+ Years Experience",
-    icon: TrophyIcon,
-    description: "Four decades of expertise in traditional jaggery making, passed down through generations with unmatched quality and authenticity.",
-    gradient: "from-amber-400 via-orange-500 to-amber-600",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
-    number: "40+",
-    unit: "Years"
+    icon: 'fa-award',
+    title: 'Quality',
+    text: 'Four decades of expertise in traditional jaggery making, passed down through generations with unmatched quality and authenticity that stands the test of time.',
+    gradient: 'circle-gradient-1',
   },
   {
-    title: "100% Organic",
-    icon: SparklesIcon,
-    description: "Certified organic farming practices with no chemicals, pesticides, or artificial additives - pure nature in every bite.",
-    gradient: "from-amber-400 via-orange-500 to-amber-600",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
-    number: "100%",
-    unit: "Organic"
+    icon: 'fa-leaf',
+    title: '100% Organic',
+    text: 'Certified organic farming practices with no chemicals, pesticides, or artificial additives - pure nature in every bite for your health and wellness.',
+    gradient: 'circle-gradient-2',
   },
   {
-    title: "No Chemicals",
-    icon: ShieldCheckIcon,
-    description: "Zero chemical processing, bleaching, or artificial enhancement. Only natural, traditional methods that preserve authentic taste.",
-    gradient: "from-amber-400 via-orange-500 to-amber-600",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
-    number: "0",
-    unit: "Chemicals"
+    icon: 'fa-shield-alt',
+    title: 'No Chemicals',
+    text: 'Zero chemical processing, bleaching, or artificial enhancement. Only natural, traditional methods that preserve authentic taste and nutritional value.',
+    gradient: 'circle-gradient-1',
   },
   {
-    title: "Farm Fresh",
-    icon: TruckIcon,
-    description: "Direct from our farms to your doorstep. Freshly harvested sugarcane processed within hours to ensure maximum freshness and nutrition.",
-    gradient: "from-amber-400 via-orange-500 to-amber-600",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-50",
-    number: "24hr",
-    unit: "Delivery"
-  }
+    icon: 'fa-truck',
+    title: 'Farm Fresh',
+    text: 'Direct from our farms to your doorstep. Freshly harvested sugarcane processed within hours to ensure maximum freshness and nutrition delivered with care.',
+    gradient: 'circle-gradient-2',
+  },
 ];
 
 export default function WhyChooseUsSection() {
+  const cardsRef = useRef<(HTMLDivElement | null)[]>([]);
+
+  useEffect(() => {
+    cardsRef.current.forEach((card, i) => {
+      if (card) {
+        card.style.animationDelay = `${0.2 * (i + 1)}s`;
+        card.style.opacity = '1';
+      }
+    });
+  }, []);
+
   return (
-    <section className="py-6 sm:py-8 md:py-10 bg-gradient-to-b from-white via-amber-50/30 to-white relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-48 h-48 sm:w-72 sm:h-72 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-64 h-64 sm:w-96 sm:h-96 bg-gradient-to-r from-amber-200/20 to-orange-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-      </div>
+    <>
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-8 sm:mb-10 md:mb-12"
-        >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
-            Why Choose Dfoods?
-          </h2>
-          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto px-4">
-            We stand out with our commitment to quality, tradition, and authenticity in every product we deliver.
-          </p>
-        </motion.div>
+        @keyframes rotateGradient {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-          {whyChooseUsItems.map((item, index) => {
-            const IconComponent = item.icon;
-            return (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                transition={{ 
-                  duration: 0.6, 
-                  delay: index * 0.15,
-                  type: "spring",
-                  stiffness: 100
-                }}
-                viewport={{ once: true }}
-                whileHover={{ 
-                  y: -10,
-                  scale: 1.02,
-                  transition: { duration: 0.3 }
-                }}
-                className="group relative"
-              >
-                {/* Card */}
-                <div className={`relative h-full bg-gradient-to-br ${item.bgGradient} rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl border border-white/50 backdrop-blur-sm overflow-hidden transition-all duration-300 group-hover:shadow-2xl`}>
-                  {/* Animated gradient overlay on hover */}
-                  <motion.div
-                    className={`absolute inset-0 bg-gradient-to-br ${item.gradient} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}
-                    initial={false}
-                  />
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+          }
+          50% {
+            transform: scale(1.05);
+          }
+          100% {
+            transform: scale(1);
+          }
+        }
 
-                  {/* Floating icon */}
-                  <motion.div
-                    initial={{ scale: 0, rotate: -180 }}
-                    whileInView={{ scale: 1, rotate: 0 }}
-                    transition={{ 
-                      duration: 0.8, 
-                      delay: index * 0.15,
-                      type: "spring",
-                      stiffness: 200
-                    }}
-                    viewport={{ once: true }}
-                    whileHover={{ 
-                      rotate: 360,
-                      scale: 1.2,
-                      transition: { duration: 0.5 }
-                    }}
-                    className="relative z-10 mb-3 sm:mb-4 flex justify-center"
-                  >
-                    <div className={`p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-gradient-to-br ${item.gradient} shadow-lg`}>
-                      <IconComponent className="w-7 h-7 sm:w-9 sm:h-9 text-white" />
+        .why-choose-us {
+          background-color: #f8f9fa;
+          padding: 20px 0;
+        }
+
+        .feature-card {
+          text-align: center;
+          padding: 20px 20px;
+          margin-bottom: 0px;
+          position: relative;
+          animation: fadeInUp 0.8s ease-out forwards;
+          opacity: 0;
+        }
+
+        .icon-container {
+          position: relative;
+          width: 220px;
+          height: 200px;
+          margin: 0 auto 20px;
+        }
+
+        .circle-base {
+          width: 200px;
+          height: 200px;
+          background-color: #f8f9fa;
+          border-radius: 50%;
+          position: absolute;
+          top: 7px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 2;
+          transition: transform 0.3s ease;
+        }
+
+        .circle-gradient-1,
+        .circle-gradient-2 {
+          width: 200px;
+          height: 200px;
+          position: absolute;
+          top: 0;
+          border-radius: 50%;
+          z-index: 1;
+          animation: rotateGradient 8s linear infinite;
+        }
+
+        .circle-gradient-1 {
+          background: linear-gradient(#F97316 0%, #F59E0B 50%);
+        }
+
+        .circle-gradient-2 {
+          background: linear-gradient(#F59E0B 0%, #F97316 50%);
+        }
+
+        .feature-icon {
+          font-size: 5rem;
+          color: #000000;
+          position: relative;
+          z-index: 3;
+          transition: transform 0.3s ease;
+        }
+
+        .icon-container:hover .feature-icon {
+          transform: scale(1.1);
+        }
+
+        .icon-container:hover .circle-base {
+          animation: pulse 1s ease-in-out infinite;
+        }
+
+        .feature-title {
+          color: #333;
+          font-size: 1.4rem;
+          margin-bottom: 10px;
+          margin-top: -10px;
+          font-weight: 600;
+          transition: color 0.3s ease;
+        }
+
+        .feature-text {
+          color: #666;
+          font-size: 0.85rem;
+          line-height: 1.6;
+        }
+
+        .section-title {
+          font-size: 2.5rem;
+          font-weight: bold;
+          margin-bottom: 10px;
+          text-align: center;
+          background: -webkit-linear-gradient(#F97316 0%, #F59E0B 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+
+        .divider {
+          width: 80px;
+          height: 4px;
+          background: linear-gradient(to right, #F97316, #F59E0B);
+          margin: 25px auto;
+          border-radius: 50px;
+          transition: width 0.3s ease;
+        }
+
+        .feature-card:hover .divider {
+          width: 120px;
+        }
+
+        .feature-card:hover .feature-title {
+          color: #F97316 !important;
+        }
+
+        @media (max-width: 768px) {
+          .icon-container {
+            width: 170px;
+            height: 170px;
+          }
+          .circle-base,
+          .circle-gradient-1,
+          .circle-gradient-2 {
+            width: 150px;
+            height: 150px;
+          }
+          .feature-icon {
+            font-size: 3.5rem;
+          }
+        }
+      `}</style>
+
+      <section className="why-choose-us">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <h2 className="section-title">Why Choose Us</h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {features.map((f, idx) => (
+              <div key={idx}>
+                <div
+                  className="feature-card"
+                  ref={(el) => {
+                    cardsRef.current[idx] = el;
+                  }}
+                >
+                  <div className="icon-container">
+                    <div className={f.gradient}></div>
+                    <div className="circle-base">
+                      <i className={`fas ${f.icon} feature-icon`}></i>
                     </div>
-                  </motion.div>
-
-                  {/* Animated number */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: index * 0.15 + 0.2 
-                    }}
-                    viewport={{ once: true }}
-                    className="text-center mb-1.5 sm:mb-2 relative z-10"
-                  >
-                    <motion.span
-                      className={`text-3xl sm:text-4xl font-black bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}
-                      whileHover={{ scale: 1.1 }}
-                    >
-                      {item.number}
-                    </motion.span>
-                    <p className={`text-[10px] sm:text-xs font-semibold mt-0.5 bg-gradient-to-r ${item.gradient} bg-clip-text text-transparent`}>
-                      {item.unit}
-                    </p>
-                  </motion.div>
-
-                  {/* Title */}
-                  <motion.h3
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.15 + 0.3 }}
-                    viewport={{ once: true }}
-                    className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 text-center relative z-10"
-                  >
-                    {item.title}
-                  </motion.h3>
-
-                  {/* Description */}
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: index * 0.15 + 0.4 }}
-                    viewport={{ once: true }}
-                    className="text-[10px] sm:text-xs text-gray-600 leading-relaxed text-center relative z-10"
-                  >
-                    {item.description}
-                  </motion.p>
-
-                  {/* Decorative corner elements */}
-                  <div className="absolute top-0 right-0 w-20 h-20 overflow-hidden">
-                    <div className={`absolute -top-10 -right-10 w-24 h-24 bg-gradient-to-br ${item.gradient} opacity-20 rounded-full blur-xl`}></div>
                   </div>
-                  <div className="absolute bottom-0 left-0 w-20 h-20 overflow-hidden">
-                    <div className={`absolute -bottom-10 -left-10 w-24 h-24 bg-gradient-to-br ${item.gradient} opacity-20 rounded-full blur-xl`}></div>
-                  </div>
+
+                  <h3 className="feature-title">{f.title}</h3>
+                  <p className="feature-text">{f.text}</p>
+                  <div className="divider"></div>
                 </div>
-              </motion.div>
-            );
-          })}
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
