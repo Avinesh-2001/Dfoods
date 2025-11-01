@@ -9,6 +9,23 @@ const config: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      // Allow any hostname pattern for development (can be restricted in production)
+      ...(process.env.NODE_ENV === 'development' ? [
+        {
+          protocol: 'https',
+          hostname: '**',
+        },
+        {
+          protocol: 'http',
+          hostname: '**',
+        },
+      ] : []),
     ],
   },
   async rewrites() {
