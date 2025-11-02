@@ -3,7 +3,17 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log('Attempting to login with User:', process.env.EMAIL_USER);
+// Log email configuration status (without exposing password)
+console.log('📧 Email Configuration Check:');
+console.log(`   EMAIL_USER: ${process.env.EMAIL_USER ? '✅ Set (' + process.env.EMAIL_USER + ')' : '❌ MISSING'}`);
+console.log(`   EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? '✅ Set (' + process.env.EMAIL_PASSWORD.length + ' chars)' : '❌ MISSING'}`);
+if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+  console.warn('⚠️ EMAIL NOT CONFIGURED - Emails will not be sent!');
+  console.warn('   Add EMAIL_USER and EMAIL_PASSWORD to your .env file');
+} else {
+  console.log('✅ Email credentials found in environment');
+}
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -15,7 +25,15 @@ const transporter = nodemailer.createTransport({
 // Verify transporter at startup
 transporter.verify((error, success) => {
   if (error) {
-    console.warn('⚠️ Email configuration warning:', error.message);
+    console.error('❌ Email configuration ERROR:', error.message);
+    console.error('   Check:');
+    console.error('   1. EMAIL_USER and EMAIL_PASSWORD in .env');
+    console.error('   2. Use Gmail App Password (not regular password)');
+    console.error('   3. Enable 2FA on Google account');
+    console.error('   4. Remove spaces from App Password');
+    if (error.code) {
+      console.error(`   Error Code: ${error.code}`);
+    }
   } else {
     console.log('✅ Email transporter is ready to send emails');
   }
