@@ -76,22 +76,25 @@ router.get("/users", authenticateAdmin, async (req, res) => {
 // Get all products
 router.get("/products", authenticateAdmin, async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 1000 } = req.query; // Increased default limit for admin dashboard
+    console.log(`📦 Fetching products - page: ${page}, limit: ${limit}`);
+    
     const products = await Product.find()
       .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+      .limit(parseInt(limit) || 1000)
+      .skip((parseInt(page) - 1) * (parseInt(limit) || 1000));
 
     const total = await Product.countDocuments();
+    console.log(`✅ Found ${products.length} products (total: ${total})`);
 
     res.json({
       products,
-      totalPages: Math.ceil(total / limit),
-      currentPage: page,
+      totalPages: Math.ceil(total / (parseInt(limit) || 1000)),
+      currentPage: parseInt(page),
       total
     });
   } catch (error) {
-    console.error('Get products error:', error);
+    console.error('❌ Get products error:', error);
     res.status(500).json({ message: 'Error fetching products', error: error.message });
   }
 });

@@ -94,16 +94,38 @@ export default function ProductsPage() {
     }
 
     try {
-      const response = await adminApi.getProducts({});
-      setProducts(response.data.products || response.data || []);
+      // Request a large limit to get all products (admin dashboard should show all)
+      const response = await adminApi.getProducts({ limit: 1000, page: 1 });
+      console.log('Products API Response:', response.data);
+      
+      // Handle paginated response
+      if (response.data && Array.isArray(response.data.products)) {
+        setProducts(response.data.products);
+        console.log(`✅ Loaded ${response.data.products.length} products`);
+      } else if (Array.isArray(response.data)) {
+        // Fallback if response is directly an array
+        setProducts(response.data);
+        console.log(`✅ Loaded ${response.data.length} products (direct array)`);
+      } else {
+        console.warn('Unexpected response format:', response.data);
+        setProducts([]);
+        toast.error('Unexpected response format from server');
+      }
     } catch (error: any) {
       console.error('Error fetching products:', error);
+      console.error('Error details:', {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message
+      });
+      
       if (error.response?.status === 401) {
         toast.error('Authentication failed. Please login again.');
         window.location.href = '/admin-login';
       } else {
-        toast.error('Failed to fetch products');
+        toast.error(error.response?.data?.message || 'Failed to fetch products');
       }
+      setProducts([]);
     } finally {
       setLoading(false);
     }
