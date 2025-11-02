@@ -28,8 +28,12 @@ export default function ProductDetailPage() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     Description: false,
     Ingredients: false,
-    'Product Information': false,
+    Benefits: false,
+    'Storage Info': false,
     FAQ: false,
+    FAQ1: false,
+    FAQ2: false,
+    FAQ3: false,
     Reviews: false,
   });
   const [offersExpanded, setOffersExpanded] = useState(false);
@@ -445,10 +449,38 @@ export default function ProductDetailPage() {
           <div className="lg:col-span-5 space-y-5 lg:sticky lg:top-24 self-start">
             {/* Product Title */}
             <div>
-              <h1 className="text-xl font-bold text-black mb-1">{product.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-black mb-2">{product.name}</h1>
+              
+              {/* Subtitle/Badge */}
+              {product.tags?.includes('Organic') && (
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
+                    {product.category || 'Organic'} | {product.tags?.join(' • ') || 'Premium Quality'}
+                  </span>
+                </div>
+              )}
+              
+              {/* Review Count Badge */}
+              {reviews.length > 0 && (
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => {
+                      const avgRating = reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
+                      return (
+                        <span key={i} className={`text-sm ${i < Math.floor(avgRating) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                          ★
+                        </span>
+                      );
+                    })}
+                  </div>
+                  <span className="text-sm text-gray-600">
+                    {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              )}
               
               {/* Vegetarian Badge */}
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-4">
                 <div className="w-4 h-4 border-2 border-green-600 rounded flex items-center justify-center">
                   <div className="w-1.5 h-1.5 bg-green-600 rounded-full"></div>
                 </div>
@@ -456,25 +488,28 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Price Block (MRP, current, savings) */}
-            <div className="bg-amber-50 border border-amber-200 rounded-md p-2.5">
-              <div className="flex items-end gap-2">
-                <div className="text-xl font-extrabold text-black">₹{currentPrice}</div>
+            {/* Price Block (Reference Style) */}
+            <div className="mb-4">
+              <div className="flex items-baseline gap-3 mb-1">
                 {product.originalPrice && product.originalPrice > currentPrice && (
-                  <>
-                    <div className="text-gray-400 line-through text-xs">₹{product.originalPrice}</div>
-                    <div className="text-green-700 font-semibold text-xs">
-                      Save ₹{product.originalPrice - currentPrice}
-                    </div>
-                  </>
+                  <span className="text-lg text-gray-500 line-through">Sale price</span>
+                )}
+                <div className="text-3xl font-bold text-black">₹{currentPrice}</div>
+                {product.originalPrice && product.originalPrice > currentPrice && (
+                  <span className="text-lg text-gray-500 line-through">₹{product.originalPrice}</span>
                 )}
               </div>
-              {product.sku && (
-                <div className="mt-1 text-xs text-black">SKU: {product.sku}</div>
+              {product.originalPrice && product.originalPrice > currentPrice && (
+                <div className="text-sm text-green-700 font-semibold mb-2">
+                  Save ₹{product.originalPrice - currentPrice}
+                </div>
               )}
-              {product.productInfo && (
-                <div className="mt-1 text-xs text-black">
-                  <span className="font-semibold">USP:</span> {product.productInfo}
+              <div className="text-sm text-gray-600">
+                MRP (Incl. of all taxes)
+              </div>
+              {product.originalPrice && product.originalPrice > currentPrice && (
+                <div className="text-sm text-gray-500 mt-1">
+                  {Math.round(((product.originalPrice - currentPrice) / product.originalPrice) * 100)}% off
                 </div>
               )}
             </div>
@@ -517,48 +552,38 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Select Variant */}
+            {/* Select Variant - Reference Style */}
             {product.variants && product.variants.length > 0 && (
               <div>
-                <h3 className="font-semibold text-black mb-1.5 text-xs">Select Variant</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  {product.variants.map((variant: any, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedVariant(variant)}
-                      className={`relative p-2.5 rounded-md border-2 text-left transition-all ${
-                        selectedVariant?.size === variant.size
-                          ? 'border-amber-600 bg-amber-50'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                    >
-                      <div className="font-bold text-sm text-black">{variant.size}</div>
-                      {selectedVariant?.size === variant.size && (
-                        <div className="mt-1 space-y-0.5 text-xs text-black">
-                          <div>SKU: {product.sku}</div>
-                          <div className="font-semibold">MRP: ₹ {variant.price}.00</div>
-                          <div className="text-gray-500">(Inc of All Taxes)</div>
-                        </div>
-                      )}
-                      {product.originalPrice && (
-                        <div className="mt-1">
-                          <span className="text-xs text-gray-500 line-through">₹{product.originalPrice}</span>
-                          <span className="ml-2 text-xs font-semibold text-green-600">
-                            ₹{variant.price}
-                          </span>
-                        </div>
-                      )}
-                      {selectedVariant?.size === variant.size && (
-                        <div className="absolute top-1.5 right-1.5">
-                          <CheckCircleIcon className="w-4 h-4 text-green-600" />
-                        </div>
-                      )}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                  {product.variants.map((variant: any, index: number) => {
+                    const variantPrice = variant.price || currentPrice;
+                    const isSelected = selectedVariant?.size === variant.size;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedVariant(variant)}
+                        className={`relative p-4 rounded-lg border-2 text-left transition-all ${
+                          isSelected
+                            ? 'border-[#1a472a] bg-[#1a472a]/5'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        <div className="font-bold text-base text-black mb-1">{variant.size || variant.name}</div>
+                        <div className="font-semibold text-lg text-[#1a472a] mb-1">₹{variantPrice}</div>
+                        <div className="text-xs text-gray-500">(Rs.{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</div>
+                        {isSelected && (
+                          <div className="absolute top-2 right-2">
+                            <CheckCircleIcon className="w-5 h-5 text-[#1a472a]" />
+                          </div>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
                 {selectedVariant && (
-                  <div className="mt-2 p-2 bg-blue-50 rounded-md text-xs text-black">
-                    <span className="font-semibold">USP:</span> {product.productInfo || product.description || 'Premium quality product'}
+                  <div className="p-3 bg-gray-50 rounded-md text-sm text-black border border-gray-200">
+                    <span className="font-semibold">Selected:</span> {selectedVariant.size} - ₹{selectedVariant.price || currentPrice}
                   </div>
                 )}
               </div>
@@ -705,25 +730,25 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Details - Collapsible Sections */}
-        <div className="mb-8 bg-white border border-gray-200 rounded-md overflow-hidden">
+        {/* Product Details - Collapsible Sections (Reference Style) */}
+        <div className="mb-8 bg-white">
           {/* Description */}
           <div className="border-b border-gray-200">
               <button
               onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-semibold text-black text-sm">Description</span>
+              <span className="font-bold text-[#1a472a] text-base">DESCRIPTION</span>
               {expandedSections.Description ? (
-                <XMarkIcon className="w-5 h-5 text-gray-600" />
+                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
               ) : (
-                <PlusIcon className="w-5 h-5 text-gray-600" />
+                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
               )}
               </button>
             {expandedSections.Description && (
-              <div className="px-4 pb-4">
-                <p className="text-black leading-relaxed text-sm">
-                  {product.description || 'Premium quality product made with care and expertise.'}
+              <div className="px-4 pb-6">
+                <p className="text-gray-700 leading-relaxed text-sm">
+                  {product.description || 'Premium quality product made with care and expertise. Looking for that comforting taste of tradition? Every drop of our premium jaggery is crafted from the finest sugarcane, offering you authentic, wholesome flavors of India.'}
                 </p>
               </div>
             )}
@@ -734,20 +759,20 @@ export default function ProductDetailPage() {
             <div className="border-b border-gray-200">
               <button
                 onClick={() => setExpandedSections(prev => ({ ...prev, Ingredients: !prev.Ingredients }))}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
               >
-                <span className="font-semibold text-black text-sm">Ingredients</span>
+                <span className="font-bold text-[#1a472a] text-base">INGREDIENTS</span>
                 {expandedSections.Ingredients ? (
-                  <XMarkIcon className="w-5 h-5 text-gray-600" />
+                  <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
                 ) : (
-                  <PlusIcon className="w-5 h-5 text-gray-600" />
+                  <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
               </button>
               {expandedSections.Ingredients && (
-                <div className="px-4 pb-4">
-                <ul className="list-disc list-inside space-y-0.5">
+                <div className="px-4 pb-6">
+                  <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
                   {product.ingredients.map((ingredient: string, index: number) => (
-                    <li key={index} className="text-black text-xs">{ingredient}</li>
+                      <li key={index}>{ingredient}</li>
                   ))}
                 </ul>
                 </div>
@@ -755,129 +780,325 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-          {/* Product Information */}
-          {(product.productInfo || product.shelfLife || product.manufacturer) && (
+          {/* Benefits */}
+          {(product.benefits || product.productInfo) && (
             <div className="border-b border-gray-200">
               <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, 'Product Information': !prev['Product Information'] }))}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                onClick={() => setExpandedSections(prev => ({ ...prev, Benefits: !prev.Benefits }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
               >
-                <span className="font-semibold text-black text-sm">Product Information</span>
-                {expandedSections['Product Information'] ? (
-                  <XMarkIcon className="w-5 h-5 text-gray-600" />
+                <span className="font-bold text-[#1a472a] text-base">BENEFITS</span>
+                {expandedSections.Benefits ? (
+                  <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
                 ) : (
-                  <PlusIcon className="w-5 h-5 text-gray-600" />
+                  <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
               </button>
-              {expandedSections['Product Information'] && (
-                <div className="px-4 pb-4">
-              <div className="grid sm:grid-cols-2 gap-3 text-xs text-black">
-                {product.productInfo && (
-                  <div>
-                    <h5 className="font-semibold text-black">USP</h5>
-                    <p>{product.productInfo}</p>
-                  </div>
-                )}
-                {product.shelfLife && (
-                  <div>
-                    <h5 className="font-semibold text-black">Shelf Life</h5>
-                    <p>{product.shelfLife}</p>
-                  </div>
-                )}
-                {product.manufacturer && (
-                  <div>
-                    <h5 className="font-semibold text-black">Manufacturer</h5>
-                    <p>{product.manufacturer}</p>
-                      </div>
+              {expandedSections.Benefits && (
+                <div className="px-4 pb-6">
+                  <ul className="space-y-2 text-gray-700 text-sm">
+                    {product.benefits ? (
+                      product.benefits.map((benefit: string, index: number) => (
+                        <li key={index} className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>{benefit}</span>
+                        </li>
+                      ))
+                    ) : (
+                      <>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Natural sweetener rich in minerals and vitamins</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Helps in digestion and boosts immunity</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Better alternative to refined sugar</span>
+                        </li>
+                        <li className="flex items-start">
+                          <span className="mr-2">•</span>
+                          <span>Made using traditional methods without chemicals</span>
+                        </li>
+                      </>
                     )}
+                  </ul>
                   </div>
+                )}
+                  </div>
+                )}
+
+          {/* Storage Info */}
+          {(product.shelfLife || product.storageInfo) && (
+            <div className="border-b border-gray-200">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': !prev['Storage Info'] }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
+              >
+                <span className="font-bold text-[#1a472a] text-base">STORAGE INFO</span>
+                {expandedSections['Storage Info'] ? (
+                  <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
+                ) : (
+                  <PlusIcon className="w-5 h-5 text-[#1a472a]" />
+                )}
+              </button>
+              {expandedSections['Storage Info'] && (
+                <div className="px-4 pb-6">
+                  <p className="text-gray-700 text-sm">
+                    {product.storageInfo || `Best stored away from direct sunlight and use a dry spoon every time before using. ${product.shelfLife ? `Best before ${product.shelfLife}.` : 'Best before 1 year from the date of packaging.'}`}
+                  </p>
                   </div>
                 )}
               </div>
             )}
 
-          {/* FAQ */}
+          {/* FAQ Section - Reference Style */}
           <div className="border-b border-gray-200">
             <button
               onClick={() => setExpandedSections(prev => ({ ...prev, FAQ: !prev.FAQ }))}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-semibold text-black text-sm">FAQ</span>
+              <span className="font-bold text-[#1a472a] text-base">FAQ</span>
               {expandedSections.FAQ ? (
-                <XMarkIcon className="w-5 h-5 text-gray-600" />
+                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
               ) : (
-                <PlusIcon className="w-5 h-5 text-gray-600" />
+                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
               )}
             </button>
             {expandedSections.FAQ && (
-              <div className="px-4 pb-4">
-                <ul className="space-y-1.5 text-black text-xs">
-                  <li>
-                    <span className="font-semibold">Does it have any side effects?</span> No known side effects.
-                  </li>
-                  <li>
-                    <span className="font-semibold">Can I use it daily?</span> Safe for everyday consumption unless otherwise advised by your physician.
-                  </li>
-                </ul>
+              <div className="px-4 pb-6">
+                <div className="space-y-0">
+                  {/* FAQ Question 1 */}
+                  <div className="border-b border-gray-200 py-4">
+                    <button
+                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': !prev['FAQ1'] }))}
+                      className="w-full flex items-center justify-between text-left"
+                    >
+                      <span className="font-bold text-[#1a472a] text-sm">WHAT DOES "ORGANIC" MEAN?</span>
+                      {expandedSections['FAQ1'] ? (
+                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      ) : (
+                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      )}
+                    </button>
+                    {expandedSections['FAQ1'] && (
+                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                        Organic jaggery means it is made from sugarcane grown without chemical fertilizers, pesticides, or synthetic additives. Our jaggery is certified organic and processed using traditional methods that preserve natural nutrients and flavors.
+              </div>
+            )}
+                  </div>
+
+                  {/* FAQ Question 2 */}
+                  <div className="border-b border-gray-200 py-4">
+                    <button
+                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': !prev['FAQ2'] }))}
+                      className="w-full flex items-center justify-between text-left"
+                    >
+                      <span className="font-bold text-[#1a472a] text-sm">WHAT MAKES THE DFOODS JAGGERY SPECIAL?</span>
+                      {expandedSections['FAQ2'] ? (
+                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      ) : (
+                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      )}
+                    </button>
+                    {expandedSections['FAQ2'] && (
+                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                        Our jaggery is made using traditional methods passed down through generations. We use firewood and sun-baked fuel for processing. Fresh sugarcane juice is boiled, cooled naturally, and processed in small batches daily. We do not use any chemicals, preservatives, or artificial additives. It's simply 100% natural, offering you the best of what nature has to offer.
+                      </div>
+                    )}
+                  </div>
+
+                  {/* FAQ Question 3 */}
+                  <div className="py-4">
+                    <button
+                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': !prev['FAQ3'] }))}
+                      className="w-full flex items-center justify-between text-left"
+                    >
+                      <span className="font-bold text-[#1a472a] text-sm">HOW SHOULD I STORE THIS JAGGERY?</span>
+                      {expandedSections['FAQ3'] ? (
+                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      ) : (
+                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                      )}
+                    </button>
+                    {expandedSections['FAQ3'] && (
+                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                        Store in a cool, dry place away from direct sunlight. Always use a dry spoon to avoid moisture. Keep it in an airtight container to maintain freshness. Best before 1 year from the date of packaging.
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Reviews */}
+          {/* Reviews Section - Reference Style */}
               <div>
             <button
               onClick={() => setExpandedSections(prev => ({ ...prev, Reviews: !prev.Reviews }))}
-              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-semibold text-black text-sm">Reviews ({reviews.length})</span>
+              <span className="font-bold text-[#1a472a] text-base">REVIEWS ({reviews.length})</span>
               {expandedSections.Reviews ? (
-                <XMarkIcon className="w-5 h-5 text-gray-600" />
+                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
               ) : (
-                <PlusIcon className="w-5 h-5 text-gray-600" />
+                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
               )}
             </button>
             {expandedSections.Reviews && (
-              <div className="px-4 pb-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h4 className="font-semibold text-black text-sm">Customer Reviews</h4>
-                  <div className="flex gap-2">
+              <div className="px-4 pb-6">
+                {/* Overall Rating Section */}
+                <div className="mb-6 flex flex-col md:flex-row md:items-start gap-6">
+                  {/* Left: Overall Rating */}
+                  <div className="flex-shrink-0">
+                    <div className="text-center md:text-left">
+                      <div className="text-4xl font-bold text-[#1a472a] mb-2">
+                        {reviews.length > 0 
+                          ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(2)
+                          : '0.00'
+                        }
+                      </div>
+                      <div className="flex items-center justify-center md:justify-start mb-2">
+                        {[...Array(5)].map((_, i) => {
+                          const avgRating = reviews.length > 0 
+                            ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length 
+                            : 0;
+                          return (
+                            <span key={i} className={`text-2xl ${i < Math.floor(avgRating) ? 'text-yellow-400' : i < avgRating ? 'text-yellow-300' : 'text-gray-300'}`}>
+                              ★
+                            </span>
+                          );
+                        })}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Based on {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right: Star Rating Breakdown */}
+                  <div className="flex-1 space-y-2">
+                    {[5, 4, 3, 2, 1].map((stars) => {
+                      const count = reviews.filter(r => (r.rating || 0) === stars).length;
+                      const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                      return (
+                        <div key={stars} className="flex items-center gap-3">
+                          <div className="flex items-center gap-1 min-w-[80px]">
+                            <span className="text-sm text-[#1a472a] font-semibold">{stars}</span>
+                            <span className="text-yellow-400 text-sm">★</span>
+                            <span className="text-xs text-gray-600">({count})</span>
+                          </div>
+                          <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full ${percentage > 50 ? 'bg-[#1a472a]' : 'bg-gray-300'}`}
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                          <div className="text-xs text-gray-600 min-w-[35px] text-right">
+                            {Math.round(percentage)}%
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Write Review Button & Authenticity Badge */}
+                  <div className="flex flex-col items-end gap-4 flex-shrink-0">
                     <button
-                      onClick={() => product && fetchReviews(product._id || product.id || params.id as string)}
-                      className="px-3 py-2 bg-gray-200 text-gray-700 text-xs font-semibold rounded-md hover:bg-gray-300 transition-colors"
-                      title="Refresh reviews"
+                      onClick={() => setShowReviewModal(true)}
+                      className="px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors whitespace-nowrap"
                     >
-                      🔄 Refresh
+                      Write a review
                     </button>
-                  <button
-                    onClick={() => setShowReviewModal(true)}
-                    className="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors"
-                  >
-                    Write a Review
-                  </button>
+                    {/* Authenticity Badge */}
+                    {reviews.length >= 10 && (
+                      <div className="text-center">
+                        <div className="w-20 h-20 mx-auto mb-2 relative">
+                          <svg viewBox="0 0 100 100" className="w-full h-full">
+                            <circle cx="50" cy="50" r="45" fill="none" stroke="#CD7F32" strokeWidth="8"/>
+                            <path d="M30 50 L45 65 L70 35" stroke="#CD7F32" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <div className="text-xs font-semibold text-[#CD7F32] mb-1">BRONZE AUTHENTICITY</div>
+                        <div className="text-xs text-gray-600">
+                          {((reviews.filter(r => (r.rating || 0) >= 4).length / reviews.length) * 100).toFixed(1)}%
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
+                {/* Customer Photos & Videos Section */}
+                <div className="mb-6 pt-6 border-t border-gray-200">
+                  <h4 className="font-semibold text-[#1a472a] mb-4 text-sm">Customer photos & videos</h4>
+                  <div className="grid grid-cols-4 gap-3">
+                    {/* Placeholder for customer photos - can be populated from reviews if they have images */}
+                    {reviews.filter(r => r.image).slice(0, 4).map((review, idx) => (
+                      <div key={idx} className="aspect-square bg-gray-100 rounded-md overflow-hidden">
+                        <Image
+                          src={review.image}
+                          alt="Customer photo"
+                          fill
+                          className="object-cover"
+                          sizes="25vw"
+                        />
+                      </div>
+                    ))}
+                    {reviews.filter(r => r.image).length === 0 && (
+                      <>
+                        {[...Array(4)].map((_, idx) => (
+                          <div key={idx} className="aspect-square bg-gray-100 rounded-md flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">No photos yet</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Individual Reviews */}
                 {reviews.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-6 pt-6 border-t border-gray-200">
                     {reviews.map((review, index) => (
-                      <div key={index} className="border border-gray-200 rounded-md p-3">
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-black text-sm">{review.name}</span>
-                            <div className="flex">
+                      <div key={index} className="pb-4 border-b border-gray-200 last:border-0">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-[#1a472a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                              {review.name?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-[#1a472a] text-sm">{review.name || 'Anonymous'}</div>
+                              <div className="flex items-center gap-1 mt-1">
                               {[...Array(5)].map((_, i) => (
-                                <span key={i} className={`text-sm ${i < review.rating ? 'text-yellow-400' : 'text-gray-300'}`}>★</span>
+                                  <span key={i} className={`text-sm ${i < (review.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                                    ★
+                                  </span>
                               ))}
                             </div>
                           </div>
-                          <span className="text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString()}</span>
                         </div>
-                        <p className="text-black text-xs">{review.text}</p>
+                          <span className="text-xs text-gray-500">
+                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recently'}
+                          </span>
+                        </div>
+                        {review.text && (
+                          <p className="text-gray-700 text-sm leading-relaxed ml-[52px]">{review.text}</p>
+                        )}
                       </div>
                     ))}
                   </div>
                 ) : (
-                    <p className="text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
+                  <div className="text-center py-8">
+                    <p className="text-gray-500 text-sm mb-4">No reviews yet. Be the first to review this product!</p>
+                    <button
+                      onClick={() => setShowReviewModal(true)}
+                      className="px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors"
+                    >
+                      Write a Review
+                    </button>
+                  </div>
                 )}
               </div>
             )}
