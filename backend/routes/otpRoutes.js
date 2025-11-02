@@ -14,6 +14,28 @@ router.post('/send-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
+    // Check email configuration FIRST before generating OTP
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+      console.error('\n❌ EMAIL CONFIGURATION MISSING:');
+      console.error(`   EMAIL_USER: ${process.env.EMAIL_USER ? 'Set' : '❌ MISSING'}`);
+      console.error(`   EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? 'Set' : '❌ MISSING'}`);
+      console.error('   Email cannot be sent. Check backend/.env file\n');
+      
+      // Still generate OTP so user can use it from console
+      const otp = crypto.randomInt(100000, 999999).toString();
+      otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
+      
+      console.log(`✅ OTP generated (no email): ${email}: ${otp}`);
+      
+      return res.json({ 
+        message: 'OTP generated but email not configured',
+        expiresIn: 300,
+        debugOtp: otp, // Always include OTP in response
+        warning: 'Email not configured. OTP available in backend console.',
+        emailConfigured: false
+      });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser)
       return res.status(400).json({ error: 'User with this email already exists' });
@@ -21,7 +43,7 @@ router.post('/send-otp', async (req, res) => {
     const otp = crypto.randomInt(100000, 999999).toString();
     otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
 
-    console.log(`✅ OTP generated for ${email}: ${otp}`); // Server log
+    console.log(`\n✅ OTP generated for ${email}: ${otp}`); // Server log
     console.log(`🔐 OTP stored in memory. Expires in 5 minutes.`);
 
     const html = `
@@ -42,31 +64,58 @@ router.post('/send-otp', async (req, res) => {
       note: 'Check console for OTP. Email delivery may take time or fail.'
     });
 
-    // Send email in background (non-blocking)
-    console.log(`📧 Attempting to send OTP email to ${email}...`);
-    console.log(`🔐 OTP to send: ${otp}`);
+    // Send email in background (non-blocking) but with better error handling
+    console.log(`\n📧 ========================================`);
+    console.log(`📧 SENDING OTP EMAIL`);
+    console.log(`📧 ========================================`);
+    console.log(`📧 To: ${email}`);
+    console.log(`📧 From: ${process.env.EMAIL_USER}`);
+    console.log(`📧 OTP: ${otp}`);
+    console.log(`📧 ========================================\n`);
     
     sendEmail(email, 'Verify Your Email - Dfood', html)
       .then((result) => {
         if (result.success) {
-          console.log(`✅ OTP email sent successfully to ${email}`);
-          console.log(`📬 Message ID: ${result.info?.messageId || 'N/A'}`);
+          console.log(`\n✅ ========================================`);
+          console.log(`✅ OTP EMAIL SENT SUCCESSFULLY!`);
+          console.log(`✅ ========================================`);
+          console.log(`✅ To: ${email}`);
+          console.log(`✅ Message ID: ${result.info?.messageId || 'N/A'}`);
           if (result.info?.response) {
-            console.log(`📬 Server response: ${result.info.response}`);
+            console.log(`✅ Server Response: ${result.info.response}`);
           }
+          console.log(`✅ ========================================\n`);
         } else {
-          console.error(`❌ FAILED to send OTP email to ${email}`);
-          console.error(`❌ Error message: ${result.error}`);
+          console.error(`\n❌ ========================================`);
+          console.error(`❌ FAILED TO SEND OTP EMAIL`);
+          console.error(`❌ ========================================`);
+          console.error(`❌ To: ${email}`);
+          console.error(`❌ Error: ${result.error}`);
           if (result.fullError) {
-            console.error(`❌ Full error object:`, result.fullError);
+            console.error(`❌ Full Error:`, result.fullError);
+            if (result.fullError.code === 'EAUTH') {
+              console.error(`\n   🔐 AUTHENTICATION ERROR DETECTED:`);
+              console.error(`   - Check EMAIL_USER and EMAIL_PASSWORD in .env`);
+              console.error(`   - Must use Gmail App Password (16 chars, no spaces)`);
+              console.error(`   - Enable 2-Step Verification on Google Account`);
+              console.error(`   - Get App Password from: https://myaccount.google.com/apppasswords\n`);
+            }
           }
-          console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
+          console.error(`⚠️ IMPORTANT: OTP is still valid: ${otp}`);
+          console.error(`   User can enter this OTP manually to proceed`);
+          console.error(`❌ ========================================\n`);
         }
       })
       .catch((error) => {
-        console.error(`❌ EXCEPTION sending OTP email to ${email}:`, error.message);
-        console.error(`❌ Full exception:`, error);
-        console.error(`⚠️ USER CAN STILL USE OTP FROM CONSOLE: ${otp}`);
+        console.error(`\n❌ ========================================`);
+        console.error(`❌ EXCEPTION SENDING OTP EMAIL`);
+        console.error(`❌ ========================================`);
+        console.error(`❌ To: ${email}`);
+        console.error(`❌ Exception: ${error.message}`);
+        console.error(`❌ Full Exception:`, error);
+        console.error(`⚠️ IMPORTANT: OTP is still valid: ${otp}`);
+        console.error(`   User can enter this OTP manually to proceed`);
+        console.error(`❌ ========================================\n`);
       });
   } catch (error) {
     console.error('❌ Error sending OTP:', error.message);
