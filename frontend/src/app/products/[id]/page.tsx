@@ -38,11 +38,18 @@ export default function ProductDetailPage() {
   });
   const [offersExpanded, setOffersExpanded] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showWriteReview, setShowWriteReview] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
+  const [reviewTitle, setReviewTitle] = useState('');
   const [reviewText, setReviewText] = useState('');
   const [reviewName, setReviewName] = useState('');
+  const [reviewEmail, setReviewEmail] = useState('');
+  const [reviewImages, setReviewImages] = useState<File[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [showSharePopup, setShowSharePopup] = useState(false);
+  const [reviewSearch, setReviewSearch] = useState('');
+  const [reviewSort, setReviewSort] = useState('mostRecent');
   const [showImageZoom, setShowImageZoom] = useState(false);
   const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
   const [isDesktop, setIsDesktop] = useState(false);
@@ -273,49 +280,64 @@ export default function ProductDetailPage() {
   };
 
   const handleSubmitReview = async () => {
-    if (!reviewName || !reviewText || reviewRating === 0) return;
+    if (!reviewName || !reviewText || !reviewEmail || reviewRating === 0) {
+      toast.error('Please fill all required fields');
+      return;
+    }
     
     setSubmittingReview(true);
     try {
+      // Auto-fill title with product name if empty
+      const finalTitle = reviewTitle || product.name;
+      
       // Try to submit to backend API first
       try {
+        const formData = new FormData();
+        formData.append('productId', product._id || product.id);
+        formData.append('name', reviewName);
+        formData.append('email', reviewEmail);
+        formData.append('title', finalTitle);
+        formData.append('rating', reviewRating.toString());
+        formData.append('text', reviewText);
+        
+        // Append images if any
+        reviewImages.forEach((image, index) => {
+          formData.append(`images`, image);
+        });
+
+        // For now, use JSON API (images will need multipart form endpoint)
         const response = await adminApi.createReview({
           productId: product._id || product.id,
           name: reviewName,
+          email: reviewEmail,
+          title: finalTitle,
           rating: reviewRating,
           text: reviewText
         });
         
         if (response.data.review) {
-          setReviews(prev => [response.data.review, ...prev]);
+          // Review submitted, will show after admin approval
+          toast.success('Review submitted successfully! It will be visible after admin approval.', {
+            icon: '⭐',
+            duration: 4000
+          });
         }
-      } catch (apiError) {
-        console.log('API submission failed, using local storage:', apiError);
-        // Fallback to local storage if API fails
-        const newReview = {
-          name: reviewName,
-          rating: reviewRating,
-          text: reviewText,
-          createdAt: new Date().toISOString()
-        };
-        
-        setReviews(prev => [newReview, ...prev]);
-        
-        // Save to localStorage as backup
-        const existingReviews = JSON.parse(localStorage.getItem(`reviews_${product._id || product.id}`) || '[]');
-        existingReviews.unshift(newReview);
-        localStorage.setItem(`reviews_${product._id || product.id}`, JSON.stringify(existingReviews));
+      } catch (apiError: any) {
+        console.log('API submission failed:', apiError);
+        toast.error(apiError.response?.data?.error || 'Failed to submit review. Please try again.');
+        return;
       }
       
+      // Reset form
       setReviewName('');
+      setReviewEmail('');
+      setReviewTitle('');
       setReviewText('');
       setReviewRating(0);
+      setReviewImages([]);
+      setShowWriteReview(false);
       setShowReviewModal(false);
       
-      toast.success('Review submitted successfully! It will be visible after admin approval.', {
-        icon: '⭐',
-        duration: 4000
-      });
     } catch (error) {
       console.error('Error submitting review:', error);
       toast.error('Failed to submit review. Please try again.');
@@ -323,6 +345,68 @@ export default function ProductDetailPage() {
       setSubmittingReview(false);
     }
   };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setReviewImages(prev => [...prev, ...files]);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setReviewImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Filter and sort reviews (only approved reviews)
+  const filteredReviews = approvedReviews.filter(review => {
+    if (!reviewSearch) return true;
+    const searchLower = reviewSearch.toLowerCase();
+    return (
+      review.name?.toLowerCase().includes(searchLower) ||
+      review.text?.toLowerCase().includes(searchLower) ||
+      review.title?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    if (reviewSort === 'mostRecent') {
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    } else if (reviewSort === 'highestRated') {
+      return (b.rating || 0) - (a.rating || 0);
+    } else if (reviewSort === 'lowestRated') {
+      return (a.rating || 0) - (b.rating || 0);
+    }
+    return 0;
+  });
+
+  // Filter only approved reviews
+  const approvedReviews = reviews.filter(r => r.isApproved !== false);
+
+  // Get all customer images from approved reviews
+  const allCustomerImages = approvedReviews
+    .filter(r => r.image || (r.images && r.images.length > 0))
+    .flatMap(r => r.images || (r.image ? [r.image] : []))
+    .filter(Boolean);
+
+  // Close share popup when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSharePopup) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.share-popup-container')) {
+          setShowSharePopup(false);
+        }
+      }
+    };
+
+    if (showSharePopup) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSharePopup]);
 
   return (
     <div className="min-h-screen bg-white py-4">
@@ -453,7 +537,7 @@ export default function ProductDetailPage() {
               
               {/* Subtitle/Badge */}
               {product.tags?.includes('Organic') && (
-                <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
                     {product.category || 'Organic'} | {product.tags?.join(' • ') || 'Premium Quality'}
                   </span>
@@ -501,9 +585,9 @@ export default function ProductDetailPage() {
               </div>
               {product.originalPrice && product.originalPrice > currentPrice && (
                 <div className="text-sm text-green-700 font-semibold mb-2">
-                  Save ₹{product.originalPrice - currentPrice}
-                </div>
-              )}
+                      Save ₹{product.originalPrice - currentPrice}
+                    </div>
+                )}
               <div className="text-sm text-gray-600">
                 MRP (Incl. of all taxes)
               </div>
@@ -560,24 +644,24 @@ export default function ProductDetailPage() {
                     const variantPrice = variant.price || currentPrice;
                     const isSelected = selectedVariant?.size === variant.size;
                     return (
-                      <button
-                        key={index}
-                        onClick={() => setSelectedVariant(variant)}
+                    <button
+                      key={index}
+                      onClick={() => setSelectedVariant(variant)}
                         className={`relative p-4 rounded-lg border-2 text-left transition-all ${
                           isSelected
                             ? 'border-[#1a472a] bg-[#1a472a]/5'
-                            : 'border-gray-300 hover:border-gray-400'
-                        }`}
-                      >
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
                         <div className="font-bold text-base text-black mb-1">{variant.size || variant.name}</div>
                         <div className="font-semibold text-lg text-[#1a472a] mb-1">₹{variantPrice}</div>
                         <div className="text-xs text-gray-500">(Rs.{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</div>
                         {isSelected && (
                           <div className="absolute top-2 right-2">
                             <CheckCircleIcon className="w-5 h-5 text-[#1a472a]" />
-                          </div>
-                        )}
-                      </button>
+                        </div>
+                      )}
+                    </button>
                     );
                   })}
                 </div>
@@ -651,81 +735,81 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Share */}
-            <div className="pt-3 border-t border-gray-200">
+            {/* Share - Images 4 & 5 Reference (Popup Style) */}
+            <div className="pt-3 border-t border-gray-200 relative share-popup-container">
               <div className="flex items-center gap-3">
                 <span className="font-semibold text-black text-sm">Share:</span>
-                <div className="flex gap-2">
-                  {/* Facebook */}
-                  <button
-                    onClick={() => {
-                      const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
-                      window.open(url, '_blank', 'width=600,height=400');
-                    }}
-                    className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center hover:bg-[#166FE5] transition-colors shadow-md hover:shadow-lg"
-                    title="Share on Facebook"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
+                <button
+                  onClick={() => setShowSharePopup(!showSharePopup)}
+                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  <ShareIcon className="w-5 h-5" />
+                  <span className="text-sm">Share</span>
+                  </button>
+              </div>
+              
+              {/* Share Popup - Opens below button */}
+              {showSharePopup && (
+                <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-[200px]">
+                  <div className="flex items-center gap-6">
+                    {/* Facebook */}
+                    <button
+                      onClick={() => {
+                        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`;
+                        window.open(url, '_blank', 'width=600,height=400');
+                        setShowSharePopup(false);
+                      }}
+                      className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity"
+                      title="Share on Facebook"
+                    >
+                      <div className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center bg-white">
+                        <svg className="w-6 h-6" fill="#1877F2" viewBox="0 0 24 24">
+                          <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-700">Facebook</span>
                   </button>
 
-                  {/* Instagram */}
-                  <button
-                    onClick={() => {
-                      // Instagram doesn't support direct sharing, so we'll copy link to clipboard
-                      navigator.clipboard.writeText(window.location.href);
-                      toast.success('Link copied! Paste it on Instagram', { icon: '📋' });
-                    }}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-[#833AB4] via-[#FD1D1D] to-[#FCB045] text-white flex items-center justify-center hover:opacity-90 transition-opacity shadow-md hover:shadow-lg"
-                    title="Share on Instagram"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
+                    {/* Twitter/X */}
+                    <button
+                      onClick={() => {
+                        const text = `Check out ${product.name} from Dfoods`;
+                        const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+                        window.open(url, '_blank', 'width=600,height=400');
+                        setShowSharePopup(false);
+                      }}
+                      className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity"
+                      title="Share on Twitter"
+                    >
+                      <div className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center bg-white">
+                        <svg className="w-6 h-6" fill="#1DA1F2" viewBox="0 0 24 24">
+                          <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-700">Twitter</span>
                   </button>
 
-                  {/* WhatsApp */}
-                  <button
-                    onClick={() => {
-                      const text = `Check out this product: ${product.name}\n${window.location.href}`;
-                      const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-                      window.open(url, '_blank');
-                    }}
-                    className="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center hover:bg-[#20BA5A] transition-colors shadow-md hover:shadow-lg"
-                    title="Share on WhatsApp"
-                  >
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
-                    </svg>
-                  </button>
-
-                  {/* Share Icon (Native Share API) */}
-                  <button
-                    onClick={async () => {
-                      if (navigator.share) {
-                        try {
-                          await navigator.share({
-                            title: product.name,
-                            text: `Check out ${product.name} from Dfoods`,
-                            url: window.location.href,
-                          });
-                        } catch (err) {
-                          console.log('Error sharing', err);
-                        }
-                      } else {
-                        // Fallback: copy to clipboard
-                        navigator.clipboard.writeText(window.location.href);
-                        toast.success('Link copied to clipboard!', { icon: '📋' });
-                      }
-                    }}
-                    className="w-10 h-10 rounded-full bg-gray-700 text-white flex items-center justify-center hover:bg-gray-800 transition-colors shadow-md hover:shadow-lg"
-                    title="Share"
-                  >
-                    <ShareIcon className="w-5 h-5" />
+                    {/* Email */}
+                    <button
+                      onClick={() => {
+                        const subject = `Check out ${product.name}`;
+                        const body = `I found this amazing product: ${product.name}\n\n${window.location.href}`;
+                        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                        setShowSharePopup(false);
+                      }}
+                      className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity"
+                      title="Share via Email"
+                    >
+                      <div className="w-12 h-12 rounded-full border-2 border-gray-200 flex items-center justify-center bg-white">
+                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <span className="text-xs text-gray-700">Email</span>
                   </button>
                 </div>
               </div>
+              )}
             </div>
           </div>
         </div>
@@ -854,13 +938,13 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-          {/* FAQ Section - Reference Style */}
+          {/* FAQ Section - Centered Heading with Collapsible Questions */}
           <div className="border-b border-gray-200">
             <button
               onClick={() => setExpandedSections(prev => ({ ...prev, FAQ: !prev.FAQ }))}
               className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-bold text-[#1a472a] text-base">FAQ</span>
+              <span className="font-bold text-[#1a472a] text-base w-full text-center">FAQ</span>
               {expandedSections.FAQ ? (
                 <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
               ) : (
@@ -868,7 +952,7 @@ export default function ProductDetailPage() {
               )}
             </button>
             {expandedSections.FAQ && (
-              <div className="px-4 pb-6">
+              <div className="px-4 pb-6 pt-4">
                 <div className="space-y-0">
                   {/* FAQ Question 1 */}
                   <div className="border-b border-gray-200 py-4">
@@ -934,36 +1018,39 @@ export default function ProductDetailPage() {
             )}
           </div>
 
-          {/* Reviews Section - Reference Style */}
+          {/* Reviews Section - Image 1 Reference Style */}
               <div>
-            <button
+                  <button
               onClick={() => setExpandedSections(prev => ({ ...prev, Reviews: !prev.Reviews }))}
               className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
             >
-              <span className="font-bold text-[#1a472a] text-base">REVIEWS ({reviews.length})</span>
+              <span className="font-bold text-[#1a472a] text-base">REVIEWS ({approvedReviews.length})</span>
               {expandedSections.Reviews ? (
                 <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
               ) : (
                 <PlusIcon className="w-5 h-5 text-[#1a472a]" />
               )}
-            </button>
+                  </button>
             {expandedSections.Reviews && (
               <div className="px-4 pb-6">
-                {/* Overall Rating Section */}
-                <div className="mb-6 flex flex-col md:flex-row md:items-start gap-6">
-                  {/* Left: Overall Rating */}
-                  <div className="flex-shrink-0">
-                    <div className="text-center md:text-left">
-                      <div className="text-4xl font-bold text-[#1a472a] mb-2">
-                        {reviews.length > 0 
-                          ? (reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length).toFixed(2)
+                {/* Reviews Header - Image 1 Layout */}
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews</h3>
+                  
+                  {/* Three Column Layout: Left (Rating) | Center (Star Breakdown) | Right (Write Review) */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+                    {/* Left: Overall Rating */}
+                    <div className="flex flex-col items-center md:items-start">
+                      <div className="text-5xl font-bold text-[#1a472a] mb-2">
+                        {approvedReviews.length > 0 
+                          ? (approvedReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / approvedReviews.length).toFixed(2)
                           : '0.00'
                         }
                       </div>
-                      <div className="flex items-center justify-center md:justify-start mb-2">
+                      <div className="flex items-center gap-1 mb-2">
                         {[...Array(5)].map((_, i) => {
-                          const avgRating = reviews.length > 0 
-                            ? reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length 
+                          const avgRating = approvedReviews.length > 0 
+                            ? approvedReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / approvedReviews.length 
                             : 0;
                           return (
                             <span key={i} className={`text-2xl ${i < Math.floor(avgRating) ? 'text-yellow-400' : i < avgRating ? 'text-yellow-300' : 'text-gray-300'}`}>
@@ -973,131 +1060,306 @@ export default function ProductDetailPage() {
                         })}
                       </div>
                       <div className="text-sm text-gray-600">
-                        Based on {reviews.length} review{reviews.length !== 1 ? 's' : ''}
+                        Based on {approvedReviews.length} review{approvedReviews.length !== 1 ? 's' : ''}
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Right: Star Rating Breakdown */}
-                  <div className="flex-1 space-y-2">
-                    {[5, 4, 3, 2, 1].map((stars) => {
-                      const count = reviews.filter(r => (r.rating || 0) === stars).length;
-                      const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
-                      return (
-                        <div key={stars} className="flex items-center gap-3">
-                          <div className="flex items-center gap-1 min-w-[80px]">
-                            <span className="text-sm text-[#1a472a] font-semibold">{stars}</span>
-                            <span className="text-yellow-400 text-sm">★</span>
-                            <span className="text-xs text-gray-600">({count})</span>
-                          </div>
-                          <div className="flex-1 h-3 bg-gray-200 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full rounded-full ${percentage > 50 ? 'bg-[#1a472a]' : 'bg-gray-300'}`}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                          <div className="text-xs text-gray-600 min-w-[35px] text-right">
-                            {Math.round(percentage)}%
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {/* Write Review Button & Authenticity Badge */}
-                  <div className="flex flex-col items-end gap-4 flex-shrink-0">
-                    <button
-                      onClick={() => setShowReviewModal(true)}
-                      className="px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors whitespace-nowrap"
-                    >
-                      Write a review
-                    </button>
-                    {/* Authenticity Badge */}
-                    {reviews.length >= 10 && (
-                      <div className="text-center">
-                        <div className="w-20 h-20 mx-auto mb-2 relative">
-                          <svg viewBox="0 0 100 100" className="w-full h-full">
-                            <circle cx="50" cy="50" r="45" fill="none" stroke="#CD7F32" strokeWidth="8"/>
-                            <path d="M30 50 L45 65 L70 35" stroke="#CD7F32" strokeWidth="6" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-                          </svg>
-                        </div>
-                        <div className="text-xs font-semibold text-[#CD7F32] mb-1">BRONZE AUTHENTICITY</div>
-                        <div className="text-xs text-gray-600">
-                          {((reviews.filter(r => (r.rating || 0) >= 4).length / reviews.length) * 100).toFixed(1)}%
-                        </div>
-                      </div>
-                    )}
-                  </div>
                 </div>
                 
-                {/* Customer Photos & Videos Section */}
-                <div className="mb-6 pt-6 border-t border-gray-200">
-                  <h4 className="font-semibold text-[#1a472a] mb-4 text-sm">Customer photos & videos</h4>
-                  <div className="grid grid-cols-4 gap-3">
-                    {/* Placeholder for customer photos - can be populated from reviews if they have images */}
-                    {reviews.filter(r => r.image).slice(0, 4).map((review, idx) => (
-                      <div key={idx} className="aspect-square bg-gray-100 rounded-md overflow-hidden">
-                        <Image
-                          src={review.image}
-                          alt="Customer photo"
-                          fill
-                          className="object-cover"
-                          sizes="25vw"
-                        />
-                      </div>
-                    ))}
-                    {reviews.filter(r => r.image).length === 0 && (
-                      <>
-                        {[...Array(4)].map((_, idx) => (
-                          <div key={idx} className="aspect-square bg-gray-100 rounded-md flex items-center justify-center">
-                            <span className="text-gray-400 text-xs">No photos yet</span>
+                    {/* Center: Star Rating Breakdown */}
+                    <div className="space-y-2">
+                      {[5, 4, 3, 2, 1].map((stars) => {
+                        const count = approvedReviews.filter(r => (r.rating || 0) === stars).length;
+                        const percentage = approvedReviews.length > 0 ? (count / approvedReviews.length) * 100 : 0;
+                        return (
+                          <div key={stars} className="flex items-center gap-2">
+                            <div className="flex items-center gap-1 min-w-[60px]">
+                              <span className="text-sm text-[#1a472a] font-semibold">{stars}</span>
+                              <span className="text-yellow-400 text-xs">★</span>
+                            </div>
+                            <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                              <div 
+                                className={`h-full rounded-full ${percentage > 50 ? 'bg-[#1a472a]' : 'bg-gray-300'}`}
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <div className="text-xs text-gray-600 min-w-[30px] text-right">
+                              {count}
+                            </div>
                           </div>
-                        ))}
-                      </>
-                    )}
+                        );
+                      })}
+                    </div>
+
+                    {/* Right: Write Review Button */}
+                    <div className="flex justify-center md:justify-end">
+                      <button
+                        onClick={() => {
+                          setShowWriteReview(!showWriteReview);
+                          if (!showWriteReview && product) {
+                            setReviewTitle(product.name);
+                          }
+                        }}
+                        className="px-6 py-3 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors whitespace-nowrap"
+                      >
+                        Write a review
+                      </button>
+                    </div>
                   </div>
                 </div>
 
-                {/* Individual Reviews */}
-                {reviews.length > 0 ? (
-                  <div className="space-y-6 pt-6 border-t border-gray-200">
-                    {reviews.map((review, index) => (
-                      <div key={index} className="pb-4 border-b border-gray-200 last:border-0">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-[#1a472a] rounded-full flex items-center justify-center text-white font-semibold text-sm">
-                              {review.name?.charAt(0)?.toUpperCase() || 'U'}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-[#1a472a] text-sm">{review.name || 'Anonymous'}</div>
-                              <div className="flex items-center gap-1 mt-1">
+                {/* Inline Write Review Form - Image 2 Reference */}
+                {showWriteReview && (
+                  <div className="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+                    <h4 className="text-lg font-bold text-[#1a472a] mb-4">Write a review</h4>
+                    
+                  <div className="space-y-4">
+                      {/* Star Rating */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Rating</label>
+                        <div className="flex gap-1">
                               {[...Array(5)].map((_, i) => (
-                                  <span key={i} className={`text-sm ${i < (review.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                                    ★
-                                  </span>
+                            <button
+                              key={i}
+                              type="button"
+                              onClick={() => setReviewRating(i + 1)}
+                              className={`text-3xl transition-transform hover:scale-110 ${
+                                i < reviewRating ? 'text-yellow-400' : 'text-gray-300'
+                              }`}
+                            >
+                              ★
+                            </button>
                               ))}
                             </div>
                           </div>
+
+                      {/* Review Title (Auto-filled with product name) */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Review Title <span className="text-gray-500 text-xs">(100)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={reviewTitle}
+                          onChange={(e) => setReviewTitle(e.target.value)}
+                          maxLength={100}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                          placeholder="Give your review a title"
+                        />
                         </div>
-                          <span className="text-xs text-gray-500">
-                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : 'Recently'}
+
+                      {/* Review Content */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Review content</label>
+                        <textarea
+                          value={reviewText}
+                          onChange={(e) => setReviewText(e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a] min-h-[120px]"
+                          placeholder="Start writing here..."
+                        />
+                      </div>
+
+                      {/* Picture/Video Upload (Optional) */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Picture/Video <span className="text-gray-500 text-xs">(optional)</span>
+                        </label>
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#1a472a] transition-colors">
+                          <input
+                            type="file"
+                            id="review-images"
+                            accept="image/*,video/*"
+                            multiple
+                            onChange={handleImageUpload}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor="review-images"
+                            className="cursor-pointer flex flex-col items-center"
+                          >
+                            <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                            <span className="text-sm text-gray-600">Click to upload images or videos</span>
+                          </label>
+                        </div>
+                        {reviewImages.length > 0 && (
+                          <div className="mt-2 flex flex-wrap gap-2">
+                            {reviewImages.map((img, idx) => (
+                              <div key={idx} className="relative w-20 h-20 rounded-md overflow-hidden border border-gray-300">
+                                <Image
+                                  src={URL.createObjectURL(img)}
+                                  alt={`Preview ${idx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                                <button
+                                  onClick={() => removeImage(idx)}
+                                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                                >
+                                  ×
+                                </button>
+                      </div>
+                    ))}
+                  </div>
+                        )}
+                      </div>
+
+                      {/* Display Name */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                          Display name <span className="text-gray-500 text-xs font-normal">(displayed publicly like John Smith)</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={reviewName}
+                          onChange={(e) => setReviewName(e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                          placeholder="Display name"
+                          required
+                        />
+                      </div>
+
+                      {/* Email Address */}
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>
+                        <input
+                          type="email"
+                          value={reviewEmail}
+                          onChange={(e) => setReviewEmail(e.target.value)}
+                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                          placeholder="Your email address"
+                          required
+                        />
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => {
+                            setShowWriteReview(false);
+                            setReviewName('');
+                            setReviewEmail('');
+                            setReviewTitle('');
+                            setReviewText('');
+                            setReviewRating(0);
+                            setReviewImages([]);
+                          }}
+                          className="flex-1 px-6 py-2.5 border-2 border-gray-300 text-gray-700 text-sm font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleSubmitReview}
+                          disabled={!reviewName || !reviewEmail || !reviewText || reviewRating === 0 || submittingReview}
+                          className={`flex-1 px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-lg hover:bg-[#153a22] transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          {submittingReview ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Customer Photos & Videos Section - Image 3 Reference */}
+                {allCustomerImages.length > 0 && (
+                  <div className="mb-6 pt-6 border-t border-gray-200">
+                    <h4 className="font-semibold text-[#1a472a] mb-4 text-sm">Customer photos & videos</h4>
+                    <div className="grid grid-cols-4 gap-3">
+                      {allCustomerImages.slice(0, 4).map((img, idx) => (
+                        <div key={idx} className="aspect-square bg-gray-100 rounded-md overflow-hidden relative">
+                          <Image
+                            src={typeof img === 'string' ? img : URL.createObjectURL(img)}
+                            alt="Customer photo"
+                            fill
+                            className="object-cover"
+                            sizes="25vw"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Search and Sort - Image 3 Reference */}
+                {approvedReviews.length > 0 && (
+                  <div className="mb-4 pt-4 border-t border-gray-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
+                    {/* Search Bar */}
+                    <div className="flex-1 w-full sm:max-w-md">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={reviewSearch}
+                          onChange={(e) => setReviewSearch(e.target.value)}
+                          placeholder="Search"
+                          className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                        />
+                        <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    {/* Sort Dropdown */}
+                    <div className="relative">
+                      <select
+                        value={reviewSort}
+                        onChange={(e) => setReviewSort(e.target.value)}
+                        className="px-4 py-2 pr-8 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a] appearance-none bg-white cursor-pointer"
+                      >
+                        <option value="mostRecent">Most Recent</option>
+                        <option value="highestRated">Highest Rated</option>
+                        <option value="lowestRated">Lowest Rated</option>
+                      </select>
+                      <svg className="absolute right-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+
+                {/* Individual Reviews - Image 3 Reference */}
+                {sortedReviews.length > 0 ? (
+                  <div className="space-y-6">
+                    {sortedReviews.map((review, index) => (
+                      <div key={index} className="pb-6 border-b border-gray-200 last:border-0">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="w-12 h-12 bg-[#1a472a] rounded-full flex items-center justify-center text-white font-semibold text-base flex-shrink-0">
+                              {review.name?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="font-semibold text-[#1a472a] text-sm">{review.name || 'Anonymous'}</span>
+                                <span className="bg-green-600 text-white text-xs px-2 py-0.5 rounded">Verified</span>
+                              </div>
+                              {review.title && (
+                                <div className="text-sm font-medium text-gray-700 mb-1">{review.title}</div>
+                              )}
+                              <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <span key={i} className={`text-sm ${i < (review.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
+                                    ★
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-xs text-gray-500 whitespace-nowrap">
+                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'Recently'}
                           </span>
                         </div>
                         {review.text && (
-                          <p className="text-gray-700 text-sm leading-relaxed ml-[52px]">{review.text}</p>
+                          <p className="text-gray-700 text-sm leading-relaxed ml-16">{review.text}</p>
                         )}
                       </div>
                     ))}
                   </div>
-                ) : (
+                ) : approvedReviews.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-gray-500 text-sm mb-4">No reviews yet. Be the first to review this product!</p>
-                    <button
-                      onClick={() => setShowReviewModal(true)}
-                      className="px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors"
-                    >
-                      Write a Review
-                    </button>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 text-sm">No reviews match your search.</p>
                   </div>
                 )}
               </div>
@@ -1105,13 +1367,12 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products */}
+        {/* Recommended Products - After Reviews */}
         {relatedProducts.length > 0 && (
-          <div className="mt-12 text-center">
+          <div className="mt-12 mb-8">
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-black mb-2">Related Products</h2>
-              <div className="w-16 h-1 bg-amber-600 mx-auto rounded-full"></div>
-              <p className="text-sm text-gray-600 mt-3">Discover more amazing jaggery products</p>
+              <h2 className="text-2xl font-bold text-[#1a472a] mb-2 text-center">Recommended Products</h2>
+              <div className="w-16 h-1 bg-[#1a472a] mx-auto rounded-full"></div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
               {relatedProducts.map((relProduct: any) => (
