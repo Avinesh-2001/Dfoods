@@ -1051,12 +1051,11 @@ export default function ProductDetailPage() {
 
           {/* Reviews Section - Always Visible, Centered Heading */}
           <div className="py-6">
-            <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews ({approvedReviews.length})</h3>
+            <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews</h3>
             
             <div className="px-4 pb-6">
                 {/* Reviews Header - Image 1 Layout */}
                 <div className="mb-8">
-                  <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews</h3>
                   
                   {/* Three Column Layout: Left (Rating) | Center (Star Breakdown) | Right (Write Review) */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
