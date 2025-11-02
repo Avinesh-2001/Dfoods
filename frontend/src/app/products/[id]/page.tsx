@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
-import { MinusIcon, PlusIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
-import { ShareIcon, HeartIcon } from '@heroicons/react/24/outline';
+import { MinusIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
+import { ShareIcon, HeartIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import ProductCard from '@/components/ui/ProductCard';
 import { adminApi } from '@/lib/api/api';
@@ -25,7 +25,13 @@ export default function ProductDetailPage() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'Description' | 'Ingredients' | 'Product Information' | 'FAQ' | 'Reviews'>('Description');
+  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
+    Description: false,
+    Ingredients: false,
+    'Product Information': false,
+    FAQ: false,
+    Reviews: false,
+  });
   const [offersExpanded, setOffersExpanded] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
@@ -132,7 +138,7 @@ export default function ProductDetailPage() {
         adminApi.getProducts()
           .then((allRes) => {
             const productsData = allRes.data?.products || allRes.data;
-            setAllProducts(Array.isArray(productsData) ? productsData : []);
+        setAllProducts(Array.isArray(productsData) ? productsData : []);
           })
           .catch((err) => {
             console.warn('Failed to fetch all products:', err);
@@ -150,27 +156,27 @@ export default function ProductDetailPage() {
         try {
           const fallbackProductId = typeof params?.id === 'string' ? params.id : String(params?.id || '');
           const mockProduct = mockProducts.find(p => String(p.id) === fallbackProductId);
+        
+        if (mockProduct) {
+          console.log('Using mock data for product:', mockProduct.name);
+          setProduct(mockProduct);
+          setAllProducts(mockProducts);
           
-          if (mockProduct) {
-            console.log('Using mock data for product:', mockProduct.name);
-            setProduct(mockProduct);
-            setAllProducts(mockProducts);
-            
-            // Set up mock variants if needed
-            if (mockProduct.sizes && mockProduct.sizes.length > 0) {
-              const mockVariants = mockProduct.sizes.map((size: string, index: number) => ({
-                size,
-                price: mockProduct.price + (index * 100), // Mock price variation
-                sku: `${mockProduct.id}-${size.toLowerCase()}`
-              }));
-              setSelectedVariant(mockVariants[0]);
-            }
-            
+          // Set up mock variants if needed
+          if (mockProduct.sizes && mockProduct.sizes.length > 0) {
+            const mockVariants = mockProduct.sizes.map((size: string, index: number) => ({
+              size,
+              price: mockProduct.price + (index * 100), // Mock price variation
+              sku: `${mockProduct.id}-${size.toLowerCase()}`
+            }));
+            setSelectedVariant(mockVariants[0]);
+          }
+          
             // Fetch reviews from API (only approved reviews are returned)
             fetchReviews(fallbackProductId).catch(err => {
               console.warn('Failed to fetch reviews:', err);
             });
-          } else {
+            } else {
             setError('Product not found. Please try again later.');
           }
         } catch (fallbackError: any) {
@@ -183,7 +189,7 @@ export default function ProductDetailPage() {
     };
     
     if (productId) {
-      fetchData();
+    fetchData();
     } else {
       setError('Invalid product ID');
       setLoading(false);
@@ -249,7 +255,10 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     handleAddToCart();
-    router.push('/cart');
+    // Small delay to ensure item is added to cart before redirect
+    setTimeout(() => {
+      router.push('/checkout');
+    }, 300);
   };
 
   const handleQuantityChange = (newQuantity: number) => {
@@ -604,7 +613,15 @@ export default function ProductDetailPage() {
               >
                 BUY NOW
               </button>
-              <button className="p-2.5 border-2 border-gray-300 rounded-md hover:border-amber-600 transition-colors">
+              <button 
+                onClick={() => {
+                  // TODO: Implement wishlist functionality
+                  // For now, redirect to wishlist page
+                  router.push('/wishlist');
+                }}
+                className="p-2.5 border-2 border-gray-300 rounded-md hover:border-amber-600 transition-colors"
+                title="Add to Wishlist"
+              >
                 <HeartIcon className="w-4 h-4" />
               </button>
             </div>
@@ -688,42 +705,72 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Product Details Tabs - working tabs */}
+        {/* Product Details - Collapsible Sections */}
         <div className="mb-8 bg-white border border-gray-200 rounded-md overflow-hidden">
-          <div className="grid grid-cols-5 border-b border-gray-200">
-            {(['Description', 'Ingredients', 'Product Information', 'FAQ', 'Reviews'] as const).map((tab) => (
+          {/* Description */}
+          <div className="border-b border-gray-200">
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-2.5 px-2 sm:px-3 text-xs font-semibold transition-colors border-b-2 ${
-                  activeTab === tab ? 'text-amber-700 border-amber-600 bg-amber-50' : 'text-black border-transparent hover:bg-gray-50'
-                }`}
-              >
-                {tab}
+              onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="font-semibold text-black text-sm">Description</span>
+              {expandedSections.Description ? (
+                <XMarkIcon className="w-5 h-5 text-gray-600" />
+              ) : (
+                <PlusIcon className="w-5 h-5 text-gray-600" />
+              )}
               </button>
-            ))}
-          </div>
-          <div className="p-4 sm:p-5">
-            {activeTab === 'Description' && (
-              <div className="prose max-w-none">
+            {expandedSections.Description && (
+              <div className="px-4 pb-4">
                 <p className="text-black leading-relaxed text-sm">
                   {product.description || 'Premium quality product made with care and expertise.'}
                 </p>
               </div>
             )}
+          </div>
 
-            {activeTab === 'Ingredients' && product.ingredients && product.ingredients.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-black mb-1.5 text-sm">Ingredients</h4>
+          {/* Ingredients */}
+          {product.ingredients && product.ingredients.length > 0 && (
+            <div className="border-b border-gray-200">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, Ingredients: !prev.Ingredients }))}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+              >
+                <span className="font-semibold text-black text-sm">Ingredients</span>
+                {expandedSections.Ingredients ? (
+                  <XMarkIcon className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <PlusIcon className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+              {expandedSections.Ingredients && (
+                <div className="px-4 pb-4">
                 <ul className="list-disc list-inside space-y-0.5">
                   {product.ingredients.map((ingredient: string, index: number) => (
                     <li key={index} className="text-black text-xs">{ingredient}</li>
                   ))}
                 </ul>
+                </div>
+              )}
               </div>
             )}
 
-            {activeTab === 'Product Information' && (
+          {/* Product Information */}
+          {(product.productInfo || product.shelfLife || product.manufacturer) && (
+            <div className="border-b border-gray-200">
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, 'Product Information': !prev['Product Information'] }))}
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+              >
+                <span className="font-semibold text-black text-sm">Product Information</span>
+                {expandedSections['Product Information'] ? (
+                  <XMarkIcon className="w-5 h-5 text-gray-600" />
+                ) : (
+                  <PlusIcon className="w-5 h-5 text-gray-600" />
+                )}
+              </button>
+              {expandedSections['Product Information'] && (
+                <div className="px-4 pb-4">
               <div className="grid sm:grid-cols-2 gap-3 text-xs text-black">
                 {product.productInfo && (
                   <div>
@@ -741,14 +788,29 @@ export default function ProductDetailPage() {
                   <div>
                     <h5 className="font-semibold text-black">Manufacturer</h5>
                     <p>{product.manufacturer}</p>
+                      </div>
+                    )}
+                  </div>
                   </div>
                 )}
               </div>
             )}
 
-            {activeTab === 'FAQ' && (
-              <div>
-                <h4 className="font-semibold text-black mb-1.5 text-sm">FAQ</h4>
+          {/* FAQ */}
+          <div className="border-b border-gray-200">
+            <button
+              onClick={() => setExpandedSections(prev => ({ ...prev, FAQ: !prev.FAQ }))}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="font-semibold text-black text-sm">FAQ</span>
+              {expandedSections.FAQ ? (
+                <XMarkIcon className="w-5 h-5 text-gray-600" />
+              ) : (
+                <PlusIcon className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
+            {expandedSections.FAQ && (
+              <div className="px-4 pb-4">
                 <ul className="space-y-1.5 text-black text-xs">
                   <li>
                     <span className="font-semibold">Does it have any side effects?</span> No known side effects.
@@ -759,11 +821,25 @@ export default function ProductDetailPage() {
                 </ul>
               </div>
             )}
+          </div>
 
-            {activeTab === 'Reviews' && (
+          {/* Reviews */}
               <div>
+            <button
+              onClick={() => setExpandedSections(prev => ({ ...prev, Reviews: !prev.Reviews }))}
+              className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+            >
+              <span className="font-semibold text-black text-sm">Reviews ({reviews.length})</span>
+              {expandedSections.Reviews ? (
+                <XMarkIcon className="w-5 h-5 text-gray-600" />
+              ) : (
+                <PlusIcon className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
+            {expandedSections.Reviews && (
+              <div className="px-4 pb-4">
                 <div className="flex justify-between items-center mb-4">
-                  <h4 className="font-semibold text-black text-sm">Customer Reviews ({reviews.length})</h4>
+                  <h4 className="font-semibold text-black text-sm">Customer Reviews</h4>
                   <div className="flex gap-2">
                     <button
                       onClick={() => product && fetchReviews(product._id || product.id || params.id as string)}
@@ -772,12 +848,12 @@ export default function ProductDetailPage() {
                     >
                       🔄 Refresh
                     </button>
-                    <button
-                      onClick={() => setShowReviewModal(true)}
-                      className="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors"
-                    >
-                      Write a Review
-                    </button>
+                  <button
+                    onClick={() => setShowReviewModal(true)}
+                    className="px-4 py-2 bg-amber-600 text-white text-xs font-semibold rounded-md hover:bg-amber-700 transition-colors"
+                  >
+                    Write a Review
+                  </button>
                   </div>
                 </div>
                 
@@ -801,9 +877,7 @@ export default function ProductDetailPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
                     <p className="text-gray-500 text-sm">No reviews yet. Be the first to review this product!</p>
-                  </div>
                 )}
               </div>
             )}
