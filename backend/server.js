@@ -19,6 +19,7 @@ import adminDashboardRoutes from './routes/adminDashboardRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
+import testEmailRoutes from './routes/testEmailRoutes.js';
 
 dotenv.config();
 
@@ -147,6 +148,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/admin/emails', emailRoutes);
 // app.use('/api/auth', otpRoutes);
 app.use('/api/auth/otp', otpRoutes);
+app.use('/api/test', testEmailRoutes);
 
 // Root route
 app.get('/', (req, res) => {
