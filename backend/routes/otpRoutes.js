@@ -213,7 +213,20 @@ router.post('/resend-otp', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
-    const existingUser = await User.findOne({ email });
+    // Check user existence (with timeout to prevent hanging)
+    let existingUser;
+    try {
+      existingUser = await Promise.race([
+        User.findOne({ email }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database query timeout')), 3000)
+        )
+      ]);
+    } catch (dbError) {
+      console.error('Database check error (resend):', dbError);
+      existingUser = null;
+    }
+    
     if (existingUser)
       return res.status(400).json({ error: 'User with this email already exists' });
 
