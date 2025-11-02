@@ -80,8 +80,6 @@ export default function Header() {
 
   const totalItems = getTotalItems();
 
-  const { clearCart } = useCartStore();
-
   const handleLogout = () => {
     dispatch(clearUser());
     clearCart(); // Clear cart when logging out
