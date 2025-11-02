@@ -357,6 +357,9 @@ export default function ProductDetailPage() {
     setReviewImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Filter only approved reviews
+  const approvedReviews = reviews.filter(r => r.isApproved !== false);
+
   // Filter and sort reviews (only approved reviews)
   const filteredReviews = approvedReviews.filter(review => {
     if (!reviewSearch) return true;
@@ -378,9 +381,6 @@ export default function ProductDetailPage() {
     }
     return 0;
   });
-
-  // Filter only approved reviews
-  const approvedReviews = reviews.filter(r => r.isApproved !== false);
 
   // Get all customer images from approved reviews
   const allCustomerImages = approvedReviews
