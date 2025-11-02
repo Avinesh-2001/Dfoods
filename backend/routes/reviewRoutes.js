@@ -93,11 +93,11 @@ router.get('/product/:productId', async (req, res) => {
 // Create a new review (requires admin approval)
 router.post('/', async (req, res) => {
   try {
-    const { productId, name, rating, text } = req.body;
+    const { productId, name, rating, text, title, email, images } = req.body;
 
     // Validate required fields
     if (!productId || !name || !rating || !text) {
-      return res.status(400).json({ message: 'All fields are required' });
+      return res.status(400).json({ message: 'Product ID, name, rating, and text are required' });
     }
 
     // Validate rating
@@ -115,13 +115,18 @@ router.post('/', async (req, res) => {
     const newReview = new Review({
       productId,
       name,
+      email: email || undefined,
+      title: title || undefined,
       rating,
       text,
+      images: images && Array.isArray(images) ? images : (images ? [images] : []), // Ensure images is an array
       isApproved: false, // Requires admin approval
       isVerified: false
     });
 
     await newReview.save();
+
+    console.log(`✅ Review created with ${newReview.images?.length || 0} images`);
 
     res.status(201).json({
       message: 'Review submitted successfully and is pending admin approval',

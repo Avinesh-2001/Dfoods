@@ -234,9 +234,9 @@ export default function ProductDetailPage() {
 
   // Get all customer images from approved reviews
   const allCustomerImages = approvedReviews
-    .filter(r => r.image || (r.images && r.images.length > 0))
-    .flatMap(r => r.images || (r.image ? [r.image] : []))
-    .filter(Boolean);
+    .filter(r => r.images && Array.isArray(r.images) && r.images.length > 0 && r.isApproved !== false)
+    .flatMap(r => r.images || [])
+    .filter(img => img && typeof img === 'string'); // Only include valid image strings
 
   // Filter and sort reviews (only approved reviews)
   const filteredReviews = approvedReviews.filter(review => {
@@ -356,6 +356,21 @@ export default function ProductDetailPage() {
       // Auto-fill title with product name if empty
       const finalTitle = reviewTitle || product.name;
       
+      // Convert images to base64 data URLs
+      const imagePromises = reviewImages.map((file) => {
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(reader.result as string); // base64 data URL
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
+      
+      // Wait for all images to be converted
+      const imageBase64Array = await Promise.all(imagePromises);
+      
       // Use logged-in user's info
       const reviewData = {
         productId: product._id || product.id,
@@ -363,7 +378,8 @@ export default function ProductDetailPage() {
         email: user.email || reviewEmail,
         title: finalTitle,
         rating: reviewRating,
-        text: reviewText
+        text: reviewText,
+        images: imageBase64Array // Include converted base64 images
       };
 
       // Try to submit to backend API with timeout
@@ -371,7 +387,7 @@ export default function ProductDetailPage() {
         const response = await Promise.race([
           adminApi.createReview(reviewData),
           new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Request timeout')), 10000)
+            setTimeout(() => reject(new Error('Request timeout')), 15000) // Increased timeout for image uploads
           )
         ]) as any;
         
@@ -1308,7 +1324,7 @@ export default function ProductDetailPage() {
                         </button>
                         <button
                           onClick={handleSubmitReview}
-                          disabled={!reviewName || !reviewEmail || !reviewText || reviewRating === 0 || submittingReview}
+                          disabled={submittingReview}
                           className={`flex-1 px-6 py-2.5 bg-[#1a472a] text-white text-sm font-semibold rounded-lg hover:bg-[#153a22] transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                           {submittingReview ? 'Submitting...' : 'Submit Review'}
@@ -1403,11 +1419,27 @@ export default function ProductDetailPage() {
                             </div>
                           </div>
                           <span className="text-xs text-gray-500 whitespace-nowrap">
-                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }) : 'Recently'}
+                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Recently'}
                           </span>
                         </div>
                         {review.text && (
-                          <p className="text-gray-700 text-sm leading-relaxed ml-16">{review.text}</p>
+                          <p className="text-gray-700 text-sm leading-relaxed mt-3">{review.text}</p>
+                        )}
+                        {/* Display review images if available */}
+                        {review.images && Array.isArray(review.images) && review.images.length > 0 && (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {review.images.map((img: string, imgIdx: number) => (
+                              <div key={imgIdx} className="relative w-24 h-24 rounded-md overflow-hidden border border-gray-300">
+                                <Image
+                                  src={img}
+                                  alt={`Review image ${imgIdx + 1}`}
+                                  fill
+                                  className="object-cover"
+                                  sizes="96px"
+                                />
+                              </div>
+                            ))}
+                          </div>
                         )}
                       </div>
                     ))}

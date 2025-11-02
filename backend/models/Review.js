@@ -23,6 +23,18 @@ const reviewSchema = new mongoose.Schema({
     trim: true,
     maxlength: 1000
   },
+  title: {
+    type: String,
+    trim: true,
+    maxlength: 200
+  },
+  email: {
+    type: String,
+    trim: true
+  },
+  images: [{
+    type: String // Array of image URLs or base64 data URLs
+  }],
   isVerified: {
     type: Boolean,
     default: false
