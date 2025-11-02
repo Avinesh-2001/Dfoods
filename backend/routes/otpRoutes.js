@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { sendEmail } from '../utils/mailers.js'; // Ensure this path is correct
+import { sendWelcomeEmail } from '../config/emailConfig.js';
 
 const router = express.Router();
 const otpStore = new Map();
@@ -116,15 +117,8 @@ router.post('/verify-otp', async (req, res) => {
     );
 
     // Send welcome email (non-blocking)
-    sendEmail(
-      email,
-      'Welcome to Dfood!',
-      `<div style="font-family:Arial; text-align:center;">
-        <h2>Welcome, ${name}!</h2>
-        <p>Your account has been successfully verified.</p>
-        <a href="${process.env.FRONTEND_URL || 'https://dfoods.in'}" style="background:#f59e0b;color:white;padding:10px 20px;border-radius:6px;text-decoration:none;">Start Shopping</a>
-      </div>`
-    ).catch(err => console.error('Welcome email error:', err));
+    sendWelcomeEmail({ _id: user._id, name: user.name, email: user.email })
+      .catch(err => console.error('Welcome email error:', err));
 
     res.status(201).json({
       message: 'Account created and verified successfully',

@@ -54,6 +54,13 @@ router.post(
       await order.save();
       await Cart.findOneAndDelete({ user: req.user._id }); // Clear cart after order
 
+      // Send checkout pending email (non-blocking)
+      order.populate('items.product user').then((populatedOrder) => {
+        sendOrderConfirmationEmail(populatedOrder).catch(err => 
+          console.error('Checkout pending email error:', err)
+        );
+      });
+
       res.status(201).json(order);
     } catch (error) {
       res.status(500).json({ message: "Server error", error: error.message });

@@ -14,22 +14,41 @@ export default function AdminAuthWrapper({ children }: AdminAuthWrapperProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Temporarily bypass authentication to show real data
-    setIsAuthenticated(true);
-    setLoading(false);
-    
-    /* TODO: Re-enable authentication later
     const checkAuth = async () => {
       const token = localStorage.getItem('adminToken');
       if (!token) {
         router.push('/admin-login');
         return;
       }
-      setIsAuthenticated(true);
+      
+      // Verify token is still valid by making a test API call
+      try {
+        const response = await fetch('/api/admin/verify', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          localStorage.removeItem('adminToken');
+          localStorage.removeItem('adminUser');
+          router.push('/admin-login');
+          return;
+        }
+        
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('adminUser');
+        router.push('/admin-login');
+        return;
+      }
+      
       setLoading(false);
     };
+    
     checkAuth();
-    */
   }, [router]);
 
   if (loading) {

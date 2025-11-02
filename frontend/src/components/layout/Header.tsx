@@ -30,7 +30,7 @@ export default function Header() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const pathname = usePathname();
-  const { getTotalItems, toggleCart } = useCartStore();
+  const { getTotalItems, toggleCart, clearCart } = useCartStore();
   const { user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
@@ -80,8 +80,11 @@ export default function Header() {
 
   const totalItems = getTotalItems();
 
+  const { clearCart } = useCartStore();
+
   const handleLogout = () => {
     dispatch(clearUser());
+    clearCart(); // Clear cart when logging out
     toast.success('Logged out successfully!');
     setIsOpen(false);
   };

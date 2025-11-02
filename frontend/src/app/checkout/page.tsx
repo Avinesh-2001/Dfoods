@@ -118,12 +118,19 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     try {
-      // Create order
-      const orderResponse = await fetch('http://localhost:5000/api/orders', {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login to continue');
+        router.push('/login');
+        return;
+      }
+
+      // Create order using API client
+      const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           shippingAddress,
@@ -141,14 +148,14 @@ export default function CheckoutPage() {
       const order = await orderResponse.json();
 
       // Create payment intent
-      const paymentResponse = await fetch('http://localhost:5000/api/payments/create', {
+      const paymentResponse = await fetch('/api/payments/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          orderId: order._id,
+          orderId: order._id || order.id,
           paymentMethod
         })
       });
@@ -185,15 +192,16 @@ export default function CheckoutPage() {
           order_id: paymentData.razorpayOrder.id,
           handler: async function (response: any) {
             try {
+              const token = localStorage.getItem('token');
               // Verify payment on backend
-              const confirmResponse = await fetch('http://localhost:5000/api/payments/confirm', {
+              const confirmResponse = await fetch('/api/payments/confirm', {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${localStorage.getItem('token')}`
+                  'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                  orderId: order._id,
+                  orderId: order._id || order.id,
                   paymentMethod: 'razorpay',
                   razorpayPaymentId: response.razorpay_payment_id,
                   razorpayOrderId: response.razorpay_order_id,
@@ -204,9 +212,13 @@ export default function CheckoutPage() {
               if (confirmResponse.ok) {
                 clearCart();
                 toast.success('Order placed successfully!');
-                router.push('/order-success');
+                // Small delay before redirect
+                setTimeout(() => {
+                  router.push('/order-success');
+                }, 1000);
               } else {
-                throw new Error('Payment verification failed');
+                const errorData = await confirmResponse.json();
+                throw new Error(errorData.message || 'Payment verification failed');
               }
             } catch (error: any) {
               console.error('Payment verification error:', error);

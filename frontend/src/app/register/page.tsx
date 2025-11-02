@@ -102,9 +102,11 @@ export default function RegisterPage() {
     }
   };
 
-  const handleOTPVerificationSuccess = (user: any, token: string) => {
+  const handleOTPVerificationSuccess = async (user: any, token: string) => {
     dispatch(setUser({ user, token }));
-    toast.success('Account created and verified successfully!');
+    toast.success('Account created successfully!', { duration: 2000 });
+    // Small delay to show toast
+    await new Promise(resolve => setTimeout(resolve, 1000));
     router.push('/');
   };
 

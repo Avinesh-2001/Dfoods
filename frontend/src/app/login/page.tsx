@@ -37,7 +37,9 @@ export default function LoginPage() {
         console.log(`${type} login response:`, data);
         dispatch(setUser({ user: { ...data[type.toLowerCase()], role: type.toLowerCase() }, token: data.token }));
         localStorage.setItem('token', data.token);
-        toast.success(`Logged in as ${type}!`);
+        toast.success(`Logged in successfully!`, { duration: 2000 });
+        // Small delay to show toast
+        await new Promise(resolve => setTimeout(resolve, 1000));
         router.push(type === 'Admin' ? '/admin-dashboard' : '/');
         return true;
       } catch (err: any) {

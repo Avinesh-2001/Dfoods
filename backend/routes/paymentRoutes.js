@@ -3,7 +3,7 @@ import Stripe from "stripe";
 import Order from "../models/Order.js";
 import userAuth from "../middlewares/userAuth.js";
 import { authenticateAdmin } from "../middlewares/adminAuth.js";
-import { sendOrderConfirmationEmail, sendPaymentSuccessEmail, sendPaymentErrorEmail } from "../config/emailConfig.js";
+import { sendOrderConfirmationEmail, sendPaymentSuccessEmail, sendPaymentErrorEmail, sendPaymentReminderEmail } from "../config/emailConfig.js";
 
 import dotenv from "dotenv";
 dotenv.config();

@@ -4,12 +4,12 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 
 const categories = [
-  {
-    name: "Plain Jaggery",
-    href: "/products?category=plain-jaggery",
-    image: "🍯",
-    description: "Pure traditional jaggery"
-  },
+  // {
+  //   name: "Plain Jaggery",
+  //   href: "/products?category=plain-jaggery",
+  //   image: "🍯",
+  //   description: "Pure traditional jaggery"
+  // },
   {
     name: "Jaggery Powder",
     href: "/products?category=jaggery-powder", 
@@ -29,7 +29,7 @@ const categories = [
     description: "Aromatic flavored varieties"
   },
   {
-    name: "Gud Combo",
+    name: "Jaggery Combo",
     href: "/products?category=gud-combo",
     image: "🎁",
     description: "Complete collection packs"

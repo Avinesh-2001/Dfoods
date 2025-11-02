@@ -12,10 +12,27 @@ interface UserState {
   token: string | null;
 }
 
-const initialState: UserState = {
-  user: null,
-  token: null,
+// Initialize from localStorage if available
+const getInitialState = (): UserState => {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    
+    if (token && userStr) {
+      try {
+        const user = JSON.parse(userStr);
+        return { user, token };
+      } catch (e) {
+        // If parsing fails, clear localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+    }
+  }
+  return { user: null, token: null };
 };
+
+const initialState: UserState = getInitialState();
 
 const userSlice = createSlice({
   name: 'user',
@@ -25,11 +42,13 @@ const userSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("user", JSON.stringify(action.payload.user));
     },
     clearUser: (state) => {
       state.user = null;
       state.token = null;
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
     },
   },
 });
