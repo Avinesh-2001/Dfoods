@@ -15,7 +15,9 @@ router.post('/send-otp', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
     // Check email configuration FIRST before generating OTP
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
+    const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+    
+    if (!emailConfigured) {
       console.error('\n❌ EMAIL CONFIGURATION MISSING:');
       console.error(`   EMAIL_USER: ${process.env.EMAIL_USER ? 'Set' : '❌ MISSING'}`);
       console.error(`   EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? 'Set' : '❌ MISSING'}`);
@@ -27,18 +29,43 @@ router.post('/send-otp', async (req, res) => {
       
       console.log(`✅ OTP generated (no email): ${email}: ${otp}`);
       
-      return res.json({ 
+      // Respond IMMEDIATELY without waiting for database check
+      res.json({ 
         message: 'OTP generated but email not configured',
         expiresIn: 300,
         debugOtp: otp, // Always include OTP in response
         warning: 'Email not configured. OTP available in backend console.',
         emailConfigured: false
       });
+
+      // Check user existence in background (non-blocking)
+      User.findOne({ email }).then(existingUser => {
+        if (existingUser) {
+          console.warn(`⚠️ User ${email} already exists (checked after response)`);
+        }
+      }).catch(err => console.error('Background user check error:', err));
+      
+      return;
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser)
+    // Check user existence (with timeout to prevent hanging)
+    let existingUser;
+    try {
+      existingUser = await Promise.race([
+        User.findOne({ email }),
+        new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Database query timeout')), 3000)
+        )
+      ]);
+    } catch (dbError) {
+      console.error('Database check error:', dbError);
+      // If database check fails, still proceed (might be network issue)
+      existingUser = null;
+    }
+    
+    if (existingUser) {
       return res.status(400).json({ error: 'User with this email already exists' });
+    }
 
     const otp = crypto.randomInt(100000, 999999).toString();
     otpStore.set(email, { otp, expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });

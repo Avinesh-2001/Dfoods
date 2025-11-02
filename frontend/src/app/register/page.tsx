@@ -58,9 +58,10 @@ export default function RegisterPage() {
       
       // Try to send OTP with timeout handling
       try {
+        // Reduced timeout since backend responds immediately (5 seconds should be enough)
         const otpPromise = authApi.sendOTP(formData.email);
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout. OTP may still be sent. Please check your email.')), 10000)
+          setTimeout(() => reject(new Error('Request timeout. OTP may still be sent. Please check your email.')), 8000)
         );
         
         const response = await Promise.race([otpPromise, timeoutPromise]) as any;
@@ -72,15 +73,16 @@ export default function RegisterPage() {
           console.log(`🔐 OTP for ${formData.email}: ${response.data.debugOtp}`);
           console.log(`🔐 ========================================`);
           console.warn('⚠️ Email delivery may have failed. Use OTP from console above.');
+          toast.success(`OTP generated: ${response.data.debugOtp}`, { duration: 10000 });
+        } else {
+          toast.success('OTP sent! Please check your email and spam folder.', { duration: 5000 });
         }
-        
-        toast.success('OTP sent! Check console for OTP if email not received.', { duration: 8000 });
       } catch (otpError: any) {
         console.error('Send OTP error:', otpError);
-        // If timeout, assume OTP was sent (backend responds immediately now)
-        if (otpError.message?.includes('timeout')) {
+        // If timeout or network error, assume OTP might have been sent (backend responds immediately)
+        if (otpError.message?.includes('timeout') || otpError.code === 'ECONNABORTED' || otpError.code === 'ERR_NETWORK') {
           setOtpSent(true);
-          toast.success('OTP request processed. Please check your email and spam folder.', { duration: 5000 });
+          toast.success('OTP request processed. Please check your email and spam folder. Check backend console if needed.', { duration: 6000 });
         } else {
           const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
           setError(message);

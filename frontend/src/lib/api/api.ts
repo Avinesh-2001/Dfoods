@@ -76,6 +76,12 @@ const api = axios.create({
   timeout: 15000, // Increased timeout for production
 });
 
+// Special instance for OTP requests with shorter timeout (backend responds immediately)
+const otpApi = axios.create({
+  baseURL: getApiBaseUrl(),
+  timeout: 5000, // Shorter timeout since backend responds immediately
+});
+
 // Request interceptor
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token') || localStorage.getItem('adminToken');
@@ -135,7 +141,7 @@ export const authApi = {
   login: (data: UserLoginData) => api.post('/users/login', data),
   register: (data: UserRegisterData) => api.post('/users/register', data),
   getProfile: () => api.get('/users/profile'),
-  sendOTP: (email: string) => api.post('/auth/otp/send-otp', { email }),
+  sendOTP: (email: string) => otpApi.post('/auth/otp/send-otp', { email }),
   verifyOTP: (email: string, otp: string, name: string, password: string) =>
     api.post('/auth/otp/verify-otp', { email, otp, name, password }),
 };
