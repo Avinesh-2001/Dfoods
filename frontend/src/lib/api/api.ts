@@ -58,11 +58,23 @@ const getApiBaseUrl = () => {
   if (typeof window !== 'undefined') {
     // Check if we have a custom API URL set
     const customUrl = localStorage.getItem('API_URL');
-    if (customUrl) return customUrl;
+    if (customUrl) {
+      // Ensure /api is appended if it's a full URL
+      if (customUrl.startsWith('http') && !customUrl.endsWith('/api') && !customUrl.endsWith('/api/')) {
+        return `${customUrl.replace(/\/$/, '')}/api`;
+      }
+      return customUrl;
+    }
     
     // In production (Vercel), use the deployed backend
     if (process.env.NEXT_PUBLIC_API_URL) {
-      return process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      // If it's a full URL (starts with http) and doesn't end with /api, append it
+      if (apiUrl.startsWith('http') && !apiUrl.endsWith('/api') && !apiUrl.endsWith('/api/')) {
+        console.log(`⚠️ NEXT_PUBLIC_API_URL missing /api, appending it: ${apiUrl} → ${apiUrl.replace(/\/$/, '')}/api`);
+        return `${apiUrl.replace(/\/$/, '')}/api`;
+      }
+      return apiUrl;
     }
   }
   
