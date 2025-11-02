@@ -44,6 +44,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Health check endpoint (for Render)
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 let isDbConnected = false;
 const connectDB = async () => {
   if (process.env.MOCK_MODE === 'true') {

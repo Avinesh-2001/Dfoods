@@ -14,20 +14,31 @@ if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
   console.log('✅ Email credentials found in environment');
 }
 
-// Create transporter with better error handling
+// Create transporter with better error handling and Render-compatible settings
 let transporter;
 try {
   transporter = nodemailer.createTransport({
-    service: 'gmail',
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASSWORD,
     },
-    // Add additional options for better reliability
-    pool: true,
-    maxConnections: 1,
-    rateDelta: 200,
-    rateLimit: 5,
+    // Render/Production-specific settings
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 5000, // 5 seconds
+    socketTimeout: 10000, // 10 seconds
+    // Retry settings
+    pool: false, // Disable pooling on Render
+    // TLS options
+    tls: {
+      rejectUnauthorized: false, // Allow self-signed certificates if needed
+      ciphers: 'SSLv3'
+    },
+    // Connection retry
+    retries: 2,
+    retryDelay: 1000,
   });
 } catch (error) {
   console.error('❌ Failed to create email transporter:', error.message);
