@@ -207,6 +207,57 @@ export default function ProductDetailPage() {
     }
   }, [productId]);
 
+  // Close share popup when clicking outside - MUST be before any conditional returns
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSharePopup) {
+        const target = event.target as HTMLElement;
+        if (!target.closest('.share-popup-container')) {
+          setShowSharePopup(false);
+        }
+      }
+    };
+
+    if (showSharePopup) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSharePopup]);
+
+  // Filter only approved reviews - MUST be before conditional returns
+  const approvedReviews = Array.isArray(reviews) ? reviews.filter(r => r.isApproved !== false) : [];
+
+  // Get all customer images from approved reviews
+  const allCustomerImages = approvedReviews
+    .filter(r => r.image || (r.images && r.images.length > 0))
+    .flatMap(r => r.images || (r.image ? [r.image] : []))
+    .filter(Boolean);
+
+  // Filter and sort reviews (only approved reviews)
+  const filteredReviews = approvedReviews.filter(review => {
+    if (!reviewSearch) return true;
+    const searchLower = reviewSearch.toLowerCase();
+    return (
+      review.name?.toLowerCase().includes(searchLower) ||
+      review.text?.toLowerCase().includes(searchLower) ||
+      review.title?.toLowerCase().includes(searchLower)
+    );
+  });
+
+  const sortedReviews = [...filteredReviews].sort((a, b) => {
+    if (reviewSort === 'mostRecent') {
+      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+    } else if (reviewSort === 'highestRated') {
+      return (b.rating || 0) - (a.rating || 0);
+    } else if (reviewSort === 'lowestRated') {
+      return (a.rating || 0) - (b.rating || 0);
+    }
+    return 0;
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-amber-50 flex items-center justify-center">
@@ -356,57 +407,6 @@ export default function ProductDetailPage() {
   const removeImage = (index: number) => {
     setReviewImages(prev => prev.filter((_, i) => i !== index));
   };
-
-  // Filter only approved reviews
-  const approvedReviews = reviews.filter(r => r.isApproved !== false);
-
-  // Filter and sort reviews (only approved reviews)
-  const filteredReviews = approvedReviews.filter(review => {
-    if (!reviewSearch) return true;
-    const searchLower = reviewSearch.toLowerCase();
-    return (
-      review.name?.toLowerCase().includes(searchLower) ||
-      review.text?.toLowerCase().includes(searchLower) ||
-      review.title?.toLowerCase().includes(searchLower)
-    );
-  });
-
-  const sortedReviews = [...filteredReviews].sort((a, b) => {
-    if (reviewSort === 'mostRecent') {
-      return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
-    } else if (reviewSort === 'highestRated') {
-      return (b.rating || 0) - (a.rating || 0);
-    } else if (reviewSort === 'lowestRated') {
-      return (a.rating || 0) - (b.rating || 0);
-    }
-    return 0;
-  });
-
-  // Get all customer images from approved reviews
-  const allCustomerImages = approvedReviews
-    .filter(r => r.image || (r.images && r.images.length > 0))
-    .flatMap(r => r.images || (r.image ? [r.image] : []))
-    .filter(Boolean);
-
-  // Close share popup when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (showSharePopup) {
-        const target = event.target as HTMLElement;
-        if (!target.closest('.share-popup-container')) {
-          setShowSharePopup(false);
-        }
-      }
-    };
-
-    if (showSharePopup) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [showSharePopup]);
 
   return (
     <div className="min-h-screen bg-white py-4">
