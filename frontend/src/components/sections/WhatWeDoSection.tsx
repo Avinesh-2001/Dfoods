@@ -159,6 +159,7 @@ export default function WhatWeDoSection() {
           color: #666666;
           text-align: center;
           width: 100%;
+          margin-bottom:40px;
         }
 
         @media (max-width: 768px) {
