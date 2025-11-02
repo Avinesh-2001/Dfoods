@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
+import { useSelector } from 'react-redux';
 import { MinusIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import { ShareIcon, HeartIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
@@ -17,6 +18,7 @@ export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addItem } = useCartStore();
+  const user = useSelector((state: any) => state.user?.user);
   
   const [product, setProduct] = useState<any>(null);
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -331,7 +333,20 @@ export default function ProductDetailPage() {
   };
 
   const handleSubmitReview = async () => {
-    if (!reviewName || !reviewText || !reviewEmail || reviewRating === 0) {
+    // Check if user is logged in
+    if (!user) {
+      toast.error('Please sign in or create an account to submit a review', {
+        icon: '🔒',
+        duration: 3000
+      });
+      // Small delay then redirect to login
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
+      return;
+    }
+
+    if (!reviewText || reviewRating === 0) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -341,53 +356,68 @@ export default function ProductDetailPage() {
       // Auto-fill title with product name if empty
       const finalTitle = reviewTitle || product.name;
       
-      // Try to submit to backend API first
-      try {
-        const formData = new FormData();
-        formData.append('productId', product._id || product.id);
-        formData.append('name', reviewName);
-        formData.append('email', reviewEmail);
-        formData.append('title', finalTitle);
-        formData.append('rating', reviewRating.toString());
-        formData.append('text', reviewText);
-        
-        // Append images if any
-        reviewImages.forEach((image, index) => {
-          formData.append(`images`, image);
-        });
+      // Use logged-in user's info
+      const reviewData = {
+        productId: product._id || product.id,
+        name: user.name || reviewName || 'User',
+        email: user.email || reviewEmail,
+        title: finalTitle,
+        rating: reviewRating,
+        text: reviewText
+      };
 
-        // For now, use JSON API (images will need multipart form endpoint)
-        const response = await adminApi.createReview({
-          productId: product._id || product.id,
-          name: reviewName,
-          email: reviewEmail,
-          title: finalTitle,
-          rating: reviewRating,
-          text: reviewText
+      // Try to submit to backend API with timeout
+      try {
+        const response = await Promise.race([
+          adminApi.createReview(reviewData),
+          new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout')), 10000)
+          )
+        ]) as any;
+        
+        // Show success message
+        toast.success('Review submitted successfully!', {
+          icon: '✅',
+          duration: 1000
         });
         
-        if (response.data.review) {
-          // Review submitted, will show after admin approval
-          toast.success('Review submitted successfully! It will be visible after admin approval.', {
+        // Reset form after showing message
+        setTimeout(() => {
+          setReviewName('');
+          setReviewEmail('');
+          setReviewTitle('');
+          setReviewText('');
+          setReviewRating(0);
+          setReviewImages([]);
+          setShowWriteReview(false);
+          setShowReviewModal(false);
+          toast.success('Your review will be visible after admin approval.', {
             icon: '⭐',
-            duration: 4000
+            duration: 3000
           });
-        }
+        }, 1000);
+        
       } catch (apiError: any) {
         console.log('API submission failed:', apiError);
-        toast.error(apiError.response?.data?.error || 'Failed to submit review. Please try again.');
+        if (apiError.message === 'Request timeout') {
+          // Even if timeout, show success message as backend may have received it
+          toast.success('Review submitted! It will be visible after admin approval.', {
+            icon: '⭐',
+            duration: 3000
+          });
+          setReviewName('');
+          setReviewEmail('');
+          setReviewTitle('');
+          setReviewText('');
+          setReviewRating(0);
+          setReviewImages([]);
+          setShowWriteReview(false);
+          setShowReviewModal(false);
+        } else {
+          toast.error(apiError.response?.data?.error || 'Failed to submit review. Please try again.');
+        }
         return;
       }
-      
-      // Reset form
-      setReviewName('');
-      setReviewEmail('');
-      setReviewTitle('');
-      setReviewText('');
-      setReviewRating(0);
-      setReviewImages([]);
-      setShowWriteReview(false);
-      setShowReviewModal(false);
       
     } catch (error) {
       console.error('Error submitting review:', error);
@@ -938,101 +968,92 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-          {/* FAQ Section - Centered Heading with Collapsible Questions */}
-          <div className="border-b border-gray-200">
-            <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, FAQ: !prev.FAQ }))}
-              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
-            >
-              <span className="font-bold text-[#1a472a] text-base w-full text-center">FAQ</span>
-              {expandedSections.FAQ ? (
-                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
-              ) : (
-                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
-              )}
-            </button>
-            {expandedSections.FAQ && (
-              <div className="px-4 pb-6 pt-4">
-                <div className="space-y-0">
-                  {/* FAQ Question 1 */}
-                  <div className="border-b border-gray-200 py-4">
-                    <button
-                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': !prev['FAQ1'] }))}
-                      className="w-full flex items-center justify-between text-left"
-                    >
-                      <span className="font-bold text-[#1a472a] text-sm">WHAT DOES "ORGANIC" MEAN?</span>
-                      {expandedSections['FAQ1'] ? (
-                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      ) : (
-                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      )}
-                    </button>
-                    {expandedSections['FAQ1'] && (
-                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
-                        Organic jaggery means it is made from sugarcane grown without chemical fertilizers, pesticides, or synthetic additives. Our jaggery is certified organic and processed using traditional methods that preserve natural nutrients and flavors.
+          {/* FAQ Section - Always Visible, Centered Heading, Collapsible Answers */}
+          <div className="border-b border-gray-200 py-6">
+            <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">FAQ</h3>
+            <div className="space-y-0">
+              {/* FAQ Question 1 */}
+              <div className="border-b border-gray-200 py-4">
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': !prev['FAQ1'] }))}
+                  className="w-full flex items-center justify-between text-left"
+                >
+                  <span className="font-bold text-[#1a472a] text-sm">WHAT DOES "ORGANIC" MEAN?</span>
+                  {expandedSections['FAQ1'] ? (
+                    <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  ) : (
+                    <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  )}
+                </button>
+                {expandedSections['FAQ1'] && (
+                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                    Organic jaggery means it is made from sugarcane grown without chemical fertilizers, pesticides, or synthetic additives. Our jaggery is certified organic and processed using traditional methods that preserve natural nutrients and flavors.
+                  </div>
+                )}
               </div>
-            )}
-                  </div>
 
-                  {/* FAQ Question 2 */}
-                  <div className="border-b border-gray-200 py-4">
-                    <button
-                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': !prev['FAQ2'] }))}
-                      className="w-full flex items-center justify-between text-left"
-                    >
-                      <span className="font-bold text-[#1a472a] text-sm">WHAT MAKES THE DFOODS JAGGERY SPECIAL?</span>
-                      {expandedSections['FAQ2'] ? (
-                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      ) : (
-                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      )}
-                    </button>
-                    {expandedSections['FAQ2'] && (
-                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
-                        Our jaggery is made using traditional methods passed down through generations. We use firewood and sun-baked fuel for processing. Fresh sugarcane juice is boiled, cooled naturally, and processed in small batches daily. We do not use any chemicals, preservatives, or artificial additives. It's simply 100% natural, offering you the best of what nature has to offer.
-                      </div>
-                    )}
+              {/* FAQ Question 2 */}
+              <div className="border-b border-gray-200 py-4">
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': !prev['FAQ2'] }))}
+                  className="w-full flex items-center justify-between text-left"
+                >
+                  <span className="font-bold text-[#1a472a] text-sm">WHAT MAKES THE DFOODS JAGGERY SPECIAL?</span>
+                  {expandedSections['FAQ2'] ? (
+                    <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  ) : (
+                    <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  )}
+                </button>
+                {expandedSections['FAQ2'] && (
+                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                    Our jaggery is made using traditional methods passed down through generations. We use firewood and sun-baked fuel for processing. Fresh sugarcane juice is boiled, cooled naturally, and processed in small batches daily. We do not use any chemicals, preservatives, or artificial additives. It's simply 100% natural, offering you the best of what nature has to offer.
                   </div>
-
-                  {/* FAQ Question 3 */}
-                  <div className="py-4">
-                    <button
-                      onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': !prev['FAQ3'] }))}
-                      className="w-full flex items-center justify-between text-left"
-                    >
-                      <span className="font-bold text-[#1a472a] text-sm">HOW SHOULD I STORE THIS JAGGERY?</span>
-                      {expandedSections['FAQ3'] ? (
-                        <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      ) : (
-                        <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
-                      )}
-                    </button>
-                    {expandedSections['FAQ3'] && (
-                      <div className="mt-3 text-gray-700 text-sm leading-relaxed">
-                        Store in a cool, dry place away from direct sunlight. Always use a dry spoon to avoid moisture. Keep it in an airtight container to maintain freshness. Best before 1 year from the date of packaging.
-                      </div>
-                    )}
-                  </div>
-                </div>
+                )}
               </div>
-            )}
+
+              {/* FAQ Question 3 */}
+              <div className="py-4">
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': !prev['FAQ3'] }))}
+                  className="w-full flex items-center justify-between text-left"
+                >
+                  <span className="font-bold text-[#1a472a] text-sm">HOW SHOULD I STORE THIS JAGGERY?</span>
+                  {expandedSections['FAQ3'] ? (
+                    <XMarkIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  ) : (
+                    <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
+                  )}
+                </button>
+                {expandedSections['FAQ3'] && (
+                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                    Store in a cool, dry place away from direct sunlight. Always use a dry spoon to avoid moisture. Keep it in an airtight container to maintain freshness. Best before 1 year from the date of packaging.
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* Reviews Section - Image 1 Reference Style */}
-              <div>
-                  <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, Reviews: !prev.Reviews }))}
-              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
-            >
-              <span className="font-bold text-[#1a472a] text-base">REVIEWS ({approvedReviews.length})</span>
-              {expandedSections.Reviews ? (
-                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
-              ) : (
-                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
-              )}
-                  </button>
-            {expandedSections.Reviews && (
-              <div className="px-4 pb-6">
+          {/* Recommended Products - Between FAQ and Reviews */}
+          {relatedProducts.length > 0 && (
+            <div className="my-12">
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-[#1a472a] mb-2 text-center">Recommended Products</h2>
+                <div className="w-16 h-1 bg-[#1a472a] mx-auto rounded-full"></div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                {relatedProducts.map((relProduct: any) => (
+                  <ProductCard key={relProduct._id || relProduct.id} product={relProduct} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Reviews Section - Always Visible, Centered Heading */}
+          <div className="py-6">
+            <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews ({approvedReviews.length})</h3>
+            
+            <div className="px-4 pb-6">
                 {/* Reviews Header - Image 1 Layout */}
                 <div className="mb-8">
                   <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">Customer Reviews</h3>
@@ -1093,9 +1114,23 @@ export default function ProductDetailPage() {
                     <div className="flex justify-center md:justify-end">
                       <button
                         onClick={() => {
+                          // Check if user is logged in
+                          if (!user) {
+                            toast.error('Please sign in or create an account to write a review', {
+                              icon: '🔒',
+                              duration: 3000
+                            });
+                            setTimeout(() => {
+                              router.push('/login');
+                            }, 1500);
+                            return;
+                          }
                           setShowWriteReview(!showWriteReview);
                           if (!showWriteReview && product) {
                             setReviewTitle(product.name);
+                            // Auto-fill with user info
+                            if (user.name) setReviewName(user.name);
+                            if (user.email) setReviewEmail(user.email);
                           }
                         }}
                         className="px-6 py-3 bg-[#1a472a] text-white text-sm font-semibold rounded-md hover:bg-[#153a22] transition-colors whitespace-nowrap"
@@ -1203,33 +1238,58 @@ export default function ProductDetailPage() {
                         )}
                       </div>
 
-                      {/* Display Name */}
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Display name <span className="text-gray-500 text-xs font-normal">(displayed publicly like John Smith)</span>
-                        </label>
-                        <input
-                          type="text"
-                          value={reviewName}
-                          onChange={(e) => setReviewName(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
-                          placeholder="Display name"
-                          required
-                        />
-                      </div>
-
-                      {/* Email Address */}
-                      <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>
-                        <input
-                          type="email"
-                          value={reviewEmail}
-                          onChange={(e) => setReviewEmail(e.target.value)}
-                          className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
-                          placeholder="Your email address"
-                          required
-                        />
-                      </div>
+                      {/* Display Name and Email - Auto-filled if logged in, readonly */}
+                      {user ? (
+                        <>
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Display name <span className="text-gray-500 text-xs font-normal">(from your account)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={user.name || reviewName}
+                              readOnly
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-600"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email address <span className="text-gray-500 text-xs font-normal">(from your account)</span></label>
+                            <input
+                              type="email"
+                              value={user.email || reviewEmail}
+                              readOnly
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm bg-gray-50 text-gray-600"
+                            />
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                              Display name <span className="text-gray-500 text-xs font-normal">(displayed publicly like John Smith)</span>
+                            </label>
+                            <input
+                              type="text"
+                              value={reviewName}
+                              onChange={(e) => setReviewName(e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                              placeholder="Display name"
+                              required
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">Email address</label>
+                            <input
+                              type="email"
+                              value={reviewEmail}
+                              onChange={(e) => setReviewEmail(e.target.value)}
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a472a]"
+                              placeholder="Your email address"
+                              required
+                            />
+                          </div>
+                        </>
+                      )}
 
                       {/* Submit Button */}
                       <div className="flex gap-3 pt-2">
@@ -1363,24 +1423,8 @@ export default function ProductDetailPage() {
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        </div>
-
-        {/* Recommended Products - After Reviews */}
-        {relatedProducts.length > 0 && (
-          <div className="mt-12 mb-8">
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-[#1a472a] mb-2 text-center">Recommended Products</h2>
-              <div className="w-16 h-1 bg-[#1a472a] mx-auto rounded-full"></div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {relatedProducts.map((relProduct: any) => (
-                <ProductCard key={relProduct._id || relProduct.id} product={relProduct} />
-              ))}
             </div>
           </div>
-        )}
 
         {/* Review Modal */}
         {showReviewModal && (
