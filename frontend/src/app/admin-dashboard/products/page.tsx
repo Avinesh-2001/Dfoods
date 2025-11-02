@@ -40,6 +40,7 @@ interface Product {
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showCSVUpload, setShowCSVUpload] = useState(false);
@@ -94,21 +95,23 @@ export default function ProductsPage() {
     }
 
     try {
+      setError(null);
       // Request a large limit to get all products (admin dashboard should show all)
       const response = await adminApi.getProducts({ limit: 1000, page: 1 });
       console.log('Products API Response:', response.data);
       
       // Handle paginated response
       if (response.data && Array.isArray(response.data.products)) {
-        setProducts(response.data.products);
+        setProducts(response.data.products || []);
         console.log(`✅ Loaded ${response.data.products.length} products`);
       } else if (Array.isArray(response.data)) {
         // Fallback if response is directly an array
-        setProducts(response.data);
+        setProducts(response.data || []);
         console.log(`✅ Loaded ${response.data.length} products (direct array)`);
       } else {
         console.warn('Unexpected response format:', response.data);
         setProducts([]);
+        setError('Unexpected response format from server');
         toast.error('Unexpected response format from server');
       }
     } catch (error: any) {
@@ -116,16 +119,24 @@ export default function ProductsPage() {
       console.error('Error details:', {
         status: error.response?.status,
         data: error.response?.data,
-        message: error.message
+        message: error.message,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL
       });
+      
+      // Ensure products is always an array
+      setProducts([]);
+      setError(error.response?.data?.message || error.message || 'Failed to fetch products');
       
       if (error.response?.status === 401) {
         toast.error('Authentication failed. Please login again.');
         window.location.href = '/admin-login';
+      } else if (error.response?.status === 404) {
+        toast.error('API endpoint not found. Please check backend configuration.');
+        setError(`404: Endpoint not found. Check if backend is running at ${error.config?.baseURL}`);
       } else {
         toast.error(error.response?.data?.message || 'Failed to fetch products');
       }
-      setProducts([]);
     } finally {
       setLoading(false);
     }
@@ -322,7 +333,9 @@ export default function ProductsPage() {
     window.URL.revokeObjectURL(url);
   };
 
-  const filteredProducts = products.filter(product => {
+  // Ensure products is always an array to prevent filter errors
+  const filteredProducts = (Array.isArray(products) ? products : []).filter(product => {
+    if (!product || !product.name) return false;
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
     return matchesSearch && matchesCategory;
@@ -334,6 +347,23 @@ export default function ProductsPage() {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+      </div>
+    );
+  }
+
+  if (error && !Array.isArray(products)) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="text-red-800 font-semibold mb-2">Error Loading Products</h3>
+          <p className="text-red-600 text-sm">{error}</p>
+          <button
+            onClick={fetchProducts}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+          >
+            Retry
+          </button>
+        </div>
       </div>
     );
   }

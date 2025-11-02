@@ -88,9 +88,9 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`🔵 ${config.method?.toUpperCase()} ${config.url}`);
-  }
+  // Log API calls in both dev and production for debugging
+  const fullUrl = `${config.baseURL}${config.url}`;
+  console.log(`🔵 ${config.method?.toUpperCase()} ${fullUrl}`);
   return config;
 });
 
