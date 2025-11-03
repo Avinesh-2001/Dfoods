@@ -1,19 +1,60 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline';
 import { testimonials } from '@/lib/data/testimonials';
 
 export default function TestimonialsSection() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Create infinite loop by duplicating testimonials
+  const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials];
+
+  const nextSlide = () => {
+    setCurrentIndex((prev) => {
+      if (prev >= testimonials.length - 1) {
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
+
+  const prevSlide = () => {
+    setCurrentIndex((prev) => {
+      if (prev <= 0) {
+        return testimonials.length - 1;
+      }
+      return prev - 1;
+    });
+  };
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => {
+        if (prev >= testimonials.length - 1) {
+          return 0;
+        }
+        return prev + 1;
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <span
+      <svg
         key={i}
-        className={`text-xs sm:text-sm ${
-          i < Math.floor(rating) ? 'text-yellow-400' : 'text-gray-300'
+        className={`w-4 h-4 sm:w-5 sm:h-5 ${
+          i < Math.floor(rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
         }`}
+        viewBox="0 0 24 24"
       >
-        ⭐
-      </span>
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
     ));
   };
 
@@ -27,6 +68,18 @@ export default function TestimonialsSection() {
       </div>
     );
   };
+
+  // Get visible testimonials (3 at a time: left, center, right)
+  const getVisibleTestimonials = () => {
+    const indices = [
+      currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1,
+      currentIndex,
+      currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1,
+    ];
+    return indices.map(idx => testimonials[idx]);
+  };
+
+  const visibleTestimonials = getVisibleTestimonials();
 
   return (
     <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-amber-50/20 to-white">
@@ -46,68 +99,100 @@ export default function TestimonialsSection() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-start max-w-[90rem] mx-auto">
-          {testimonials.slice(0, 3).map((testimonial, index) => {
-            const isCenter = index === 1;
+        <div 
+          className="relative"
+          onMouseEnter={() => setIsAutoPlaying(false)}
+          onMouseLeave={() => setIsAutoPlaying(true)}
+        >
+          <div className="relative max-w-[90rem] mx-auto">
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              className="absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all z-20 border border-gray-200"
+              aria-label="Previous testimonial"
+            >
+              <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
             
-            return (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 flex flex-col transition-all ${
-                  isCenter 
-                    ? 'scale-105 z-10 shadow-2xl border-2 border-gray-300 relative' 
-                    : 'hover:shadow-xl border-2 border-transparent'
-                }`}
-                style={isCenter ? {
-                  background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(249,250,251,0.5) 100%)',
-                } : {}}
-              >
-                {isCenter && (
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 opacity-60 -z-10 blur-sm"></div>
-                )}
-                <div className={isCenter ? 'relative z-10' : ''}>
-                  <div className="flex items-start gap-3 mb-2">
-                    {/* User Avatar */}
-                    <div className="flex-shrink-0">
-                      {getUserAvatar(testimonial.name)}
-                    </div>
+            <button
+              onClick={nextSlide}
+              className="absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all z-20 border border-gray-200"
+              aria-label="Next testimonial"
+            >
+              <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </button>
 
-                    {/* Rating and Name */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex">
-                          {renderStars(testimonial.rating)}
+            {/* Carousel Container */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-start px-8 sm:px-12">
+              <AnimatePresence mode="wait">
+                {visibleTestimonials.map((testimonial, displayIndex) => {
+                  const isCenter = displayIndex === 1;
+                  
+                  return (
+                    <motion.div
+                      key={`${testimonial.id}-${currentIndex}-${displayIndex}`}
+                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                      animate={{ 
+                        opacity: 1, 
+                        scale: isCenter ? 1.05 : 1,
+                        y: 0
+                      }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.4 }}
+                      className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 flex flex-col transition-all ${
+                        isCenter 
+                          ? 'scale-105 z-10 shadow-2xl border-2 border-gray-300 relative' 
+                          : 'hover:shadow-xl border-2 border-transparent opacity-90'
+                      }`}
+                      style={isCenter ? {
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(249,250,251,0.5) 100%)',
+                      } : {}}
+                    >
+                      {isCenter && (
+                        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 opacity-60 -z-10 blur-sm"></div>
+                      )}
+                      <div className={isCenter ? 'relative z-10' : ''}>
+                        <div className="flex items-start gap-3 mb-2">
+                          {/* User Avatar */}
+                          <div className="flex-shrink-0">
+                            {getUserAvatar(testimonial.name)}
+                          </div>
+
+                          {/* Rating and Name */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <div className="flex items-center gap-0.5">
+                                {renderStars(testimonial.rating)}
+                              </div>
+                              {testimonial.verified && (
+                                <svg className="w-4 h-4 text-green-600 fill-green-600" viewBox="0 0 24 24">
+                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                                </svg>
+                              )}
+                            </div>
+                            <h4 className="font-bold text-xs sm:text-sm text-gray-900 mb-0.5">
+                              {testimonial.name}
+                            </h4>
+                            <p className="text-[10px] sm:text-xs text-gray-500">
+                              {new Date(testimonial.date).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                year: 'numeric' 
+                              })}
+                            </p>
+                          </div>
                         </div>
-                        {testimonial.verified && (
-                          <span className="text-[10px] sm:text-xs bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded-full font-semibold">
-                            ✓
-                          </span>
-                        )}
-                      </div>
-                      <h4 className="font-bold text-xs sm:text-sm text-gray-900 mb-0.5">
-                        {testimonial.name}
-                      </h4>
-                      <p className="text-[10px] sm:text-xs text-gray-500">
-                        {new Date(testimonial.date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          year: 'numeric' 
-                        })}
-                      </p>
-                    </div>
-                  </div>
 
-                  {/* Comment */}
-                  <blockquote className="text-gray-700 text-left italic text-xs sm:text-sm leading-relaxed line-clamp-3">
-                    "{testimonial.comment}"
-                  </blockquote>
-                </div>
-              </motion.div>
-            );
-          })}
+                        {/* Comment */}
+                        <blockquote className="text-gray-700 text-left italic text-xs sm:text-sm leading-relaxed line-clamp-3">
+                          "{testimonial.comment}"
+                        </blockquote>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
 
         {/* Overall Rating */}
@@ -120,9 +205,11 @@ export default function TestimonialsSection() {
         >
           <div className="inline-flex flex-col sm:flex-row items-center bg-white rounded-xl px-5 sm:px-6 py-4 sm:py-5 shadow-xl border-2 border-gray-200">
             <div className="flex items-center mb-3 sm:mb-0 sm:mr-5">
-              <div className="flex">
+              <div className="flex items-center gap-0.5">
                 {Array.from({ length: 5 }, (_, i) => (
-                  <span key={i} className="text-xl sm:text-2xl text-yellow-400">⭐</span>
+                  <svg key={i} className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
                 ))}
               </div>
               <span className="ml-2 sm:ml-3 text-lg sm:text-xl font-bold text-gray-900">4.8</span>

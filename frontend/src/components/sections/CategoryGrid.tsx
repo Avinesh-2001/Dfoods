@@ -30,7 +30,7 @@ const categories = [
   },
   {
     name: "Jaggery Combo",
-    href: "/products?category=gud-combo",
+    href: "/products?category=jaggery-combo",
     image: "🎁",
     description: "Complete collection packs"
   },

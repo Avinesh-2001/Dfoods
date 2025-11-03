@@ -394,7 +394,7 @@ export default function ProductDetailPage() {
         // Show success message
         toast.success('Review submitted successfully!', {
           icon: '✅',
-          duration: 1000
+          duration: 500
         });
         
         // Reset form after showing message
@@ -407,19 +407,15 @@ export default function ProductDetailPage() {
           setReviewImages([]);
           setShowWriteReview(false);
           setShowReviewModal(false);
-          toast.success('Your review will be visible after admin approval.', {
-            icon: '⭐',
-            duration: 3000
-          });
-        }, 1000);
+        }, 500);
         
       } catch (apiError: any) {
         console.log('API submission failed:', apiError);
         if (apiError.message === 'Request timeout') {
           // Even if timeout, show success message as backend may have received it
-          toast.success('Review submitted! It will be visible after admin approval.', {
-            icon: '⭐',
-            duration: 3000
+          toast.success('Review submitted successfully!', {
+            icon: '✅',
+            duration: 500
           });
           setReviewName('');
           setReviewEmail('');
@@ -597,9 +593,9 @@ export default function ProductDetailPage() {
                     {[...Array(5)].map((_, i) => {
                       const avgRating = reviews.reduce((sum, r) => sum + (r.rating || 0), 0) / reviews.length;
                       return (
-                        <span key={i} className={`text-sm ${i < Math.floor(avgRating) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                          ★
-                        </span>
+                        <svg key={i} className={`w-4 h-4 ${i < Math.floor(avgRating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                       );
                     })}
                   </div>
@@ -989,10 +985,11 @@ export default function ProductDetailPage() {
             <h3 className="text-xl font-bold text-[#1a472a] mb-6 text-center">FAQ</h3>
             <div className="space-y-0">
               {/* FAQ Question 1 */}
-              <div className="border-b border-gray-200 py-4">
-                <button
-                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': !prev['FAQ1'] }))}
-                  className="w-full flex items-center justify-between text-left"
+              <div className="border-b border-gray-200 py-4 group">
+                <div
+                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': true }))}
+                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': false }))}
+                  className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">WHAT DOES "ORGANIC" MEAN?</span>
                   {expandedSections['FAQ1'] ? (
@@ -1000,19 +997,20 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </button>
+                </div>
                 {expandedSections['FAQ1'] && (
-                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                  <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Organic jaggery means it is made from sugarcane grown without chemical fertilizers, pesticides, or synthetic additives. Our jaggery is certified organic and processed using traditional methods that preserve natural nutrients and flavors.
                   </div>
                 )}
               </div>
 
               {/* FAQ Question 2 */}
-              <div className="border-b border-gray-200 py-4">
-                <button
-                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': !prev['FAQ2'] }))}
-                  className="w-full flex items-center justify-between text-left"
+              <div className="border-b border-gray-200 py-4 group">
+                <div
+                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': true }))}
+                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': false }))}
+                  className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">WHAT MAKES THE DFOODS JAGGERY SPECIAL?</span>
                   {expandedSections['FAQ2'] ? (
@@ -1020,19 +1018,20 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </button>
+                </div>
                 {expandedSections['FAQ2'] && (
-                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                  <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Our jaggery is made using traditional methods passed down through generations. We use firewood and sun-baked fuel for processing. Fresh sugarcane juice is boiled, cooled naturally, and processed in small batches daily. We do not use any chemicals, preservatives, or artificial additives. It's simply 100% natural, offering you the best of what nature has to offer.
                   </div>
                 )}
               </div>
 
               {/* FAQ Question 3 */}
-              <div className="py-4">
-                <button
-                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': !prev['FAQ3'] }))}
-                  className="w-full flex items-center justify-between text-left"
+              <div className="py-4 group">
+                <div
+                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': true }))}
+                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': false }))}
+                  className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">HOW SHOULD I STORE THIS JAGGERY?</span>
                   {expandedSections['FAQ3'] ? (
@@ -1040,9 +1039,9 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </button>
+                </div>
                 {expandedSections['FAQ3'] && (
-                  <div className="mt-3 text-gray-700 text-sm leading-relaxed">
+                  <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Store in a cool, dry place away from direct sunlight. Always use a dry spoon to avoid moisture. Keep it in an airtight container to maintain freshness. Best before 1 year from the date of packaging.
                   </div>
                 )}
@@ -1076,7 +1075,7 @@ export default function ProductDetailPage() {
                   {/* Three Column Layout: Left (Rating) | Center (Star Breakdown) | Right (Write Review) */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                     {/* Left: Overall Rating */}
-                    <div className="flex flex-col items-center md:items-start">
+                    <div className="flex flex-col items-center md:items-start pb-6 border-b md:border-b-0 md:border-r border-gray-300 pr-6">
                       <div className="text-5xl font-bold text-[#1a472a] mb-2">
                         {approvedReviews.length > 0 
                           ? (approvedReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / approvedReviews.length).toFixed(2)
@@ -1089,9 +1088,9 @@ export default function ProductDetailPage() {
                             ? approvedReviews.reduce((sum, r) => sum + (r.rating || 0), 0) / approvedReviews.length 
                             : 0;
                           return (
-                            <span key={i} className={`text-2xl ${i < Math.floor(avgRating) ? 'text-yellow-400' : i < avgRating ? 'text-yellow-300' : 'text-gray-300'}`}>
-                              ★
-                            </span>
+                            <svg key={i} className={`w-6 h-6 ${i < Math.floor(avgRating) ? 'text-yellow-400 fill-yellow-400' : i < avgRating ? 'text-yellow-300 fill-yellow-300' : 'text-gray-300'}`} viewBox="0 0 24 24">
+                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
                           );
                         })}
                       </div>
@@ -1101,7 +1100,7 @@ export default function ProductDetailPage() {
                 </div>
                 
                     {/* Center: Star Rating Breakdown */}
-                    <div className="space-y-2">
+                    <div className="space-y-2 pb-6 border-b md:border-b-0 md:border-r border-gray-300 pr-6">
                       {[5, 4, 3, 2, 1].map((stars) => {
                         const count = approvedReviews.filter(r => (r.rating || 0) === stars).length;
                         const percentage = approvedReviews.length > 0 ? (count / approvedReviews.length) * 100 : 0;
@@ -1109,7 +1108,9 @@ export default function ProductDetailPage() {
                           <div key={stars} className="flex items-center gap-2">
                             <div className="flex items-center gap-1 min-w-[60px]">
                               <span className="text-sm text-[#1a472a] font-semibold">{stars}</span>
-                              <span className="text-yellow-400 text-xs">★</span>
+                              <svg className="w-4 h-4 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
                             </div>
                             <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div 
@@ -1171,11 +1172,13 @@ export default function ProductDetailPage() {
                               key={i}
                               type="button"
                               onClick={() => setReviewRating(i + 1)}
-                              className={`text-3xl transition-transform hover:scale-110 ${
-                                i < reviewRating ? 'text-yellow-400' : 'text-gray-300'
+                              className={`transition-transform hover:scale-110 ${
+                                i < reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
                               }`}
                             >
-                              ★
+                              <svg className="w-8 h-8" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
                             </button>
                               ))}
                             </div>
@@ -1411,9 +1414,9 @@ export default function ProductDetailPage() {
                               )}
                               <div className="flex items-center gap-1">
                                 {[...Array(5)].map((_, i) => (
-                                  <span key={i} className={`text-sm ${i < (review.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}>
-                                    ★
-                                  </span>
+                                  <svg key={i} className={`w-4 h-4 ${i < (review.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} viewBox="0 0 24 24">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                  </svg>
                                 ))}
                               </div>
                             </div>
@@ -1490,11 +1493,13 @@ export default function ProductDetailPage() {
                       <button
                         key={i}
                         onClick={() => setReviewRating(i + 1)}
-                        className={`text-2xl transition-colors ${
-                          i < reviewRating ? 'text-yellow-400' : 'text-gray-300 hover:text-yellow-300'
+                        className={`transition-transform hover:scale-110 ${
+                          i < reviewRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 hover:text-yellow-300'
                         }`}
                       >
-                        ★
+                        <svg className="w-6 h-6" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                       </button>
                     ))}
                   </div>

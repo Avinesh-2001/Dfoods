@@ -155,7 +155,7 @@ export default function Footer() {
 
             {/* Copyright */}
             <div className="text-center md:text-right text-xs sm:text-sm space-y-1 text-gray-600">
-              <p>Made with ❤️ Dfoods</p>
+              <p>Made with Dfoods</p>
               <p>Copyright © 2024 Dfoods. All rights reserved.</p>
             </div>
           </div>
