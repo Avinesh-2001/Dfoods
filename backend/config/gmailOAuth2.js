@@ -186,50 +186,95 @@ export async function getTransporter() {
 }
 
 /**
- * Send email using Gmail OAuth2
+ * Send email using Gmail API directly (more reliable than SMTP)
+ */
+async function sendEmailViaGmailAPI(mailOptions) {
+  try {
+    const oauth2Client = createOAuth2Client();
+    
+    if (!REFRESH_TOKEN) {
+      throw new Error('Gmail refresh token not configured');
+    }
+
+    oauth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+    const { token } = await oauth2Client.getAccessToken();
+    
+    if (!token) {
+      throw new Error('Failed to get access token');
+    }
+
+    const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+
+    // Create email message in RFC 2822 format
+    const emailLines = [];
+    emailLines.push(`From: ${mailOptions.from || `"Dfoods" <${USER_EMAIL}>`}`);
+    emailLines.push(`To: ${mailOptions.to}`);
+    emailLines.push(`Subject: ${mailOptions.subject}`);
+    emailLines.push('Content-Type: text/html; charset=utf-8');
+    emailLines.push('');
+    emailLines.push(mailOptions.html);
+
+    const email = emailLines.join('\r\n');
+    const encodedEmail = Buffer.from(email).toString('base64').replace(/\+/g, '-').replace(/\//g, '_');
+
+    const response = await gmail.users.messages.send({
+      userId: 'me',
+      requestBody: {
+        raw: encodedEmail
+      }
+    });
+
+    return { success: true, messageId: response.data.id, info: response.data };
+  } catch (error) {
+    console.error('❌ Error sending email via Gmail API:', error.message);
+    throw error;
+  }
+}
+
+/**
+ * Send email using Gmail OAuth2 (tries API first, falls back to SMTP)
  */
 export async function sendEmailViaGmail(mailOptions) {
   try {
-    console.log('🔄 Getting Gmail OAuth2 transporter...');
-    const transporter = await getTransporter();
+    console.log('🔄 Attempting to send email via Gmail OAuth2...');
     
-    if (!transporter) {
-      throw new Error('Gmail OAuth2 transporter not available. Check your configuration.');
-    }
-
-    console.log('✅ Transporter ready, sending email...');
-    
-    // Send email with longer timeout and retry logic
-    const sendEmailWithRetry = async (attempt = 1, maxAttempts = 3) => {
-      try {
-        const sendPromise = transporter.sendMail({
-          from: `"${mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'}" <${USER_EMAIL}>`,
-          to: mailOptions.to,
-          subject: mailOptions.subject,
-          html: mailOptions.html,
-          text: mailOptions.html?.replace(/<[^>]*>/g, '') || ''
-        });
-        
-        // Increased timeout to 60 seconds for slow connections
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error(`Email send timeout after 60 seconds (attempt ${attempt}/${maxAttempts})`)), 60000)
-        );
-        
-        return await Promise.race([sendPromise, timeoutPromise]);
-      } catch (error) {
-        if (attempt < maxAttempts && (error.message.includes('timeout') || error.message.includes('ECONNRESET'))) {
-          console.log(`⚠️ Attempt ${attempt} failed, retrying... (${error.message})`);
-          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
-          return sendEmailWithRetry(attempt + 1, maxAttempts);
-        }
-        throw error;
+    // Try Gmail API first (more reliable)
+    try {
+      console.log('📡 Trying Gmail API method...');
+      const result = await sendEmailViaGmailAPI(mailOptions);
+      console.log('✅ Email sent via Gmail API:', result.messageId);
+      return { success: true, messageId: result.messageId, info: result.info };
+    } catch (apiError) {
+      console.warn('⚠️ Gmail API method failed, trying SMTP fallback...');
+      console.warn(`   Error: ${apiError.message}`);
+      
+      // Fallback to SMTP
+      const transporter = await getTransporter();
+      
+      if (!transporter) {
+        throw new Error('Gmail OAuth2 transporter not available. Check your configuration.');
       }
-    };
-    
-    const info = await sendEmailWithRetry();
 
-    console.log('✅ Email sent via Gmail OAuth2:', info.messageId);
-    return { success: true, messageId: info.messageId, info };
+      console.log('✅ Transporter ready, sending email via SMTP...');
+      
+      // Send email with timeout
+      const sendPromise = transporter.sendMail({
+        from: `"${mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'}" <${USER_EMAIL}>`,
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        html: mailOptions.html,
+        text: mailOptions.html?.replace(/<[^>]*>/g, '') || ''
+      });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('SMTP email send timeout after 30 seconds')), 30000)
+      );
+      
+      const info = await Promise.race([sendPromise, timeoutPromise]);
+
+      console.log('✅ Email sent via Gmail SMTP:', info.messageId);
+      return { success: true, messageId: info.messageId, info };
+    }
   } catch (error) {
     console.error('❌ Error sending email via Gmail OAuth2:', error.message);
     if (error.message.includes('timeout')) {
