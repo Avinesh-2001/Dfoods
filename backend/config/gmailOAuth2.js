@@ -100,9 +100,11 @@ async function createTransporter() {
 
     console.log('✅ Access token obtained');
 
-    // Create transporter
+    // Create transporter with explicit Gmail SMTP settings
     transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // Use SSL
       auth: {
         type: 'OAuth2',
         user: USER_EMAIL,
@@ -110,7 +112,13 @@ async function createTransporter() {
         clientSecret: CLIENT_SECRET,
         refreshToken: REFRESH_TOKEN,
         accessToken: accessToken
-      }
+      },
+      tls: {
+        rejectUnauthorized: false // Allow self-signed certificates if needed
+      },
+      connectionTimeout: 10000, // 10 seconds for connection
+      greetingTimeout: 10000, // 10 seconds for greeting
+      socketTimeout: 60000 // 60 seconds for socket operations
     });
 
     // Verify transporter configuration with timeout (optional - skip if it times out)
