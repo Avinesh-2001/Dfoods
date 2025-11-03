@@ -1,26 +1,38 @@
-import nodemailer from 'nodemailer';
+import sgMail from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // You can change this to other services like 'outlook', 'yahoo', etc.
-  auth: {
-    user: process.env.EMAIL_USER, // Your email
-    pass: process.env.EMAIL_PASSWORD, // Your app password
-  },
-});
+// Configure SendGrid
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.EMAIL_USER;
 
-// Verify connection configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.warn('⚠️ Email configuration warning:', error.message);
-    console.log('📧 Email functionality will be limited. Configure proper email credentials for full functionality.');
-  } else {
-    console.log('✅ Email server is ready to send messages');
+if (SENDGRID_API_KEY) {
+  sgMail.setApiKey(SENDGRID_API_KEY);
+  console.log('✅ SendGrid configured in emailConfig');
+} else {
+  console.warn('⚠️ SENDGRID_API_KEY not configured');
+}
+
+// Helper function to send email via SendGrid
+const sendEmailViaSendGrid = async (mailOptions) => {
+  if (!SENDGRID_API_KEY || !FROM_EMAIL) {
+    throw new Error('SendGrid not configured. Add SENDGRID_API_KEY and FROM_EMAIL to environment variables.');
   }
-});
+
+  const msg = {
+    to: mailOptions.to,
+    from: {
+      email: FROM_EMAIL,
+      name: mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'
+    },
+    subject: mailOptions.subject,
+    html: mailOptions.html,
+    text: mailOptions.html?.replace(/<[^>]*>/g, '') || '',
+  };
+
+  return await sgMail.send(msg);
+};
 
 // Send email to admin when new contact form is submitted
 export const sendContactNotificationToAdmin = async (contactData) => {
@@ -90,9 +102,9 @@ export const sendContactNotificationToAdmin = async (contactData) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Admin notification email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Admin notification email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.warn('⚠️ Email sending failed (non-critical):', error.message);
     return { success: false, error: error.message };
@@ -161,9 +173,9 @@ export const sendContactAcknowledgmentToUser = async (contactData) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ User acknowledgment email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ User acknowledgment email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.warn('⚠️ Email sending failed (non-critical):', error.message);
     return { success: false, error: error.message };
@@ -234,9 +246,9 @@ export const sendOrderConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Order confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Order confirmation email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending order confirmation email:', error);
     throw error;
@@ -291,9 +303,9 @@ export const sendPaymentSuccessEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment success email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Payment success email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending payment success email:', error);
     throw error;
@@ -348,9 +360,9 @@ export const sendPaymentErrorEmail = async (order, errorMessage) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment error email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Payment error email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending payment error email:', error);
     throw error;
@@ -404,9 +416,9 @@ export const sendPaymentReminderEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment reminder email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Payment reminder email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending payment reminder email:', error);
     throw error;
@@ -466,9 +478,9 @@ export const sendWelcomeEmail = async (user) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Welcome email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Welcome email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending welcome email:', error);
     throw error;
@@ -524,9 +536,9 @@ export const sendShippingConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Shipping confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Shipping confirmation email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending shipping confirmation email:', error);
     throw error;
@@ -580,9 +592,9 @@ export const sendDeliveryConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Delivery confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Delivery confirmation email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending delivery confirmation email:', error);
     throw error;
@@ -636,9 +648,9 @@ export const sendOrderCancellationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Order cancellation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Order cancellation email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending order cancellation email:', error);
     throw error;
@@ -690,9 +702,9 @@ export const sendDiscountNotificationEmail = async (user, discountCode, discount
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Discount notification email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Discount notification email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending discount notification email:', error);
     throw error;
@@ -747,15 +759,15 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Password reset email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmailViaSendGrid(mailOptions);
+    console.log('✅ Password reset email sent via SendGrid');
+    return { success: true, messageId: response[0]?.headers['x-message-id'] || 'N/A' };
   } catch (error) {
     console.error('❌ Error sending password reset email:', error);
     throw error;
   }
 };
 
-export default transporter;
+export default { sendEmailViaSendGrid };
 
 
