@@ -18,11 +18,12 @@ console.log('\n🔧 Finalizing Gmail OAuth2 Setup...\n');
 let envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
 
 // Ensure all required variables are set
+// Get these from environment variables or .env file
 const requiredVars = {
-  GMAIL_CLIENT_ID: 'YOUR_CLIENT_ID_HERE',
-  GMAIL_CLIENT_SECRET: 'YOUR_CLIENT_SECRET_HERE',
-  GMAIL_REDIRECT_URI: 'https://dfoods.onrender.com',
-  GMAIL_USER: 'avijangid7011@gmail.com'
+  GMAIL_CLIENT_ID: process.env.GMAIL_CLIENT_ID || 'YOUR_CLIENT_ID_HERE',
+  GMAIL_CLIENT_SECRET: process.env.GMAIL_CLIENT_SECRET || 'YOUR_CLIENT_SECRET_HERE',
+  GMAIL_REDIRECT_URI: process.env.GMAIL_REDIRECT_URI || 'https://dfoods.onrender.com',
+  GMAIL_USER: process.env.GMAIL_USER || 'avijangid7011@gmail.com'
 };
 
 // Update or add each variable
