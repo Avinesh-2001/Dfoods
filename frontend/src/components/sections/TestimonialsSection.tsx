@@ -9,9 +9,6 @@ export default function TestimonialsSection() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-  // Create infinite loop by duplicating testimonials
-  const duplicatedTestimonials = [...testimonials, ...testimonials, ...testimonials];
-
   const nextSlide = () => {
     setCurrentIndex((prev) => {
       if (prev >= testimonials.length - 1) {
@@ -69,18 +66,6 @@ export default function TestimonialsSection() {
     );
   };
 
-  // Get visible testimonials (3 at a time: left, center, right)
-  const getVisibleTestimonials = () => {
-    const indices = [
-      currentIndex === 0 ? testimonials.length - 1 : currentIndex - 1,
-      currentIndex,
-      currentIndex === testimonials.length - 1 ? 0 : currentIndex + 1,
-    ];
-    return indices.map(idx => testimonials[idx]);
-  };
-
-  const visibleTestimonials = getVisibleTestimonials();
-
   return (
     <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-amber-50/20 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,74 +107,52 @@ export default function TestimonialsSection() {
               <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
-            {/* Carousel Container */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 items-start px-8 sm:px-12">
+            {/* Carousel Container - Slider Style */}
+            <div className="overflow-hidden px-8 sm:px-12">
               <AnimatePresence mode="wait">
-                {visibleTestimonials.map((testimonial, displayIndex) => {
-                  const isCenter = displayIndex === 1;
-                  
-                  return (
-                    <motion.div
-                      key={`${testimonial.id}-${currentIndex}-${displayIndex}`}
-                      initial={{ opacity: 0, scale: 0.9, y: 20 }}
-                      animate={{ 
-                        opacity: 1, 
-                        scale: isCenter ? 1.05 : 1,
-                        y: 0
-                      }}
-                      exit={{ opacity: 0, scale: 0.9 }}
-                      transition={{ duration: 0.4 }}
-                      className={`bg-white rounded-lg shadow-lg p-3 sm:p-4 flex flex-col transition-all ${
-                        isCenter 
-                          ? 'scale-105 z-10 shadow-2xl border-2 border-gray-300 relative' 
-                          : 'hover:shadow-xl border-2 border-transparent opacity-90'
-                      }`}
-                      style={isCenter ? {
-                        background: 'linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(249,250,251,0.5) 100%)',
-                      } : {}}
-                    >
-                      {isCenter && (
-                        <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 opacity-60 -z-10 blur-sm"></div>
-                      )}
-                      <div className={isCenter ? 'relative z-10' : ''}>
-                        <div className="flex items-start gap-3 mb-2">
-                          {/* User Avatar */}
-                          <div className="flex-shrink-0">
-                            {getUserAvatar(testimonial.name)}
-                          </div>
+                <motion.div
+                  key={currentIndex}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.5 }}
+                  className="bg-white rounded-lg shadow-lg p-6 sm:p-8 flex flex-col max-w-3xl mx-auto"
+                >
+                  <div className="flex items-start gap-4 mb-4">
+                    {/* User Avatar */}
+                    <div className="flex-shrink-0">
+                      {getUserAvatar(testimonials[currentIndex].name)}
+                    </div>
 
-                          {/* Rating and Name */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center justify-between mb-1">
-                              <div className="flex items-center gap-0.5">
-                                {renderStars(testimonial.rating)}
-                              </div>
-                              {testimonial.verified && (
-                                <svg className="w-4 h-4 text-green-600 fill-green-600" viewBox="0 0 24 24">
-                                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                                </svg>
-                              )}
-                            </div>
-                            <h4 className="font-bold text-xs sm:text-sm text-gray-900 mb-0.5">
-                              {testimonial.name}
-                            </h4>
-                            <p className="text-[10px] sm:text-xs text-gray-500">
-                              {new Date(testimonial.date).toLocaleDateString('en-US', { 
-                                month: 'short', 
-                                year: 'numeric' 
-                              })}
-                            </p>
-                          </div>
+                    {/* Rating and Name */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-1">
+                          {renderStars(testimonials[currentIndex].rating)}
                         </div>
-
-                        {/* Comment */}
-                        <blockquote className="text-gray-700 text-left italic text-xs sm:text-sm leading-relaxed line-clamp-3">
-                          "{testimonial.comment}"
-                        </blockquote>
+                        {testimonials[currentIndex].verified && (
+                          <svg className="w-5 h-5 text-green-600 fill-green-600" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                          </svg>
+                        )}
                       </div>
-                    </motion.div>
-                  );
-                })}
+                      <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-1">
+                        {testimonials[currentIndex].name}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-gray-500">
+                        {new Date(testimonials[currentIndex].date).toLocaleDateString('en-US', { 
+                          month: 'short', 
+                          year: 'numeric' 
+                        })}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Comment */}
+                  <blockquote className="text-gray-700 text-left italic text-sm sm:text-base leading-relaxed">
+                    "{testimonials[currentIndex].comment}"
+                  </blockquote>
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>

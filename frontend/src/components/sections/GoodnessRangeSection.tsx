@@ -24,20 +24,14 @@ const categories = [
     description: "Finely ground powder"
   },
   {
-    name: "Plain Jaggery",
-    href: "/products?category=plain-jaggery",
-    image: "https://images.unsplash.com/photo-1587049633312-d628ae50a8ae?w=400&h=400&fit=crop&q=80",
-    description: "Pure traditional jaggery"
-  },
-  {
     name: "Flavoured Jaggery",
     href: "/products?category=flavoured-jaggery",
     image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop&q=80",
     description: "Aromatic flavored varieties"
   },
   {
-    name: "Gud Combo",
-    href: "/products?category=gud-combo",
+    name: "Jaggery Combo",
+    href: "/products?category=jaggery-combo",
     image: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=400&fit=crop&q=80",
     description: "Complete collection packs"
   }

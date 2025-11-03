@@ -287,10 +287,16 @@ export default function ProductDetailPage() {
   }
 
   
-  const relatedProducts = Array.isArray(allProducts) 
-    ? allProducts
-        .filter(p => p.category === product.category && (p._id !== product._id || p.id !== product.id))
-        .slice(0, 4)
+  // Get related products from same category, or fallback to any products
+  const relatedProducts = Array.isArray(allProducts) && allProducts.length > 0
+    ? (() => {
+        const sameCategory = allProducts.filter(
+          p => p.category === product.category && (p._id !== product._id && p.id !== product.id)
+        );
+        return sameCategory.length > 0 
+          ? sameCategory.slice(0, 4)
+          : allProducts.filter(p => p._id !== product._id && p.id !== product.id).slice(0, 4);
+      })()
     : [];
 
   const currentPrice = selectedVariant ? selectedVariant.price : product.price;
@@ -859,10 +865,11 @@ export default function ProductDetailPage() {
         {/* Product Details - Collapsible Sections (Reference Style) */}
         <div className="mb-8 bg-white">
           {/* Description */}
-          <div className="border-b border-gray-200">
-              <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
-              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
+          <div className="border-b border-gray-200 group">
+              <div
+              onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Description: true }))}
+              onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Description: false }))}
+              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <span className="font-bold text-[#1a472a] text-base">DESCRIPTION</span>
               {expandedSections.Description ? (
@@ -870,10 +877,10 @@ export default function ProductDetailPage() {
               ) : (
                 <PlusIcon className="w-5 h-5 text-[#1a472a]" />
               )}
-              </button>
+              </div>
             {expandedSections.Description && (
               <div className="px-4 pb-6">
-                <p className="text-gray-700 leading-relaxed text-sm">
+                <p className="text-gray-600 font-normal leading-relaxed text-sm">
                   {product.description || 'Premium quality product made with care and expertise. Looking for that comforting taste of tradition? Every drop of our premium jaggery is crafted from the finest sugarcane, offering you authentic, wholesome flavors of India.'}
                 </p>
               </div>
@@ -882,10 +889,11 @@ export default function ProductDetailPage() {
 
           {/* Ingredients */}
           {product.ingredients && product.ingredients.length > 0 && (
-            <div className="border-b border-gray-200">
-              <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, Ingredients: !prev.Ingredients }))}
-                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
+            <div className="border-b border-gray-200 group">
+              <div
+                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Ingredients: true }))}
+                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Ingredients: false }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">INGREDIENTS</span>
                 {expandedSections.Ingredients ? (
@@ -893,10 +901,10 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </button>
+              </div>
               {expandedSections.Ingredients && (
                 <div className="px-4 pb-6">
-                  <ul className="list-disc list-inside space-y-2 text-gray-700 text-sm">
+                  <ul className="list-disc list-inside space-y-2 text-gray-600 font-normal text-sm">
                   {product.ingredients.map((ingredient: string, index: number) => (
                       <li key={index}>{ingredient}</li>
                   ))}
@@ -908,10 +916,11 @@ export default function ProductDetailPage() {
 
           {/* Benefits */}
           {(product.benefits || product.productInfo) && (
-            <div className="border-b border-gray-200">
-              <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, Benefits: !prev.Benefits }))}
-                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
+            <div className="border-b border-gray-200 group">
+              <div
+                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Benefits: true }))}
+                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Benefits: false }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">BENEFITS</span>
                 {expandedSections.Benefits ? (
@@ -919,10 +928,10 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </button>
+              </div>
               {expandedSections.Benefits && (
                 <div className="px-4 pb-6">
-                  <ul className="space-y-2 text-gray-700 text-sm">
+                  <ul className="space-y-2 text-gray-600 font-normal text-sm">
                     {product.benefits ? (
                       product.benefits.map((benefit: string, index: number) => (
                         <li key={index} className="flex items-start">
@@ -958,10 +967,11 @@ export default function ProductDetailPage() {
 
           {/* Storage Info */}
           {(product.shelfLife || product.storageInfo) && (
-            <div className="border-b border-gray-200">
-              <button
-                onClick={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': !prev['Storage Info'] }))}
-                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors"
+            <div className="border-b border-gray-200 group">
+              <div
+                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': true }))}
+                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': false }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">STORAGE INFO</span>
                 {expandedSections['Storage Info'] ? (
@@ -969,10 +979,10 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </button>
+              </div>
               {expandedSections['Storage Info'] && (
                 <div className="px-4 pb-6">
-                  <p className="text-gray-700 text-sm">
+                  <p className="text-gray-600 font-normal text-sm">
                     {product.storageInfo || `Best stored away from direct sunlight and use a dry spoon every time before using. ${product.shelfLife ? `Best before ${product.shelfLife}.` : 'Best before 1 year from the date of packaging.'}`}
                   </p>
                   </div>
@@ -1050,14 +1060,14 @@ export default function ProductDetailPage() {
           </div>
 
           {/* Recommended Products - Between FAQ and Reviews */}
-          {relatedProducts.length > 0 && (
+          {(relatedProducts.length > 0 || allProducts.length > 0) && (
             <div className="my-12">
               <div className="mb-8">
                 <h2 className="text-2xl font-bold text-[#1a472a] mb-2 text-center">Recommended Products</h2>
                 <div className="w-16 h-1 bg-[#1a472a] mx-auto rounded-full"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-                {relatedProducts.map((relProduct: any) => (
+                {(relatedProducts.length > 0 ? relatedProducts : allProducts.filter((p: any) => p._id !== product._id && p.id !== product.id).slice(0, 4)).map((relProduct: any) => (
                   <ProductCard key={relProduct._id || relProduct.id} product={relProduct} />
                 ))}
               </div>
