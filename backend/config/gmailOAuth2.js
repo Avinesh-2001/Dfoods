@@ -113,15 +113,22 @@ async function createTransporter() {
       }
     });
 
-    // Verify transporter configuration with timeout
+    // Verify transporter configuration with timeout (optional - skip if it times out)
     console.log('🔄 Verifying Gmail OAuth2 transporter...');
-    const verifyPromise = transporter.verify();
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Transporter verification timeout after 10 seconds')), 10000)
-    );
-    
-    await Promise.race([verifyPromise, timeoutPromise]);
-    console.log('✅ Gmail OAuth2 transporter configured and verified');
+    try {
+      const verifyPromise = transporter.verify();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Transporter verification timeout after 10 seconds')), 10000)
+      );
+      
+      await Promise.race([verifyPromise, timeoutPromise]);
+      console.log('✅ Gmail OAuth2 transporter configured and verified');
+    } catch (verifyError) {
+      // If verification times out, still use the transporter (it might work for sending)
+      console.warn('⚠️ Transporter verification timed out or failed, but transporter will still be used');
+      console.warn('   The transporter should still work for sending emails');
+      console.warn(`   Error: ${verifyError.message}`);
+    }
     
     return transporter;
   } catch (error) {
