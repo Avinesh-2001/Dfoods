@@ -1,7 +1,23 @@
 # Gmail OAuth2 Authorization URL
 # ============================================
 # 
-# Click this URL to authorize and get your refresh token:
+# ⚠️ IMPORTANT: Fix Redirect URI First!
+# ============================================
+# Before using this URL, you MUST add the redirect URI to Google Cloud Console:
+#
+# 1. Go to: https://console.cloud.google.com/apis/credentials?project=dfoods-477119
+# 2. Click on your OAuth 2.0 Client ID
+# 3. Add to "Authorized redirect URIs":
+#    https://dfoods.onrender.com/oauth2callback
+# 4. Click SAVE
+# 5. Add test user: avijangid7011@gmail.com (if not done)
+# 6. Wait 1-2 minutes
+#
+# Then use the authorization URL below:
+#
+# ============================================
+# Authorization URL:
+# ============================================
 #
 # https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&prompt=consent&response_type=code&client_id=435536199150-45qkuagjh5ou7hudabjestbgfbaff7nk.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fdfoods.onrender.com%2Foauth2callback
 #
@@ -16,14 +32,16 @@
 # ============================================
 # Quick Steps:
 # ============================================
-# 1. Make sure your backend is deployed on Render
-# 2. Click the authorization URL above
-# 3. Sign in with: avijangid7011@gmail.com
-# 4. Click "Allow"
-# 5. Copy the refresh token from the redirected page
-# 6. Add it to Render environment variables
-# 7. Redeploy your backend
-# 8. Remove the /oauth2callback endpoint from server.js
+# 1. ✅ Fix redirect URI in Google Cloud Console (see above)
+# 2. ✅ Add test user: avijangid7011@gmail.com
+# 3. ✅ Make sure backend is deployed on Render
+# 4. ✅ Click the authorization URL above
+# 5. ✅ Sign in with: avijangid7011@gmail.com
+# 6. ✅ Click "Allow"
+# 7. ✅ Copy the refresh token from the redirected page
+# 8. ✅ Add it to Render environment variables
+# 9. ✅ Redeploy your backend
+# 10. ✅ Remove the /oauth2callback endpoint from server.js
 #
 # ============================================
 

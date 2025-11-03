@@ -1,0 +1,39 @@
+# ⚡ QUICK FIX: Route Not Found
+
+## The Problem
+{"message": "Route not found"} = OAuth endpoint not deployed yet
+
+## The Fix (2 Steps)
+
+### Step 1: Deploy to Render
+
+**If using Git (auto-deploy):**
+```bash
+git add backend/server.js
+git commit -m "Add OAuth callback"
+git push origin main
+```
+Wait 2-5 minutes for auto-deploy.
+
+**OR Manual Deploy:**
+1. Go to Render Dashboard
+2. Select backend service
+3. Click "Manual Deploy"
+4. Wait for completion
+
+### Step 2: Test Endpoint
+
+Visit: https://dfoods.onrender.com/oauth2callback
+
+Should see HTML page (not JSON error).
+
+### Step 3: Try Authorization Again
+
+Use the authorization URL - should work now!
+
+---
+
+## That's It!
+
+After deployment, the OAuth flow will complete successfully.
+
