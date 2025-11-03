@@ -46,21 +46,32 @@ async function getAccessToken() {
       refresh_token: REFRESH_TOKEN
     });
 
-    // Add timeout to prevent hanging
+    // Add timeout to prevent hanging (increased to 15 seconds)
     const tokenPromise = oauth2Client.getAccessToken();
     const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Access token request timeout after 10 seconds')), 10000)
+      setTimeout(() => reject(new Error('Access token request timeout after 15 seconds')), 15000)
     );
 
-    const { token } = await Promise.race([tokenPromise, timeoutPromise]);
+    const result = await Promise.race([tokenPromise, timeoutPromise]);
+    const token = result?.token || result;
+    
+    if (!token) {
+      throw new Error('Access token is null or undefined');
+    }
+    
     return token;
   } catch (error) {
     console.error('❌ Error getting Gmail access token:', error.message);
     if (error.message.includes('invalid_grant')) {
       console.error('   🔐 Invalid refresh token. You may need to regenerate it.');
       console.error('   🔐 The refresh token may have been revoked or expired.');
+      console.error('   🔐 Go to: https://myaccount.google.com/permissions');
+      console.error('   🔐 Remove the app and generate a new refresh token.');
     } else if (error.message.includes('timeout')) {
-      console.error('   ⏱️  Request timed out. Check network connectivity.');
+      console.error('   ⏱️  Request timed out. Check network connectivity to Google OAuth servers.');
+    } else if (error.response) {
+      console.error(`   📡 HTTP Status: ${error.response.status}`);
+      console.error(`   📡 Response: ${JSON.stringify(error.response.data)}`);
     }
     throw error;
   }
