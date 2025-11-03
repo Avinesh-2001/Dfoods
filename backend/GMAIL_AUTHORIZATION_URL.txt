@@ -1,0 +1,29 @@
+# Gmail OAuth2 Authorization URL
+# ============================================
+# 
+# Click this URL to authorize and get your refresh token:
+#
+# https://accounts.google.com/o/oauth2/v2/auth?access_type=offline&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fgmail.send&prompt=consent&response_type=code&client_id=435536199150-45qkuagjh5ou7hudabjestbgfbaff7nk.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fdfoods.onrender.com%2Foauth2callback
+#
+# After clicking "Allow", you'll be redirected to:
+# https://dfoods.onrender.com/oauth2callback?code=...
+#
+# The page will display your GMAIL_REFRESH_TOKEN
+#
+# Copy that token and add it to Render environment variables as:
+# GMAIL_REFRESH_TOKEN=<paste_token_here>
+#
+# ============================================
+# Quick Steps:
+# ============================================
+# 1. Make sure your backend is deployed on Render
+# 2. Click the authorization URL above
+# 3. Sign in with: avijangid7011@gmail.com
+# 4. Click "Allow"
+# 5. Copy the refresh token from the redirected page
+# 6. Add it to Render environment variables
+# 7. Redeploy your backend
+# 8. Remove the /oauth2callback endpoint from server.js
+#
+# ============================================
+

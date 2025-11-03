@@ -1,162 +1,121 @@
 // utils/mailer.js
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { sendEmailViaGmail, isGmailConfigured } from '../config/gmailOAuth2.js';
+
 dotenv.config();
 
-// Log email configuration status (without exposing password)
-console.log('📧 Email Configuration Check:');
-console.log(`   EMAIL_USER: ${process.env.EMAIL_USER ? '✅ Set (' + process.env.EMAIL_USER + ')' : '❌ MISSING'}`);
-console.log(`   EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? '✅ Set (' + process.env.EMAIL_PASSWORD.length + ' chars)' : '❌ MISSING'}`);
-if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-  console.warn('⚠️ EMAIL NOT CONFIGURED - Emails will not be sent!');
-  console.warn('   Add EMAIL_USER and EMAIL_PASSWORD to your .env file');
-} else {
-  console.log('✅ Email credentials found in environment');
-}
+// Check which email service is configured
+const USE_GMAIL = isGmailConfigured();
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.EMAIL_USER || process.env.GMAIL_USER;
 
-// Create transporter with better error handling and Render-compatible settings
-let transporter;
-try {
-  transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-    // Render/Production-specific settings
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 5000, // 5 seconds
-    socketTimeout: 10000, // 10 seconds
-    // Retry settings
-    pool: false, // Disable pooling on Render
-    // TLS options
-    tls: {
-      rejectUnauthorized: false, // Allow self-signed certificates if needed
-      ciphers: 'SSLv3'
-    },
-    // Connection retry
-    retries: 2,
-    retryDelay: 1000,
-  });
-} catch (error) {
-  console.error('❌ Failed to create email transporter:', error.message);
-  transporter = null;
-}
-
-// Verify transporter at startup (only if transporter was created)
-if (transporter) {
-  transporter.verify((error, success) => {
-    if (error) {
-      console.error('\n❌ ============================================');
-      console.error('❌ EMAIL CONFIGURATION ERROR');
-      console.error('❌ ============================================');
-      console.error(`❌ Error: ${error.message}`);
-      console.error('\n📋 TROUBLESHOOTING STEPS:');
-      console.error('   1. Check .env file exists in backend/ folder');
-      console.error('   2. EMAIL_USER should be your full Gmail address');
-      console.error('   3. EMAIL_PASSWORD should be a Gmail App Password (16 characters, no spaces)');
-      console.error('   4. To create App Password:');
-      console.error('      - Go to Google Account > Security');
-      console.error('      - Enable 2-Step Verification');
-      console.error('      - Go to App Passwords');
-      console.error('      - Generate password for "Mail"');
-      console.error('      - Copy the 16-character password (no spaces)');
-      console.error('   5. Make sure .env file has NO quotes around values');
-      console.error('      Correct: EMAIL_USER=yourname@gmail.com');
-      console.error('      Wrong:   EMAIL_USER="yourname@gmail.com"');
-      if (error.code) {
-        console.error(`\n   Error Code: ${error.code}`);
-      }
-      if (error.command) {
-        console.error(`   Failed Command: ${error.command}`);
-      }
-      console.error('❌ ============================================\n');
-    } else {
-      console.log('\n✅ ============================================');
-      console.log('✅ Email transporter verified and ready!');
-      console.log('✅ ============================================\n');
-    }
-  });
+if (USE_GMAIL) {
+  console.log('\n✅ ============================================');
+  console.log('✅ Gmail OAuth2 Email Service Ready!');
+  console.log(`   FROM_EMAIL: ${FROM_EMAIL || 'NOT SET'}`);
+  console.log('✅ ============================================\n');
+} else if (SENDGRID_API_KEY) {
+  console.log('\n✅ ============================================');
+  console.log('✅ SendGrid Email Service Ready! (Fallback)');
+  console.log(`   FROM_EMAIL: ${FROM_EMAIL || 'NOT SET'}`);
+  console.log('✅ ============================================\n');
 } else {
-  console.error('\n❌ Email transporter not created - check .env file\n');
+  console.warn('\n⚠️ ============================================');
+  console.warn('⚠️ No email service configured!');
+  console.warn('   Configure Gmail OAuth2 or SendGrid');
+  console.warn('⚠️ ============================================\n');
 }
 
 /**
- * Send email with detailed logs
+ * Send email using Gmail OAuth2 (preferred) or SendGrid (fallback)
  */
 export const sendEmail = async (to, subject, html) => {
   try {
-    // Validate email configuration
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASSWORD) {
-      const error = 'EMAIL_USER or EMAIL_PASSWORD not configured in .env file';
+    // Check configuration
+    if (!FROM_EMAIL) {
+      const error = 'FROM_EMAIL not configured in environment variables';
       console.error(`\n❌ ${error}`);
-      console.error(`   Current EMAIL_USER: ${process.env.EMAIL_USER || 'NOT SET'}`);
-      console.error(`   Current EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? 'SET (' + process.env.EMAIL_PASSWORD.length + ' chars)' : 'NOT SET'}`);
-      console.error(`   Check: backend/.env file exists and has these variables\n`);
+      console.error(`   Add FROM_EMAIL or GMAIL_USER to your environment variables\n`);
       return { success: false, error };
     }
 
-    // Check if transporter exists
-    if (!transporter) {
-      const error = 'Email transporter not initialized. Check email configuration.';
-      console.error(`❌ ${error}`);
-      return { success: false, error };
-    }
-
-    const mailOptions = {
-      from: `"Dfoods" <${process.env.EMAIL_USER}>`,
-      to,
-      subject,
-      html,
-      // Add text version for better compatibility
-      text: html.replace(/<[^>]*>/g, ''), // Strip HTML tags for text version
-    };
-
-    console.log(`\n📧 Attempting to send email:`);
+    console.log(`\n📧 Attempting to send email ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}:`);
     console.log(`   To: ${to}`);
-    console.log(`   From: ${mailOptions.from}`);
+    console.log(`   From: ${FROM_EMAIL}`);
     console.log(`   Subject: ${subject}`);
 
-    const info = await transporter.sendMail(mailOptions);
-    
-    console.log(`✅ Email sent successfully!`);
-    console.log(`   Message ID: ${info.messageId || 'N/A'}`);
-    console.log(`   Response: ${info.response || 'N/A'}`);
-    console.log(`   To: ${to}\n`);
-    
-    return { success: true, info };
+    let result;
+
+    if (USE_GMAIL) {
+      // Use Gmail OAuth2
+      result = await sendEmailViaGmail({
+        to,
+        from: `"Dfoods" <${FROM_EMAIL}>`,
+        subject,
+        html
+      });
+      
+      console.log(`✅ Email sent successfully via Gmail OAuth2!`);
+      console.log(`   Message ID: ${result.messageId || 'N/A'}`);
+      console.log(`   To: ${to}\n`);
+      
+      return { success: true, info: result };
+    } else if (SENDGRID_API_KEY) {
+      // Fallback to SendGrid
+      const sgMail = (await import('@sendgrid/mail')).default;
+      sgMail.setApiKey(SENDGRID_API_KEY);
+
+      const msg = {
+        to,
+        from: {
+          email: FROM_EMAIL,
+          name: 'Dfoods'
+        },
+        subject,
+        html,
+        text: html.replace(/<[^>]*>/g, ''),
+      };
+
+      const response = await sgMail.send(msg);
+      
+      console.log(`✅ Email sent successfully via SendGrid!`);
+      console.log(`   Status Code: ${response[0]?.statusCode || 'N/A'}`);
+      console.log(`   To: ${to}\n`);
+      
+      return { success: true, info: response };
+    } else {
+      const error = 'No email service configured. Configure Gmail OAuth2 or SendGrid.';
+      console.error(`\n❌ ${error}\n`);
+      return { success: false, error };
+    }
   } catch (error) {
     console.error(`\n❌ Error sending email to ${to}:`);
     console.error(`   Error Message: ${error.message}`);
-    if (error.code) {
-      console.error(`   Error Code: ${error.code}`);
-    }
-    if (error.command) {
-      console.error(`   Failed Command: ${error.command}`);
-    }
-    if (error.responseCode) {
-      console.error(`   Response Code: ${error.responseCode}`);
-    }
+    
     if (error.response) {
-      console.error(`   Response: ${error.response}`);
+      console.error(`   Status Code: ${error.response.statusCode}`);
+      console.error(`   Response Body:`, JSON.stringify(error.response.body, null, 2));
     }
     
     // Provide helpful error messages
-    if (error.code === 'EAUTH') {
+    if (USE_GMAIL) {
+      if (error.message.includes('refresh_token')) {
+        console.error(`\n   🔐 OAUTH2 ERROR:`);
+        console.error(`   - Check GMAIL_REFRESH_TOKEN in environment variables`);
+        console.error(`   - Run scripts/generateGmailRefreshToken.js to generate a refresh token\n`);
+      } else if (error.message.includes('access_token')) {
+        console.error(`\n   🔐 OAUTH2 ERROR:`);
+        console.error(`   - Access token expired. Refresh token should auto-refresh.`);
+        console.error(`   - Check GMAIL_CLIENT_ID and GMAIL_CLIENT_SECRET\n`);
+      }
+    } else if (error.code === 401) {
       console.error(`\n   🔐 AUTHENTICATION ERROR:`);
-      console.error(`   - Check EMAIL_USER and EMAIL_PASSWORD in .env`);
-      console.error(`   - Use Gmail App Password (16 chars, no spaces)`);
-      console.error(`   - Enable 2-Step Verification on Google Account\n`);
-    } else if (error.code === 'ECONNECTION') {
-      console.error(`\n   🌐 CONNECTION ERROR:`);
-      console.error(`   - Check your internet connection`);
-      console.error(`   - Gmail SMTP servers may be blocked\n`);
-    } else if (error.code === 'ETIMEDOUT') {
-      console.error(`\n   ⏱️ TIMEOUT ERROR:`);
-      console.error(`   - Gmail servers may be slow`);
-      console.error(`   - Try again in a few minutes\n`);
+      console.error(`   - Check SENDGRID_API_KEY in environment variables`);
+      console.error(`   - Make sure the API key is valid and active\n`);
+    } else if (error.code === 403) {
+      console.error(`\n   🚫 PERMISSION ERROR:`);
+      console.error(`   - Your SendGrid API key may not have send permissions`);
+      console.error(`   - Verify API key permissions in SendGrid dashboard\n`);
     }
     
     console.error(`❌ Full error object:`, error);
@@ -166,5 +125,5 @@ export const sendEmail = async (to, subject, html) => {
   }
 };
 
-export default transporter;
+export default { sendEmail };
  

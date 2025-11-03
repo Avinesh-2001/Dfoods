@@ -1,26 +1,54 @@
-import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { sendEmailViaGmail, isGmailConfigured } from './gmailOAuth2.js';
 
 dotenv.config();
 
-// Create reusable transporter
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // You can change this to other services like 'outlook', 'yahoo', etc.
-  auth: {
-    user: process.env.EMAIL_USER, // Your email
-    pass: process.env.EMAIL_PASSWORD, // Your app password
-  },
-});
+// Check which email service is configured
+const USE_GMAIL = isGmailConfigured();
+const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const FROM_EMAIL = process.env.FROM_EMAIL || process.env.EMAIL_USER || process.env.GMAIL_USER;
 
-// Verify connection configuration
-transporter.verify((error, success) => {
-  if (error) {
-    console.warn('⚠️ Email configuration warning:', error.message);
-    console.log('📧 Email functionality will be limited. Configure proper email credentials for full functionality.');
+if (USE_GMAIL) {
+  console.log('✅ Gmail OAuth2 configured in emailConfig');
+} else if (SENDGRID_API_KEY) {
+  console.log('✅ SendGrid configured in emailConfig (fallback)');
+} else {
+  console.warn('⚠️ No email service configured. Use Gmail OAuth2 or SendGrid.');
+}
+
+// Helper function to send email (prefers Gmail OAuth2, falls back to SendGrid)
+const sendEmail = async (mailOptions) => {
+  if (USE_GMAIL) {
+    // Use Gmail OAuth2
+    return await sendEmailViaGmail(mailOptions);
+  } else if (SENDGRID_API_KEY && FROM_EMAIL) {
+    // Fallback to SendGrid
+    const sgMail = (await import('@sendgrid/mail')).default;
+    if (!sgMail) {
+      throw new Error('SendGrid not available. Install @sendgrid/mail package.');
+    }
+    
+    sgMail.setApiKey(SENDGRID_API_KEY);
+    
+    const msg = {
+      to: mailOptions.to,
+      from: {
+        email: FROM_EMAIL,
+        name: mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'
+      },
+      subject: mailOptions.subject,
+      html: mailOptions.html,
+      text: mailOptions.html?.replace(/<[^>]*>/g, '') || '',
+    };
+
+    return await sgMail.send(msg);
   } else {
-    console.log('✅ Email server is ready to send messages');
+    throw new Error('No email service configured. Configure Gmail OAuth2 or SendGrid.');
   }
-});
+};
+
+// Keep old function name for backward compatibility
+const sendEmailViaSendGrid = sendEmail;
 
 // Send email to admin when new contact form is submitted
 export const sendContactNotificationToAdmin = async (contactData) => {
@@ -90,9 +118,10 @@ export const sendContactNotificationToAdmin = async (contactData) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Admin notification email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Admin notification email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.warn('⚠️ Email sending failed (non-critical):', error.message);
     return { success: false, error: error.message };
@@ -161,9 +190,10 @@ export const sendContactAcknowledgmentToUser = async (contactData) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ User acknowledgment email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ User acknowledgment email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.warn('⚠️ Email sending failed (non-critical):', error.message);
     return { success: false, error: error.message };
@@ -234,9 +264,10 @@ export const sendOrderConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Order confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Order confirmation email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending order confirmation email:', error);
     throw error;
@@ -291,9 +322,10 @@ export const sendPaymentSuccessEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment success email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Payment success email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending payment success email:', error);
     throw error;
@@ -348,9 +380,10 @@ export const sendPaymentErrorEmail = async (order, errorMessage) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment error email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Payment error email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending payment error email:', error);
     throw error;
@@ -404,9 +437,10 @@ export const sendPaymentReminderEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Payment reminder email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Payment reminder email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending payment reminder email:', error);
     throw error;
@@ -466,9 +500,10 @@ export const sendWelcomeEmail = async (user) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Welcome email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Welcome email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending welcome email:', error);
     throw error;
@@ -524,9 +559,10 @@ export const sendShippingConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Shipping confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Shipping confirmation email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending shipping confirmation email:', error);
     throw error;
@@ -580,9 +616,10 @@ export const sendDeliveryConfirmationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Delivery confirmation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Delivery confirmation email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending delivery confirmation email:', error);
     throw error;
@@ -636,9 +673,10 @@ export const sendOrderCancellationEmail = async (order) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Order cancellation email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Order cancellation email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending order cancellation email:', error);
     throw error;
@@ -690,9 +728,10 @@ export const sendDiscountNotificationEmail = async (user, discountCode, discount
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Discount notification email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Discount notification email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending discount notification email:', error);
     throw error;
@@ -747,15 +786,16 @@ export const sendPasswordResetEmail = async (user, resetToken) => {
   };
 
   try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Password reset email sent:', info.messageId);
-    return { success: true, messageId: info.messageId };
+    const response = await sendEmail(mailOptions);
+    const messageId = response.messageId || response[0]?.headers['x-message-id'] || 'N/A';
+    console.log(`✅ Password reset email sent ${USE_GMAIL ? 'via Gmail OAuth2' : 'via SendGrid'}`);
+    return { success: true, messageId };
   } catch (error) {
     console.error('❌ Error sending password reset email:', error);
     throw error;
   }
 };
 
-export default transporter;
+export default { sendEmailViaSendGrid: sendEmail };
 
 
