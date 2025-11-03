@@ -152,15 +152,10 @@ async function createTransporter() {
 export async function getTransporter() {
   try {
     if (transporter) {
-      // Try to verify existing transporter
-      try {
-        await transporter.verify();
-        return transporter;
-      } catch (error) {
-        // Token expired, refresh it
-        console.log('🔄 Refreshing Gmail access token...');
-        transporter = null;
-      }
+      // Skip verification to avoid timeout - just try to use it
+      // Verification times out but sending might still work
+      console.log('✅ Using existing transporter (skipping verification to avoid timeout)');
+      return transporter;
     }
 
     // Create new transporter with fresh token
@@ -185,20 +180,34 @@ export async function sendEmailViaGmail(mailOptions) {
 
     console.log('✅ Transporter ready, sending email...');
     
-    // Send email with timeout
-    const sendPromise = transporter.sendMail({
-      from: `"${mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'}" <${USER_EMAIL}>`,
-      to: mailOptions.to,
-      subject: mailOptions.subject,
-      html: mailOptions.html,
-      text: mailOptions.html?.replace(/<[^>]*>/g, '') || ''
-    });
+    // Send email with longer timeout and retry logic
+    const sendEmailWithRetry = async (attempt = 1, maxAttempts = 3) => {
+      try {
+        const sendPromise = transporter.sendMail({
+          from: `"${mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'}" <${USER_EMAIL}>`,
+          to: mailOptions.to,
+          subject: mailOptions.subject,
+          html: mailOptions.html,
+          text: mailOptions.html?.replace(/<[^>]*>/g, '') || ''
+        });
+        
+        // Increased timeout to 60 seconds for slow connections
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error(`Email send timeout after 60 seconds (attempt ${attempt}/${maxAttempts})`)), 60000)
+        );
+        
+        return await Promise.race([sendPromise, timeoutPromise]);
+      } catch (error) {
+        if (attempt < maxAttempts && (error.message.includes('timeout') || error.message.includes('ECONNRESET'))) {
+          console.log(`⚠️ Attempt ${attempt} failed, retrying... (${error.message})`);
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+          return sendEmailWithRetry(attempt + 1, maxAttempts);
+        }
+        throw error;
+      }
+    };
     
-    const timeoutPromise = new Promise((_, reject) => 
-      setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
-    );
-    
-    const info = await Promise.race([sendPromise, timeoutPromise]);
+    const info = await sendEmailWithRetry();
 
     console.log('✅ Email sent via Gmail OAuth2:', info.messageId);
     return { success: true, messageId: info.messageId, info };
