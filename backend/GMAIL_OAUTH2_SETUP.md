@@ -30,8 +30,8 @@ npm install
 
 ```env
 # Gmail OAuth2 Configuration
-GMAIL_CLIENT_ID=435536199150-45qkuagjh5ou7hudabjestbgfbaff7nk.apps.googleusercontent.com
-GMAIL_CLIENT_SECRET=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
+GMAIL_CLIENT_ID=YOUR_CLIENT_ID_HERE
+GMAIL_CLIENT_SECRET=YOUR_CLIENT_SECRET_HERE
 GMAIL_REDIRECT_URI=https://dfoods.onrender.com
 GMAIL_USER=your-email@gmail.com
 ```
