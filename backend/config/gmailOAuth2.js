@@ -169,25 +169,40 @@ export async function getTransporter() {
  */
 export async function sendEmailViaGmail(mailOptions) {
   try {
+    console.log('🔄 Getting Gmail OAuth2 transporter...');
     const transporter = await getTransporter();
     
     if (!transporter) {
       throw new Error('Gmail OAuth2 transporter not available. Check your configuration.');
     }
 
-    // Send email
-    const info = await transporter.sendMail({
+    console.log('✅ Transporter ready, sending email...');
+    
+    // Send email with timeout
+    const sendPromise = transporter.sendMail({
       from: `"${mailOptions.from?.split('<')[0]?.trim() || 'Dfoods'}" <${USER_EMAIL}>`,
       to: mailOptions.to,
       subject: mailOptions.subject,
       html: mailOptions.html,
       text: mailOptions.html?.replace(/<[^>]*>/g, '') || ''
     });
+    
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
+    );
+    
+    const info = await Promise.race([sendPromise, timeoutPromise]);
 
     console.log('✅ Email sent via Gmail OAuth2:', info.messageId);
     return { success: true, messageId: info.messageId, info };
   } catch (error) {
     console.error('❌ Error sending email via Gmail OAuth2:', error.message);
+    if (error.message.includes('timeout')) {
+      console.error('   ⏱️  Email sending timed out. This might indicate:');
+      console.error('      1. Network connectivity issues from Render to Gmail');
+      console.error('      2. Gmail API rate limiting');
+      console.error('      3. Invalid refresh token causing authentication delays');
+    }
     throw error;
   }
 }
