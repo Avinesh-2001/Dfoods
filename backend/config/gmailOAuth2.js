@@ -46,10 +46,22 @@ async function getAccessToken() {
       refresh_token: REFRESH_TOKEN
     });
 
-    const { token } = await oauth2Client.getAccessToken();
+    // Add timeout to prevent hanging
+    const tokenPromise = oauth2Client.getAccessToken();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Access token request timeout after 10 seconds')), 10000)
+    );
+
+    const { token } = await Promise.race([tokenPromise, timeoutPromise]);
     return token;
   } catch (error) {
     console.error('❌ Error getting Gmail access token:', error.message);
+    if (error.message.includes('invalid_grant')) {
+      console.error('   🔐 Invalid refresh token. You may need to regenerate it.');
+      console.error('   🔐 The refresh token may have been revoked or expired.');
+    } else if (error.message.includes('timeout')) {
+      console.error('   ⏱️  Request timed out. Check network connectivity.');
+    }
     throw error;
   }
 }
@@ -77,8 +89,16 @@ async function createTransporter() {
       return null;
     }
 
-    // Get access token
+    console.log('🔄 Getting Gmail access token...');
+    
+    // Get access token with timeout
     const accessToken = await getAccessToken();
+    
+    if (!accessToken) {
+      throw new Error('Failed to get access token');
+    }
+
+    console.log('✅ Access token obtained');
 
     // Create transporter
     transporter = nodemailer.createTransport({
@@ -93,13 +113,28 @@ async function createTransporter() {
       }
     });
 
-    // Verify transporter configuration
-    await transporter.verify();
+    // Verify transporter configuration with timeout
+    console.log('🔄 Verifying Gmail OAuth2 transporter...');
+    const verifyPromise = transporter.verify();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Transporter verification timeout after 10 seconds')), 10000)
+    );
+    
+    await Promise.race([verifyPromise, timeoutPromise]);
     console.log('✅ Gmail OAuth2 transporter configured and verified');
     
     return transporter;
   } catch (error) {
     console.error('❌ Error creating Gmail OAuth2 transporter:', error.message);
+    if (error.message.includes('timeout')) {
+      console.error('   ⏱️  Connection timeout. This might be a network issue or Gmail API rate limiting.');
+      console.error('   💡 Try again in a few moments. If it persists, check:');
+      console.error('      1. Network connectivity on Render');
+      console.error('      2. Gmail API is accessible');
+      console.error('      3. Refresh token is still valid');
+    } else if (error.message.includes('invalid_grant')) {
+      console.error('   🔐 Invalid refresh token. You need to regenerate it.');
+    }
     return null;
   }
 }
