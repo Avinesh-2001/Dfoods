@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { sendEmail } from '../utils/mailers.js'; // Ensure this path is correct
 import { sendWelcomeEmail } from '../config/emailConfig.js';
+import { isGmailConfigured } from '../config/gmailOAuth2.js';
 
 const router = express.Router();
 const otpStore = new Map();
@@ -15,13 +16,20 @@ router.post('/send-otp', async (req, res) => {
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
     // Check email configuration FIRST before generating OTP
-    const emailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+    // Check for Gmail OAuth2 first, then fallback to old config
+    const gmailConfigured = isGmailConfigured();
+    const sendGridConfigured = !!(process.env.SENDGRID_API_KEY && process.env.FROM_EMAIL);
+    const oldEmailConfigured = !!(process.env.EMAIL_USER && process.env.EMAIL_PASSWORD);
+    const emailConfigured = gmailConfigured || sendGridConfigured || oldEmailConfigured;
     
     if (!emailConfigured) {
       console.error('\n❌ EMAIL CONFIGURATION MISSING:');
-      console.error(`   EMAIL_USER: ${process.env.EMAIL_USER ? 'Set' : '❌ MISSING'}`);
-      console.error(`   EMAIL_PASSWORD: ${process.env.EMAIL_PASSWORD ? 'Set' : '❌ MISSING'}`);
-      console.error('   Email cannot be sent. Check backend/.env file\n');
+      console.error('   Checking Gmail OAuth2:');
+      console.error(`   GMAIL_CLIENT_ID: ${process.env.GMAIL_CLIENT_ID ? 'Set' : '❌ MISSING'}`);
+      console.error(`   GMAIL_CLIENT_SECRET: ${process.env.GMAIL_CLIENT_SECRET ? 'Set' : '❌ MISSING'}`);
+      console.error(`   GMAIL_REFRESH_TOKEN: ${process.env.GMAIL_REFRESH_TOKEN ? 'Set' : '❌ MISSING'}`);
+      console.error(`   GMAIL_USER: ${process.env.GMAIL_USER ? 'Set' : '❌ MISSING'}`);
+      console.error('   Email cannot be sent. Configure Gmail OAuth2 or SendGrid in Render environment variables\n');
       
       // Still generate OTP so user can use it from console
       const otp = crypto.randomInt(100000, 999999).toString();
