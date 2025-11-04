@@ -31,8 +31,8 @@ export default function SiteLoader({ children }: SiteLoaderProps) {
             className="fixed inset-0 bg-white z-50 flex items-center justify-center"
           >
             <div className="text-center">
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-white">
-                <img src="/images/Dfood_logo.png" alt="Dfoods" className="w-full h-full object-contain" />
+              <div className="mx-auto mb-4 flex items-center justify-center">
+                <img src="/images/Dfood_logo.png" alt="Dfoods" className="h-20 w-auto object-contain" />
               </div>
               <h1 className="text-3xl font-bold text-[#8B4513] mb-2">Dfoods</h1>
               <p className="text-lg text-gray-600 mb-6">Pure Traditional Sweetness</p>

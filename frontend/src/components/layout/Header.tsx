@@ -110,9 +110,9 @@ export default function Header() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-full overflow-hidden shadow-md bg-white">
-                {/* Use site logo image */}
-                <img src="/images/Dfood_logo.png" alt="Dfoods" className="w-full h-full object-contain" />
+              <div className="h-10 flex items-center">
+                {/* Use site logo image without cropping */}
+                <img src="/images/Dfood_logo.png" alt="Dfoods" className="h-10 w-auto object-contain" />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">Dfoods</h1>
