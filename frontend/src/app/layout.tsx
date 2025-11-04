@@ -47,7 +47,7 @@ export default function RootLayout({
         <script src="https://js.stripe.com/v3/"></script>
       </head>
       <body
-        className={`${poppins.variable} ${playfair.variable} font-sans antialiased bg-[#FDF6E3]`}
+        className={`${poppins.variable} ${playfair.variable} font-sans antialiased bg-white`}
       >
         <ErrorBoundary>
           <ClientProvider>

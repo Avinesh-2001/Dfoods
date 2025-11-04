@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useCartStore } from '@/lib/store/cartStore';
 import { useSelector } from 'react-redux';
 import { MinusIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
-import { ShareIcon, HeartIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { HeartIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import ProductCard from '@/components/ui/ProductCard';
 import { adminApi } from '@/lib/api/api';
@@ -622,25 +622,22 @@ export default function ProductDetailPage() {
 
             {/* Price Block (Reference Style) */}
             <div className="mb-4">
-              <div className="flex items-baseline gap-3 mb-1">
-                {product.originalPrice && product.originalPrice > currentPrice && (
-                  <span className="text-lg text-gray-500 line-through">Sale price</span>
-                )}
+              <div className="flex items-baseline gap-2 mb-1">
                 <div className="text-3xl font-bold text-black">₹{currentPrice}</div>
                 {product.originalPrice && product.originalPrice > currentPrice && (
-                  <span className="text-lg text-gray-500 line-through">₹{product.originalPrice}</span>
+                  <span className="text-sm text-gray-500 line-through">₹{product.originalPrice}</span>
                 )}
               </div>
               {product.originalPrice && product.originalPrice > currentPrice && (
-                <div className="text-sm text-green-700 font-semibold mb-2">
-                      Save ₹{product.originalPrice - currentPrice}
-                    </div>
-                )}
+                <div className="text-xs text-green-700 font-semibold mb-2">
+                  Save ₹{product.originalPrice - currentPrice}
+                </div>
+              )}
               <div className="text-sm text-gray-600">
                 MRP (Incl. of all taxes)
               </div>
               {product.originalPrice && product.originalPrice > currentPrice && (
-                <div className="text-sm text-gray-500 mt-1">
+                <div className="text-xs text-gray-500 mt-1">
                   {Math.round(((product.originalPrice - currentPrice) / product.originalPrice) * 100)}% off
                 </div>
               )}
@@ -783,20 +780,25 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Share - Images 4 & 5 Reference (Popup Style) */}
+            {/* Share - Icon button triggers popup */}
             <div className="pt-3 border-t border-gray-200 relative share-popup-container">
-              <div className="flex items-center gap-3">
-                <span className="font-semibold text-black text-sm">Share:</span>
-                <button
-                  onClick={() => setShowSharePopup(!showSharePopup)}
-                  className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
-                >
-                  <ShareIcon className="w-5 h-5" />
-                  <span className="text-sm">Share</span>
-                  </button>
-              </div>
+              <button
+                onClick={() => setShowSharePopup(!showSharePopup)}
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                aria-label="Share"
+                title="Share"
+              >
+                {/* Custom share SVG */}
+                <svg width="20" height="20" viewBox="-0.5 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#a3a3a3">
+                  <g strokeWidth="0"/>
+                  <g strokeLinecap="round" strokeLinejoin="round"/>
+                  <g>
+                    <path d="M13.47 4.13998C12.74 4.35998 12.28 5.96 12.09 7.91C6.77997 7.91 2 13.4802 2 20.0802C4.19 14.0802 8.99995 12.45 12.14 12.45C12.34 14.21 12.79 15.6202 13.47 15.8202C15.57 16.4302 22 12.4401 22 9.98006C22 7.52006 15.57 3.52998 13.47 4.13998Z" stroke="#a3a3a3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </g>
+                </svg>
+              </button>
               
-              {/* Share Popup - Opens below button */}
+              {/* Share Popup - Opens below icon */}
               {showSharePopup && (
                 <div className="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-10 min-w-[200px]">
                   <div className="flex items-center gap-6">

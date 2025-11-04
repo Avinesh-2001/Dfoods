@@ -28,11 +28,11 @@ export default function SiteLoader({ children }: SiteLoaderProps) {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-            className="fixed inset-0 bg-[#FDF6E3] z-50 flex items-center justify-center"
+            className="fixed inset-0 bg-white z-50 flex items-center justify-center"
           >
             <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 bg-[#E67E22] rounded-full flex items-center justify-center">
-                <span className="text-3xl text-white font-bold">D</span>
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-white">
+                <img src="/images/Dfood_logo.png" alt="Dfoods" className="w-full h-full object-contain" />
               </div>
               <h1 className="text-3xl font-bold text-[#8B4513] mb-2">Dfoods</h1>
               <p className="text-lg text-gray-600 mb-6">Pure Traditional Sweetness</p>

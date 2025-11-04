@@ -44,6 +44,23 @@ export const sendEmail = async (to, subject, html) => {
     console.log(`   From: ${FROM_EMAIL}`);
     console.log(`   Subject: ${subject}`);
 
+    // Ensure logo header is present in all emails
+    const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL || process.env.APP_PUBLIC_URL || '';
+    const logoUrl = process.env.EMAIL_LOGO_URL || (PUBLIC_BASE_URL ? `${PUBLIC_BASE_URL.replace(/\/$/, '')}/images/Dfood_logo.png` : '');
+
+    const wrappedHtml = `
+      <div style="font-family:Arial,Helvetica,sans-serif;background-color:#ffffff;padding:16px;">
+        <div style="text-align:center;margin-bottom:16px;">
+          ${logoUrl
+            ? `<img src="${logoUrl}" alt="Dfoods" style="height:48px;width:auto;display:inline-block;" />`
+            : `<div style=\"font-weight:700;font-size:20px;color:#1f2937;\">Dfoods</div>`}
+        </div>
+        <div style="background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;">
+          ${html}
+        </div>
+        <div style="text-align:center;color:#6b7280;font-size:12px;margin-top:12px;">© ${new Date().getFullYear()} Dfoods</div>
+      </div>`;
+
     let result;
 
     if (USE_GMAIL) {
@@ -52,7 +69,7 @@ export const sendEmail = async (to, subject, html) => {
         to,
         from: `"Dfoods" <${FROM_EMAIL}>`,
         subject,
-        html
+        html: wrappedHtml
       });
       
       console.log(`✅ Email sent successfully via Gmail OAuth2!`);
@@ -72,8 +89,8 @@ export const sendEmail = async (to, subject, html) => {
           name: 'Dfoods'
         },
         subject,
-        html,
-        text: html.replace(/<[^>]*>/g, ''),
+        html: wrappedHtml,
+        text: wrappedHtml.replace(/<[^>]*>/g, ''),
       };
 
       const response = await sgMail.send(msg);

@@ -67,122 +67,66 @@ export default function TestimonialsSection() {
   };
 
   return (
-    <section className="py-8 sm:py-10 md:py-12 bg-gradient-to-b from-white via-amber-50/20 to-white">
+    <section className="py-8 sm:py-10 md:py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-6 sm:mb-8 md:mb-10"
+          className="text-center mb-6 sm:mb-8"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-gray-900 mb-2 sm:mb-3">
-            What Our Customers Say
-          </h2>
-          <p className="text-sm sm:text-base text-gray-700 max-w-2xl mx-auto px-4">
-            Don't just take our word for it - hear from thousands of satisfied customers who love our authentic jaggery.
-          </p>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900">What Our Customers Say</h2>
         </motion.div>
 
-        <div 
+        {/* 3-card layout like reference */}
+        <div
           className="relative"
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
-          <div className="relative max-w-[90rem] mx-auto">
-            {/* Navigation Arrows */}
-            <button
-              onClick={prevSlide}
-              className="absolute left-0 sm:-left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all z-20 border border-gray-200"
-              aria-label="Previous testimonial"
-            >
-              <ChevronLeftIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-            
-            <button
-              onClick={nextSlide}
-              className="absolute right-0 sm:-right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 rounded-full p-2 sm:p-3 shadow-lg transition-all z-20 border border-gray-200"
-              aria-label="Next testimonial"
-            >
-              <ChevronRightIcon className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
+          <button
+            onClick={prevSlide}
+            className="absolute -left-2 sm:-left-6 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-md border border-gray-200"
+            aria-label="Prev"
+          >
+            <ChevronLeftIcon className="w-5 h-5" />
+          </button>
+          <button
+            onClick={nextSlide}
+            className="absolute -right-2 sm:-right-6 top-1/2 -translate-y-1/2 bg-white text-gray-800 rounded-full p-2 shadow-md border border-gray-200"
+            aria-label="Next"
+          >
+            <ChevronRightIcon className="w-5 h-5" />
+          </button>
 
-            {/* Carousel Container - Slider Style */}
-            <div className="overflow-hidden px-8 sm:px-12">
-              <AnimatePresence mode="wait">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {Array.from({ length: 3 }).map((_, idx) => {
+              const t = testimonials[(currentIndex + idx) % testimonials.length];
+              return (
                 <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, x: 100 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -100 }}
-                  transition={{ duration: 0.5 }}
-                  className="bg-white rounded-lg shadow-lg p-6 sm:p-8 flex flex-col max-w-3xl mx-auto"
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4, delay: idx * 0.1 }}
+                  className="bg-white rounded-2xl shadow-md px-6 py-8 text-center border border-gray-100"
                 >
-                  <div className="flex items-start gap-4 mb-4">
-                    {/* User Avatar */}
-                    <div className="flex-shrink-0">
-                      {getUserAvatar(testimonials[currentIndex].name)}
-                    </div>
-
-                    {/* Rating and Name */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-1">
-                          {renderStars(testimonials[currentIndex].rating)}
-                        </div>
-                        {testimonials[currentIndex].verified && (
-                          <svg className="w-5 h-5 text-green-600 fill-green-600" viewBox="0 0 24 24">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-                          </svg>
-                        )}
-                      </div>
-                      <h4 className="font-bold text-base sm:text-lg text-gray-900 mb-1">
-                        {testimonials[currentIndex].name}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-gray-500">
-                        {new Date(testimonials[currentIndex].date).toLocaleDateString('en-US', { 
-                          month: 'short', 
-                          year: 'numeric' 
-                        })}
-                      </p>
-                    </div>
+                  {/* Stars */}
+                  <div className="flex justify-center gap-1 mb-4">
+                    {renderStars(t.rating)}
                   </div>
-
-                  {/* Comment */}
-                  <blockquote className="text-gray-700 text-left italic text-sm sm:text-base leading-relaxed">
-                    "{testimonials[currentIndex].comment}"
-                  </blockquote>
+                  {/* Quote */}
+                  <p className="text-gray-700 text-sm leading-relaxed mb-6">{t.comment}</p>
+                  {/* Avatar */}
+                  <div className="flex flex-col items-center gap-3">
+                    {getUserAvatar(t.name)}
+                    <div className="text-xs font-semibold tracking-wide text-gray-900 uppercase">{t.name}</div>
+                  </div>
                 </motion.div>
-              </AnimatePresence>
-            </div>
+              );
+            })}
           </div>
         </div>
-
-        {/* Overall Rating */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
-          className="text-center mt-8 sm:mt-10"
-        >
-          <div className="inline-flex flex-col sm:flex-row items-center bg-white rounded-xl px-5 sm:px-6 py-4 sm:py-5 shadow-xl border-2 border-gray-200">
-            <div className="flex items-center mb-3 sm:mb-0 sm:mr-5">
-              <div className="flex items-center gap-0.5">
-                {Array.from({ length: 5 }, (_, i) => (
-                  <svg key={i} className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-400 fill-yellow-400" viewBox="0 0 24 24">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                ))}
-              </div>
-              <span className="ml-2 sm:ml-3 text-lg sm:text-xl font-bold text-gray-900">4.8</span>
-            </div>
-            <div className="text-center sm:text-left sm:border-l-2 sm:border-gray-300 sm:pl-5">
-              <p className="text-[10px] sm:text-xs text-gray-600">Based on</p>
-              <p className="font-bold text-base sm:text-lg text-gray-900">500+ Reviews</p>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
