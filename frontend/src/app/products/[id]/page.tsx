@@ -9,16 +9,24 @@ import { useCartStore } from '@/lib/store/cartStore';
 import { useSelector } from 'react-redux';
 import { MinusIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
 import { HeartIcon, XMarkIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid';
 import toast from 'react-hot-toast';
 import ProductCard from '@/components/ui/ProductCard';
 import { adminApi } from '@/lib/api/api';
 import { products as mockProducts } from '@/lib/data/products';
+import { useWishlistStore } from '@/lib/store/wishlistStore';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addItem } = useCartStore();
   const user = useSelector((state: any) => state.user?.user);
+  const addToWishlist = useWishlistStore((state) => state.addToWishlist);
+  const removeFromWishlist = useWishlistStore((state) => state.removeFromWishlist);
+  const isProductInWishlist = useWishlistStore((state) => state.isInWishlist);
+  const wishlistInitialized = useWishlistStore((state) => state.initialized);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
   
   const [product, setProduct] = useState<any>(null);
   const [allProducts, setAllProducts] = useState<any[]>([]);
@@ -57,6 +65,12 @@ export default function ProductDetailPage() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [failedImages, setFailedImages] = useState<Set<number>>(new Set());
   const [imageErrors, setImageErrors] = useState<Map<number, string>>(new Map());
+
+  useEffect(() => {
+    if (!wishlistInitialized) {
+      fetchWishlist();
+    }
+  }, [wishlistInitialized, fetchWishlist]);
 
   useEffect(() => {
     const checkDevice = () => {
@@ -768,15 +782,43 @@ export default function ProductDetailPage() {
                 BUY NOW
               </button>
               <button 
-                onClick={() => {
-                  // TODO: Implement wishlist functionality
-                  // For now, redirect to wishlist page
-                  router.push('/wishlist');
+                onClick={async () => {
+                  if (!user) {
+                    toast.error('Please login to use wishlist');
+                    router.push('/login');
+                    return;
+                  }
+
+                  if (wishlistLoading) return;
+
+                  setWishlistLoading(true);
+                  const productId = product._id || product.id;
+                  const inWishlist = isProductInWishlist(productId);
+                  const success = inWishlist
+                    ? await removeFromWishlist(productId)
+                    : await addToWishlist(productId);
+
+                  setWishlistLoading(false);
+
+                  if (success) {
+                    toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
+                  } else {
+                    toast.error('Unable to update wishlist');
+                  }
                 }}
-                className="p-2.5 border-2 border-gray-300 rounded-md hover:border-amber-600 transition-colors"
-                title="Add to Wishlist"
+                disabled={wishlistLoading}
+                className={`p-2.5 border-2 rounded-md transition-colors flex items-center justify-center ${
+                  isProductInWishlist(product._id || product.id)
+                    ? 'border-[#E67E22] text-[#E67E22] bg-[#FFF4EA]'
+                    : 'border-gray-300 text-gray-500 hover:border-[#E67E22] hover:text-[#E67E22]'
+                } ${wishlistLoading ? 'cursor-wait opacity-70' : ''}`}
+                title={isProductInWishlist(product._id || product.id) ? 'Remove from wishlist' : 'Add to wishlist'}
               >
-                <HeartIcon className="w-4 h-4" />
+                {isProductInWishlist(product._id || product.id) ? (
+                  <HeartIconSolid className="w-5 h-5" />
+                ) : (
+                  <HeartIcon className="w-5 h-5" />
+                )}
               </button>
             </div>
 
