@@ -48,11 +48,15 @@ export default function WishlistPage() {
   }, [user, initialized, fetchWishlist, clearWishlist, router]);
 
   const moveToCart = async (product: any) => {
+    if (!product) return;
+    
     const productId = product._id || product.id;
+    if (!productId) return;
+    
     addItem({
       id: productId,
-      name: product.name,
-      price: product.price,
+      name: product.name || 'Product',
+      price: product.price || 0,
       image: product.images?.[0] || '',
       quantity: 1,
     });
@@ -98,7 +102,7 @@ export default function WishlistPage() {
             <button
               onClick={() => {
                 wishlistItems.forEach((item) => {
-                  if (item.quantity > 0 || item.inStock) {
+                  if (item && (item.quantity > 0 || item.inStock)) {
                     moveToCart(item);
                   }
                 });
@@ -115,7 +119,7 @@ export default function WishlistPage() {
         <AnimatePresence mode="wait">
           {wishlistItems.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              {wishlistItems.map((item) => (
+              {wishlistItems.filter(item => item && (item._id || item.id)).map((item) => (
                 <motion.div
                   key={item._id || item.id}
                   initial={{ opacity: 0, y: 15 }}
@@ -124,10 +128,10 @@ export default function WishlistPage() {
                   className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
                 >
                   <Link href={`/products/${item._id || item.id}`} className="block relative h-44 bg-gray-50">
-                    {item.images?.[0] && (
+                    {item?.images?.[0] && (
                       <Image
                         src={item.images[0]}
-                        alt={item.name}
+                        alt={item?.name || 'Product'}
                         fill
                         className="object-cover"
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
@@ -148,7 +152,7 @@ export default function WishlistPage() {
 
                   <div className="p-4 space-y-3">
                     <Link href={`/products/${item._id || item.id}`}>
-                      {item.category && (
+                      {item?.category && (
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium mb-2"
                           style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}
@@ -157,22 +161,22 @@ export default function WishlistPage() {
                         </span>
                       )}
                       <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
-                        {item.name}
+                        {item?.name || 'Product'}
                       </h3>
                     </Link>
 
                     <div className="flex items-center justify-between">
                       <p className="text-base font-semibold" style={{ color: THEME_ORANGE }}>
-                        ₹{item.price?.toLocaleString()}
+                        ₹{(item?.price || 0).toLocaleString()}
                       </p>
-                      <span className={`${item.quantity > 0 || item.inStock ? 'text-green-600' : 'text-red-600'} text-xs font-medium`}>
-                        {item.quantity > 0 || item.inStock ? 'In Stock' : 'Out of Stock'}
+                      <span className={`${(item?.quantity > 0 || item?.inStock) ? 'text-green-600' : 'text-red-600'} text-xs font-medium`}>
+                        {(item?.quantity > 0 || item?.inStock) ? 'In Stock' : 'Out of Stock'}
                       </span>
                     </div>
 
                     <button
                       onClick={() => moveToCart(item)}
-                      disabled={!(item.quantity > 0 || item.inStock)}
+                      disabled={!((item?.quantity > 0 || item?.inStock))}
                       className="w-full flex items-center justify-center gap-2 py-2 rounded-md text-sm font-medium text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
                       style={{ backgroundColor: THEME_ORANGE }}
                     >
