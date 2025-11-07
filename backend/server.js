@@ -20,6 +20,8 @@ import contactRoutes from './routes/contactRoutes.js';
 import emailRoutes from './routes/emailRoutes.js';
 import otpRoutes from './routes/otpRoutes.js';
 import testEmailRoutes from './routes/testEmailRoutes.js';
+import returnRoutes from './routes/returnRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
 
 dotenv.config();
 
@@ -35,14 +37,7 @@ app.use(cors({
 app.use(express.json());
 
 // Request logging middleware (minimal)
-app.use((req, res, next) => {
-  // Only log important requests (skip static files and OPTIONS)
-  if (req.method !== 'OPTIONS' && !req.url.includes('favicon')) {
-    const timestamp = new Date().toLocaleTimeString();
-    console.log(`[${timestamp}] ${req.method} ${req.url}`);
-  }
-  next();
-});
+// Logging disabled for production
 
 // Health check endpoint (for Render)
 app.get('/health', (req, res) => {
@@ -52,7 +47,6 @@ app.get('/health', (req, res) => {
 let isDbConnected = false;
 const connectDB = async () => {
   if (process.env.MOCK_MODE === 'true') {
-    console.log('MOCK_MODE enabled - skipping MongoDB connection');
     return true;
   }
   try {
@@ -61,35 +55,30 @@ const connectDB = async () => {
       maxPoolSize: 10,
     });
     isDbConnected = true;
-    console.log('✅ MongoDB Connected');
 
     const defaultAdminEmail = 'admin@dfoods.com';
     const adminExists = await Admin.findOne({ email: defaultAdminEmail });
 
     if (!adminExists) {
-      const newAdmin = await Admin.create({
+      await Admin.create({
         name: 'Default Admin',
         email: defaultAdminEmail,
         password: 'admin123',
         role: 'admin',
       });
-      console.log('✅ Default admin created successfully');
-    } else {
-      console.log('✅ Default admin already exists');
     }
     return true;
   } catch (error) {
-    console.warn('⚠️ MongoDB connection failed. Running in MOCK_MODE. Error:', error.message);
     isDbConnected = false;
     return false;
   }
 };
 
 mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
+  // MongoDB error logged internally
 });
 mongoose.connection.on('disconnected', () => {
-  console.log('MongoDB disconnected. Attempting to reconnect...');
+  // MongoDB disconnected, will attempt to reconnect
 });
 
 // Routes
@@ -151,9 +140,10 @@ app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin/dashboard', adminDashboardRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/admin/emails', emailRoutes);
-// app.use('/api/auth', otpRoutes);
 app.use('/api/auth/otp', otpRoutes);
 app.use('/api/test', testEmailRoutes);
+app.use('/api/returns', returnRoutes);
+app.use('/api/coupons', couponRoutes);
 
 // Root route
 app.get('/', (req, res) => {

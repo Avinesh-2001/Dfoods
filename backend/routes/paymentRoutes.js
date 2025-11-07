@@ -117,7 +117,6 @@ router.post("/confirm", userAuth, async (req, res) => {
       res.json({ message: "Payment confirmed", order });
     }
   } catch (error) {
-    console.error('Payment confirmation error:', error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
@@ -149,13 +148,11 @@ router.post(
         if (order) {
           order.paymentStatus = "paid";
           await order.save();
-          console.log("Payment succeeded for order:", orderId);
         }
         break;
       default:
-        console.log(`Unhandled event type ${event.type}`);
+        break;
     }
-console.log("Stripe key loaded?", process.env.STRIPE_SECRET_KEY ? "Yes" : "No");
 
     res.json({ received: true });
   }

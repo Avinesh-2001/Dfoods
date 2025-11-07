@@ -5,10 +5,14 @@ import userAuth from "../middlewares/userAuth.js";
 import { authenticateAdmin } from "../middlewares/adminAuth.js";
 import { body, validationResult } from "express-validator";
 import { 
+  sendCheckoutPendingEmail,
   sendOrderConfirmationEmail, 
   sendShippingConfirmationEmail, 
   sendDeliveryConfirmationEmail,
-  sendOrderCancellationEmail 
+  sendOrderCancellationEmail,
+  sendOrderEditedEmail,
+  sendPickupOrderEmail,
+  sendOrderInvoiceEmail
 } from "../config/emailConfig.js";
 
 const router = express.Router();
@@ -56,9 +60,9 @@ router.post(
 
       // Send checkout pending email (non-blocking)
       order.populate('items.product user').then((populatedOrder) => {
-        sendOrderConfirmationEmail(populatedOrder).catch(err => 
-          console.error('Checkout pending email error:', err)
-        );
+        sendCheckoutPendingEmail(populatedOrder).catch(err => {
+          // Email failure shouldn't block order creation
+        });
       });
 
       res.status(201).json(order);

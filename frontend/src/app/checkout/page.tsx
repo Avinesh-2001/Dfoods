@@ -48,11 +48,15 @@ export default function CheckoutPage() {
   
   const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [orderSummary, setOrderSummary] = useState({
     subtotal: 0,
     tax: 0,
     serviceCharge: 0,
     delivery: 0,
+    discount: 0,
     total: 0
   });
 
@@ -69,16 +73,18 @@ export default function CheckoutPage() {
 
     // Calculate order summary
     const subtotal = getTotalPrice();
-    const tax = subtotal * 0.18; // 18% GST
-    const serviceCharge = subtotal * 0.02; // 2% service charge
+    const discount = appliedCoupon ? appliedCoupon.discount : 0;
+    const tax = (subtotal - discount) * 0.18; // 18% GST
+    const serviceCharge = (subtotal - discount) * 0.02; // 2% service charge
     const delivery = 0; // Free delivery
-    const total = subtotal + tax + serviceCharge + delivery;
+    const total = subtotal - discount + tax + serviceCharge + delivery;
 
     setOrderSummary({
       subtotal,
       tax,
       serviceCharge,
       delivery,
+      discount,
       total
     });
 
@@ -86,11 +92,53 @@ export default function CheckoutPage() {
     if (user.name) {
       setShippingAddress(prev => ({
         ...prev,
-        fullName: user.name,
-        phone: user.phone || ''
-      }));
+      fullName: user.name,
+      phone: user.phone || ''
+    }));
     }
-  }, [user, items, getTotalPrice, router]);
+  }, [user, items, getTotalPrice, router, appliedCoupon]);
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/coupons/validate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          code: couponCode,
+          subtotal: getTotalPrice()
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.valid) {
+        setAppliedCoupon(data.coupon);
+        toast.success(`Coupon applied! You saved ₹${data.coupon.discount.toFixed(2)}`);
+      } else {
+        toast.error(data.message || 'Invalid coupon code');
+      }
+    } catch (error) {
+      toast.error('Failed to apply coupon');
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode('');
+    toast.success('Coupon removed');
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -500,19 +548,63 @@ export default function CheckoutPage() {
                 ))}
               </div>
 
+              {/* Coupon Code */}
+              <div className="border-t border-gray-200 pt-4 mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Have a coupon code?
+                </label>
+                {!appliedCoupon ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                      placeholder="Enter code"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    />
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={isApplyingCoupon || !couponCode.trim()}
+                      className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {isApplyingCoupon ? 'Applying...' : 'Apply'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                    <div>
+                      <p className="font-semibold text-green-800">{appliedCoupon.code}</p>
+                      <p className="text-sm text-green-600">Discount applied!</p>
+                    </div>
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-red-600 hover:text-red-800 text-sm font-medium"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+              </div>
+
               {/* Price Breakdown */}
               <div className="space-y-3 border-t border-gray-200 pt-4">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal:</span>
                   <span>₹{orderSummary.subtotal.toLocaleString()}</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-green-600 font-semibold">
+                    <span>Discount ({appliedCoupon.code}):</span>
+                    <span>-₹{orderSummary.discount.toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between text-gray-600">
                   <span>GST (18%):</span>
-                  <span>₹{orderSummary.tax.toLocaleString()}</span>
+                  <span>₹{orderSummary.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Service Charge (2%):</span>
-                  <span>₹{orderSummary.serviceCharge.toLocaleString()}</span>
+                  <span>₹{orderSummary.serviceCharge.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>Delivery:</span>
@@ -520,8 +612,13 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between text-xl font-bold text-[#8B4513] border-t border-gray-300 pt-3">
                   <span>Total:</span>
-                  <span>₹{orderSummary.total.toLocaleString()}</span>
+                  <span className="price-text">₹{orderSummary.total.toFixed(2)}</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="text-center text-sm text-green-600 font-medium">
+                    🎉 You saved ₹{orderSummary.discount.toFixed(2)}!
+                  </div>
+                )}
               </div>
 
               {/* Security Badges */}

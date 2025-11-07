@@ -89,6 +89,13 @@ const emailCategories = [
   }
 ];
 
+interface User {
+  _id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
 export default function EmailsPage() {
   const [templates, setTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,6 +105,14 @@ export default function EmailsPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showPreviewModal, setShowPreviewModal] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<EmailTemplate | null>(null);
+  const [showPromotionalModal, setShowPromotionalModal] = useState(false);
+  const [users, setUsers] = useState<User[]>([]);
+  const [promotionalForm, setPromotionalForm] = useState({
+    subject: '',
+    content: '',
+    recipientType: 'all',
+    recipientEmails: [] as string[]
+  });
   const [editForm, setEditForm] = useState({
     name: '',
     subject: '',
@@ -108,6 +123,7 @@ export default function EmailsPage() {
 
   useEffect(() => {
     fetchTemplates();
+    fetchUsers();
   }, []);
 
   const fetchTemplates = async () => {
@@ -115,11 +131,75 @@ export default function EmailsPage() {
       const response = await adminApi.getEmailTemplates();
       setTemplates(response.data || []);
     } catch (error) {
-      console.error('Error fetching templates:', error);
       toast.error('Failed to fetch email templates');
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/emails/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      const data = await response.json();
+      setUsers(data || []);
+    } catch (error) {
+      // Silent fail
+    }
+  };
+
+  const handleSendPromotionalEmail = async () => {
+    if (!promotionalForm.subject || !promotionalForm.content) {
+      toast.error('Subject and content are required');
+      return;
+    }
+
+    if (promotionalForm.recipientType === 'selected' && promotionalForm.recipientEmails.length === 0) {
+      toast.error('Please select at least one recipient');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/emails/send-promotional`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(promotionalForm)
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success(`Promotional emails sent successfully! (${data.success}/${data.total})`);
+        setShowPromotionalModal(false);
+        setPromotionalForm({
+          subject: '',
+          content: '',
+          recipientType: 'all',
+          recipientEmails: []
+        });
+      } else {
+        toast.error(data.error || 'Failed to send promotional emails');
+      }
+    } catch (error) {
+      toast.error('Failed to send promotional emails');
+    }
+  };
+
+  const handleToggleRecipient = (email: string) => {
+    setPromotionalForm(prev => ({
+      ...prev,
+      recipientEmails: prev.recipientEmails.includes(email)
+        ? prev.recipientEmails.filter(e => e !== email)
+        : [...prev.recipientEmails, email]
+    }));
   };
 
   const handleEditTemplate = (template: EmailTemplate) => {
@@ -204,10 +284,13 @@ export default function EmailsPage() {
           <p className="text-gray-600">Manage email notifications and templates</p>
         </div>
         <div className="flex space-x-3">
-          <button className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-          <PlusIcon className="h-5 w-5 mr-2" />
-            Create Template
-        </button>
+          <button 
+            onClick={() => setShowPromotionalModal(true)}
+            className="flex items-center px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+          >
+            <EnvelopeIcon className="h-5 w-5 mr-2" />
+            Send Promotional Email
+          </button>
         </div>
       </div>
 
@@ -408,6 +491,117 @@ export default function EmailsPage() {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Promotional Email Modal */}
+      {showPromotionalModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <h3 className="text-lg font-semibold mb-4">📧 Send Promotional Email</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  value={promotionalForm.subject}
+                  onChange={(e) => setPromotionalForm({...promotionalForm, subject: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  placeholder="e.g., Special 20% Off on All Products!"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email Content (HTML supported)
+                </label>
+                <textarea
+                  value={promotionalForm.content}
+                  onChange={(e) => setPromotionalForm({...promotionalForm, content: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  rows={10}
+                  placeholder="Enter your promotional email content. You can use {{name}} to personalize."
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Tip: Use {"{{name}}"} to insert customer names. The email will be wrapped with company logo and footer automatically.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Recipients
+                </label>
+                <div className="space-y-2">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="recipientType"
+                      checked={promotionalForm.recipientType === 'all'}
+                      onChange={() => setPromotionalForm({...promotionalForm, recipientType: 'all'})}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500"
+                    />
+                    <span className="ml-2 text-sm">Send to all users ({users.length} users)</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="recipientType"
+                      checked={promotionalForm.recipientType === 'selected'}
+                      onChange={() => setPromotionalForm({...promotionalForm, recipientType: 'selected'})}
+                      className="h-4 w-4 text-amber-600 focus:ring-amber-500"
+                    />
+                    <span className="ml-2 text-sm">Send to selected users</span>
+                  </label>
+                </div>
+              </div>
+
+              {promotionalForm.recipientType === 'selected' && (
+                <div className="border rounded-lg p-4 max-h-60 overflow-y-auto">
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    Select Users ({promotionalForm.recipientEmails.length} selected)
+                  </p>
+                  <div className="space-y-2">
+                    {users.map(user => (
+                      <label key={user._id} className="flex items-center py-1">
+                        <input
+                          type="checkbox"
+                          checked={promotionalForm.recipientEmails.includes(user.email)}
+                          onChange={() => handleToggleRecipient(user.email)}
+                          className="h-4 w-4 text-amber-600 focus:ring-amber-500 rounded"
+                        />
+                        <span className="ml-2 text-sm">{user.name} ({user.email})</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  onClick={() => {
+                    setShowPromotionalModal(false);
+                    setPromotionalForm({
+                      subject: '',
+                      content: '',
+                      recipientType: 'all',
+                      recipientEmails: []
+                    });
+                  }}
+                  className="px-4 py-2 text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSendPromotionalEmail}
+                  className="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+                >
+                  Send Email
+                </button>
+              </div>
             </div>
           </div>
         </div>

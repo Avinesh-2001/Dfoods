@@ -71,6 +71,9 @@ export default function Footer() {
               <Link href="/contact" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Contact Us
               </Link>
+              <Link href="/faq" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+                FAQ
+              </Link>
               <Link href="/rewards" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
                 Rewards
               </Link>

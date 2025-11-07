@@ -22,7 +22,6 @@ router.post(
 
     const { name, email, password } = req.body;
     try {
-      console.log('Register attempt:', { name, email }); // Debug
       const existingUser = await User.findOne({ email });
       if (existingUser) return res.status(400).json({ message: "User already exists" });
 
@@ -33,14 +32,12 @@ router.post(
       try {
         await sendWelcomeEmail(user);
       } catch (emailError) {
-        console.error('Welcome email failed:', emailError);
         // Don't fail registration if email fails
       }
 
       const token = jwt.sign({ id: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: "1d" });
       res.status(201).json({ token, user: { id: user._id, name, email } });
     } catch (error) {
-      console.error('Register error:', error); // Debug
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }
@@ -59,23 +56,19 @@ router.post(
 
     const { email, password } = req.body;
     try {
-      console.log('Login attempt:', { email }); // Debug
       const user = await User.findOne({ email });
       if (!user) {
-        console.log('User not found:', email); // Debug
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
       const isMatch = await user.matchPassword(password);
       if (!isMatch) {
-        console.log('Password mismatch for:', email); // Debug
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
       const token = jwt.sign({ id: user._id, role: 'user' }, process.env.JWT_SECRET, { expiresIn: "1d" });
       res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
     } catch (error) {
-      console.error('Login error:', error); // Debug
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }
@@ -86,7 +79,6 @@ router.get("/profile", userAuth, async (req, res) => {
   try {
     res.json({ user: req.user });
   } catch (error) {
-    console.error('Profile error:', error); // Debug
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
@@ -114,13 +106,12 @@ router.put(
       await user.save();
       res.json({ user: { id: user._id, name: user.name, email: user.email } });
     } catch (error) {
-      console.error('Update profile error:', error); // Debug
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }
 );
 
-// Forgot password (placeholder for email service)
+// Forgot password
 router.post(
   "/forgot-password",
   [body("email").isEmail().withMessage("Invalid email")],
@@ -134,9 +125,17 @@ router.post(
       if (!user) return res.status(404).json({ message: "User not found" });
 
       const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-      res.json({ message: "Password reset token generated", resetToken });
+      
+      // Send password reset email
+      const { sendPasswordResetEmail } = await import('../config/emailConfig.js');
+      try {
+        await sendPasswordResetEmail(user, resetToken);
+      } catch (emailError) {
+        // Don't fail the request if email fails
+      }
+      
+      res.json({ message: "Password reset link sent to email", resetToken });
     } catch (error) {
-      console.error('Forgot password error:', error); // Debug
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }
@@ -161,7 +160,6 @@ router.post(
       await user.save();
       res.json({ message: "Password reset successfully" });
     } catch (error) {
-      console.error('Reset password error:', error); // Debug
       res.status(400).json({ message: "Invalid or expired token", error: error.message });
     }
   }

@@ -111,7 +111,70 @@ router.post('/send', authenticateAdmin, async (req, res) => {
     if (result.success) res.json({ message: 'Email sent successfully' });
     else res.status(500).json({ error: result.error });
   } catch (error) {
-    console.error('Error sending email:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Send promotional email to selected users
+router.post('/send-promotional', authenticateAdmin, async (req, res) => {
+  try {
+    const { subject, content, recipientType, recipientEmails } = req.body;
+    
+    if (!subject || !content) {
+      return res.status(400).json({ error: 'Subject and content are required' });
+    }
+
+    let recipients = [];
+    
+    if (recipientType === 'all') {
+      // Send to all users
+      const User = (await import('../models/User.js')).default;
+      const users = await User.find({}, 'email name');
+      recipients = users.map(u => ({ email: u.email, name: u.name }));
+    } else if (recipientType === 'selected' && recipientEmails && recipientEmails.length > 0) {
+      // Send to selected emails
+      const User = (await import('../models/User.js')).default;
+      const users = await User.find({ email: { $in: recipientEmails } }, 'email name');
+      recipients = users.map(u => ({ email: u.email, name: u.name }));
+    } else {
+      return res.status(400).json({ error: 'Invalid recipient type or no recipients specified' });
+    }
+
+    if (recipients.length === 0) {
+      return res.status(400).json({ error: 'No recipients found' });
+    }
+
+    // Send emails to all recipients
+    const { sendPromotionalEmail } = await import('../config/emailConfig.js');
+    const results = await Promise.allSettled(
+      recipients.map(recipient => {
+        // Replace {{name}} placeholder if present
+        const personalizedContent = content.replace(/{{name}}/g, recipient.name || 'Valued Customer');
+        return sendPromotionalEmail(recipient.email, subject, personalizedContent);
+      })
+    );
+
+    const successCount = results.filter(r => r.status === 'fulfilled').length;
+    const failureCount = results.filter(r => r.status === 'rejected').length;
+
+    res.json({
+      message: `Promotional emails sent`,
+      total: recipients.length,
+      success: successCount,
+      failed: failureCount
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get all users for email selection
+router.get('/users', authenticateAdmin, async (req, res) => {
+  try {
+    const User = (await import('../models/User.js')).default;
+    const users = await User.find({}, 'email name createdAt').sort({ createdAt: -1 });
+    res.json(users);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
