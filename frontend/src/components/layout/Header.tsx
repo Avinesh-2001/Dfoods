@@ -142,17 +142,18 @@ export default function Header() {
               ))}
             </nav>
 
-            {/* Desktop Icons */}
-            <div className="hidden md:flex items-center space-x-4">
+            {/* Right Side - Desktop and Mobile */}
+            <div className="flex items-center space-x-4">
+              {/* Desktop Icons - Only visible on desktop */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2 text-white/90 hover:text-white transition-colors relative"
+                className="hidden md:block p-2 text-white/90 hover:text-white transition-colors relative"
                 title="Search Products"
               >
                 <MagnifyingGlassIcon className="w-5 h-5" />
               </button>
 
-              <div className="relative z-[100] profile-dropdown">
+              <div className="hidden md:block relative z-[100] profile-dropdown">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="p-2 text-white/90 hover:text-white transition-colors"
@@ -236,7 +237,7 @@ export default function Header() {
 
               <button
                 onClick={toggleCart}
-                className="relative p-2 text-white/90 hover:text-white transition-colors"
+                className="hidden md:block relative p-2 text-white/90 hover:text-white transition-colors"
               >
                 <ShoppingCartIcon className="w-5 h-5" />
                 {totalItems > 0 && (
@@ -251,9 +252,10 @@ export default function Header() {
                 )}
               </button>
 
+              {/* Mobile Hamburger - Always visible on mobile */}
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-2.5 bg-white rounded-lg shadow-lg hover:bg-white transition-all z-[60]"
+                className="md:hidden p-2.5 bg-white rounded-lg shadow-lg hover:bg-white transition-all"
                 aria-label="Menu"
               >
                 {isOpen ? (
