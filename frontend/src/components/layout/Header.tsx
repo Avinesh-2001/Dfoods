@@ -120,7 +120,7 @@ export default function Header() {
                 <img
                   src="/images/Dfood_logo.png"
                   alt="Dfoods"
-                  className="h-12 md:h-10 w-auto object-contain"
+                  className="h-16 md:h-16 w-auto object-contain"
                 />
               </div>
             </Link>
