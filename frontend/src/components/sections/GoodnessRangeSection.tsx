@@ -65,7 +65,7 @@ export default function GoodnessRangeSection() {
             spaceBetween={20}
             slidesPerView={2.5}
             centeredSlides={false}
-            loop={categories.length > 3}
+            loop={false}
             autoplay={{
               delay: 3000,
               disableOnInteraction: false,

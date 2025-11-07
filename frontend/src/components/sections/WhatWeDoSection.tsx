@@ -222,7 +222,7 @@ export default function WhatWeDoSection() {
                 spaceBetween={20}
                 slidesPerView={1.1}
                 centeredSlides={true}
-                loop={whatWeDoItems.length > 2}
+                loop={false}
                 autoplay={{
                   delay: 3500,
                   disableOnInteraction: false,
