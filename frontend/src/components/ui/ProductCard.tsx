@@ -139,13 +139,13 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
           <button
             onClick={toggleWishlist}
             disabled={isLoading}
-            className="absolute top-2 right-2 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all duration-200 disabled:opacity-50"
+            className="absolute top-2 right-2 z-10 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:bg-white transition-all duration-200 disabled:opacity-50 hover:scale-110"
             aria-label={isInWishlist ? 'Remove from wishlist' : 'Add to wishlist'}
           >
             {isInWishlist ? (
-              <HeartIconSolid className="w-5 h-5 text-red-500" />
+              <HeartIconSolid className="w-5 h-5 text-amber-600" />
             ) : (
-              <HeartIcon className="w-5 h-5 text-gray-700 hover:text-red-500" />
+              <HeartIcon className="w-5 h-5 text-gray-600 hover:text-amber-600" />
             )}
           </button>
         </div>
