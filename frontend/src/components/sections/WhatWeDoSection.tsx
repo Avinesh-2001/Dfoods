@@ -142,12 +142,27 @@ export default function WhatWeDoSection() {
           font-weight: 700;
           color: #000000;
           margin-bottom: 10px;
+          text-align: center;
         }
 
         .section-subtitle {
           font-size: 0.95rem;
           color: #666666;
           margin-bottom: 40px;
+          text-align: center;
+        }
+
+        .card-up {
+          transform: translateY(-30px);
+        }
+
+        .card-down {
+          transform: translateY(30px);
+        }
+
+        .what-we-do-card:hover {
+          transform: translateY(0px) !important;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
 
         @media (max-width: 768px) {
@@ -172,6 +187,11 @@ export default function WhatWeDoSection() {
 
           .section-title {
             font-size: 1.75rem;
+            text-align: center;
+          }
+
+          .section-subtitle {
+            text-align: center;
           }
         }
       `}</style>
@@ -229,7 +249,7 @@ export default function WhatWeDoSection() {
               </Swiper>
             </div>
 
-            {/* Desktop Grid - ORIGINAL LAYOUT */}
+            {/* Desktop Grid - Wave Effect */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {whatWeDoItems.map((item, index) => (
                 <motion.div
@@ -238,7 +258,7 @@ export default function WhatWeDoSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -10 }}
+                  className={index % 2 === 0 ? 'card-down' : 'card-up'}
                 >
                   <div className="what-we-do-card">
                     <div className="icon-circle">

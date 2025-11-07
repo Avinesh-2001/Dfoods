@@ -81,7 +81,7 @@ export default function TestimonialsSection() {
           viewport={{ once: true }}
           className="text-center mb-6 sm:mb-8"
         >
-          <h2 className="text-2xl sm:text-3xl font-display font-bold text-gray-900">What Our Customers Say</h2>
+          <h2 className="text-2xl sm:text-3xl font-display font-bold text-black">What Our Customers Say</h2>
         </motion.div>
 
         {/* Mobile: Single Swiper */}

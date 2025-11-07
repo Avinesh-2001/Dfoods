@@ -73,10 +73,10 @@ export default function ContactPage() {
           transition={{ duration: 0.8 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#F97316] mb-4">
+          <h1 className="text-3xl sm:text-4xl font-bold text-black mb-4">
             Contact Us
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-black max-w-2xl mx-auto">
             Get in touch with us for any questions, feedback, or support. We'd love to hear from you!
           </p>
         </motion.div>
@@ -100,7 +100,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-[#F97316] mb-2">Address</h3>
-                    <p className="text-gray-600 leading-relaxed">
+                    <p className="text-black leading-relaxed">
                       Panchaganga Farm Solutions Pvt Ltd<br />
                       B-12, Part-2, MIDC, Waluj, UIT<br />
                       431136 Bhiwadi, India
@@ -117,7 +117,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-[#F97316] mb-2">Phone</h3>
                     <a 
                       href="tel:+918010906093" 
-                      className="text-gray-600 hover:text-[#F97316] transition-colors"
+                      className="text-black hover:text-[#F97316] transition-colors"
                     >
                       +91 8010906093
                     </a>
@@ -133,7 +133,7 @@ export default function ContactPage() {
                     <h3 className="font-semibold text-[#F97316] mb-2">Email</h3>
                     <a 
                       href="mailto:care@dfoods.in" 
-                      className="text-gray-600 hover:text-[#F97316] transition-colors"
+                      className="text-black hover:text-[#F97316] transition-colors"
                     >
                       care@dfoods.in
                     </a>
@@ -147,7 +147,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-[#F97316] mb-2">Business Hours</h3>
-                    <div className="text-gray-600 space-y-1">
+                    <div className="text-black space-y-1">
                       <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
                       <p>Saturday: 9:00 AM - 4:00 PM</p>
                       <p>Sunday: Closed</p>
@@ -195,7 +195,7 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-sm font-medium text-black mb-2">
                       Full Name *
                     </label>
                     <input
@@ -211,7 +211,7 @@ export default function ContactPage() {
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
                       Email Address *
                     </label>
                     <input
@@ -228,7 +228,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="phone" className="block text-sm font-medium text-black mb-2">
                     Phone Number
                   </label>
                   <input
@@ -243,7 +243,7 @@ export default function ContactPage() {
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="message" className="block text-sm font-medium text-black mb-2">
                     Message *
                   </label>
                   <textarea

@@ -27,7 +27,7 @@ export default function Footer() {
                 <MapPinIcon className="w-5 h-5 text-[#F97316] mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-sm sm:text-base text-gray-900">Panchaganga Farm Solutions Pvt Ltd</p>
-                  <p className="text-xs sm:text-sm text-gray-700">
+                  <p className="text-xs sm:text-sm text-black">
                     B-12, Part-2, MIDC, Waluj, UIT, 431136 Bhiwadi, India
                   </p>
                 </div>
@@ -37,7 +37,7 @@ export default function Footer() {
                 <PhoneIcon className="w-5 h-5 text-[#F97316] flex-shrink-0" />
                 <a 
                   href="tel:+918010906093" 
-                  className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors"
+                  className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors"
                 >
                   +91 8010906093
                 </a>
@@ -47,7 +47,7 @@ export default function Footer() {
                 <EnvelopeIcon className="w-5 h-5 text-[#F97316] flex-shrink-0" />
                 <a 
                   href="mailto:care@dfoods.in" 
-                  className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors"
+                  className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors"
                 >
                   care@dfoods.in
                 </a>
@@ -59,25 +59,25 @@ export default function Footer() {
           <div className="space-y-4">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Quick Links</h3>
             <div className="grid grid-cols-2 gap-2">
-              <Link href="/" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 Home
               </Link>
-              <Link href="/about" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/about" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 About Us
               </Link>
-              <Link href="/products" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/products" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 Products
               </Link>
-              <Link href="/contact" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/contact" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 Contact Us
               </Link>
-              <Link href="/faq" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/faq" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 FAQ
               </Link>
-              <Link href="/rewards" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/rewards" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 Rewards
               </Link>
-              <Link href="/account" className="text-xs sm:text-sm text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/account" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
                 My Account
               </Link>
             </div>
@@ -111,7 +111,7 @@ export default function Footer() {
               <div className="flex space-x-4">
                 <motion.a
                   href="#"
-                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-gray-700"
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-black"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -119,7 +119,7 @@ export default function Footer() {
                 </motion.a>
                 <motion.a
                   href="#"
-                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-gray-700"
+                  className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center hover:bg-[#F97316] hover:text-white transition-colors text-black"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -142,16 +142,16 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             {/* Legal Links */}
             <div className="flex flex-wrap justify-center md:justify-start space-x-6 text-xs sm:text-sm">
-              <Link href="/privacy" className="text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/privacy" className="text-black hover:text-[#F97316] transition-colors">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/terms" className="text-black hover:text-[#F97316] transition-colors">
                 Terms of Use
               </Link>
-              <Link href="/shipping" className="text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/shipping" className="text-black hover:text-[#F97316] transition-colors">
                 Shipping & Return Policy
               </Link>
-              <Link href="/disclaimer" className="text-gray-700 hover:text-[#F97316] transition-colors">
+              <Link href="/disclaimer" className="text-black hover:text-[#F97316] transition-colors">
                 Disclaimer
               </Link>
             </div>

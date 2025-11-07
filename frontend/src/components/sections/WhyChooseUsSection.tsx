@@ -263,9 +263,13 @@ export default function WhyChooseUsSection() {
         }
 
         @media (max-width: 768px) {
+          .single-card-container {
+            text-align: center;
+          }
           .icon-container {
             width: 160px;
             height: 160px;
+            margin: 0 auto 20px;
           }
           .circle-base,
           .circle-gradient-1,
@@ -278,12 +282,15 @@ export default function WhyChooseUsSection() {
           }
           .feature-title {
             font-size: 1.5rem;
+            text-align: center;
           }
           .feature-text {
             font-size: 0.85rem;
+            text-align: center;
           }
           .section-title {
             font-size: 2rem;
+            text-align: center;
           }
         }
       `}</style>

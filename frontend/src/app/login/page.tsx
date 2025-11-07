@@ -86,8 +86,8 @@ export default function LoginPage() {
             <div className="w-16 h-16 bg-[#E67E22] rounded-full flex items-center justify-center mx-auto mb-4">
               <UserIcon className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-[#8B4513]">Welcome Back</h1>
-            <p className="text-gray-600 mt-2">Sign in to your Dfoods account</p>
+            <h1 className="text-2xl font-bold text-black">Welcome Back</h1>
+            <p className="text-black mt-2">Sign in to your Dfoods account</p>
           </div>
 
           {error && <p className="text-red-500 text-center mb-4">{error}</p>}

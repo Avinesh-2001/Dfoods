@@ -911,9 +911,8 @@ export default function ProductDetailPage() {
         <div className="mb-8 bg-white">
           {/* Description */}
           <div className="border-b border-gray-200 group">
-              <div
-              onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Description: true }))}
-              onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Description: false }))}
+              <button
+              onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
               className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
             >
               <span className="font-bold text-[#1a472a] text-base">DESCRIPTION</span>
@@ -935,9 +934,8 @@ export default function ProductDetailPage() {
           {/* Ingredients */}
           {product.ingredients && product.ingredients.length > 0 && (
             <div className="border-b border-gray-200 group">
-              <div
-                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Ingredients: true }))}
-                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Ingredients: false }))}
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, Ingredients: !prev.Ingredients }))}
                 className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">INGREDIENTS</span>
@@ -946,7 +944,7 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </div>
+              </button>
               {expandedSections.Ingredients && (
                 <div className="px-4 pb-6">
                   <ul className="list-disc list-inside space-y-2 text-gray-600 body-text text-xs">
@@ -962,9 +960,8 @@ export default function ProductDetailPage() {
           {/* Benefits */}
           {(product.benefits || product.productInfo) && (
             <div className="border-b border-gray-200 group">
-              <div
-                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, Benefits: true }))}
-                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, Benefits: false }))}
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, Benefits: !prev.Benefits }))}
                 className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">BENEFITS</span>
@@ -973,7 +970,7 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </div>
+              </button>
               {expandedSections.Benefits && (
                 <div className="px-4 pb-6">
                   <ul className="space-y-2 text-gray-600 body-text text-xs">
@@ -1013,9 +1010,8 @@ export default function ProductDetailPage() {
           {/* Storage Info */}
           {(product.shelfLife || product.storageInfo) && (
             <div className="border-b border-gray-200 group">
-              <div
-                onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': true }))}
-                onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': false }))}
+              <button
+                onClick={() => setExpandedSections(prev => ({ ...prev, 'Storage Info': !prev['Storage Info'] }))}
                 className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
               >
                 <span className="font-bold text-[#1a472a] text-base">STORAGE INFO</span>
@@ -1024,7 +1020,7 @@ export default function ProductDetailPage() {
                 ) : (
                   <PlusIcon className="w-5 h-5 text-[#1a472a]" />
                 )}
-              </div>
+              </button>
               {expandedSections['Storage Info'] && (
                 <div className="px-4 pb-6">
                   <p className="text-gray-600 font-normal text-sm">
@@ -1041,9 +1037,8 @@ export default function ProductDetailPage() {
             <div className="space-y-0">
               {/* FAQ Question 1 */}
               <div className="border-b border-gray-200 py-4 group">
-                <div
-                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': true }))}
-                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': false }))}
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ1': !prev.FAQ1 }))}
                   className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">WHAT DOES "ORGANIC" MEAN?</span>
@@ -1052,7 +1047,7 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </div>
+                </button>
                 {expandedSections['FAQ1'] && (
                   <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Organic jaggery means it is made from sugarcane grown without chemical fertilizers, pesticides, or synthetic additives. Our jaggery is certified organic and processed using traditional methods that preserve natural nutrients and flavors.
@@ -1062,9 +1057,8 @@ export default function ProductDetailPage() {
 
               {/* FAQ Question 2 */}
               <div className="border-b border-gray-200 py-4 group">
-                <div
-                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': true }))}
-                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': false }))}
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ2': !prev.FAQ2 }))}
                   className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">WHAT MAKES THE DFOODS JAGGERY SPECIAL?</span>
@@ -1073,7 +1067,7 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </div>
+                </button>
                 {expandedSections['FAQ2'] && (
                   <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Our jaggery is made using traditional methods passed down through generations. We use firewood and sun-baked fuel for processing. Fresh sugarcane juice is boiled, cooled naturally, and processed in small batches daily. We do not use any chemicals, preservatives, or artificial additives. It's simply 100% natural, offering you the best of what nature has to offer.
@@ -1083,9 +1077,8 @@ export default function ProductDetailPage() {
 
               {/* FAQ Question 3 */}
               <div className="py-4 group">
-                <div
-                  onMouseEnter={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': true }))}
-                  onMouseLeave={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': false }))}
+                <button
+                  onClick={() => setExpandedSections(prev => ({ ...prev, 'FAQ3': !prev.FAQ3 }))}
                   className="w-full flex items-center justify-between text-left cursor-pointer"
                 >
                   <span className="font-bold text-[#1a472a] text-sm">HOW SHOULD I STORE THIS JAGGERY?</span>
@@ -1094,7 +1087,7 @@ export default function ProductDetailPage() {
                   ) : (
                     <PlusIcon className="w-4 h-4 text-[#1a472a] flex-shrink-0 ml-4" />
                   )}
-                </div>
+                </button>
                 {expandedSections['FAQ3'] && (
                   <div className="mt-3 text-gray-600 font-normal text-sm leading-relaxed">
                     Store in a cool, dry place away from direct sunlight. Always use a dry spoon to avoid moisture. Keep it in an airtight container to maintain freshness. Best before 1 year from the date of packaging.

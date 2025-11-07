@@ -116,11 +116,11 @@ export default function Header() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center space-x-2">
-              <div className="h-10 flex items-center">
+              <div className="h-16 flex items-center">
                 <img
                   src="/images/Dfood_logo.png"
                   alt="Dfoods"
-                  className="h-10 w-auto object-contain"
+                  className="h-12 md:h-10 w-auto object-contain"
                 />
               </div>
             </Link>
@@ -253,13 +253,13 @@ export default function Header() {
 
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-2 text-white hover:text-white transition-colors z-50"
+                className="md:hidden p-2 transition-colors z-50"
                 aria-label="Menu"
               >
                 {isOpen ? (
-                  <XMarkIcon className="w-7 h-7 text-white" />
+                  <XMarkIcon className="w-7 h-7 text-black" />
                 ) : (
-                  <Bars3Icon className="w-7 h-7 text-white" />
+                  <Bars3Icon className="w-7 h-7 text-black" />
                 )}
               </button>
             </div>

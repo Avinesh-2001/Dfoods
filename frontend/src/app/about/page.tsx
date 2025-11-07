@@ -43,7 +43,7 @@ export default function AboutPage() {
               <h2 className="text-3xl sm:text-4xl font-bold text-[#F97316] mb-6">
                 Our Story
               </h2>
-              <div className="space-y-4 text-gray-600 leading-relaxed">
+              <div className="space-y-4 text-black leading-relaxed">
                 <p>
                   Dfoods was born from a deep-rooted passion for preserving the authentic taste of traditional Indian jaggery. 
                   Founded in 1983 by Rajesh Kumar, our journey began in a small village in Maharashtra with a simple mission: 
@@ -74,7 +74,7 @@ export default function AboutPage() {
                       <span className="text-6xl text-white">🏭</span>
                     </div>
                     <h3 className="text-2xl font-bold text-[#F97316]">Traditional Processing</h3>
-                    <p className="text-gray-600 mt-2">Since 1983</p>
+                    <p className="text-black mt-2">Since 1983</p>
                   </div>
                 </div>
               </div>
@@ -96,7 +96,7 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-6">
               Our Mission
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-xl text-black max-w-3xl mx-auto">
               To preserve and promote the authentic taste of traditional Indian jaggery while ensuring 
               the highest quality, purity, and sustainability in everything we do.
             </p>
@@ -130,7 +130,7 @@ export default function AboutPage() {
               >
                 <div className="text-4xl mb-4">{item.icon}</div>
                 <h3 className="text-xl font-bold text-[#F97316] mb-3">{item.title}</h3>
-                <p className="text-gray-600">{item.description}</p>
+                <p className="text-black">{item.description}</p>
               </motion.div>
             ))}
           </div>
@@ -150,7 +150,7 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-6">
               Our Values
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-black max-w-2xl mx-auto">
               Our core values guide everything we do, from farming to customer service.
             </p>
           </motion.div>
@@ -204,7 +204,7 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-6">
               Our Process
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-black max-w-2xl mx-auto">
               From farm to table, we follow a meticulous process to ensure the highest quality jaggery.
             </p>
           </motion.div>
@@ -228,7 +228,7 @@ export default function AboutPage() {
                   {process.step}
                 </div>
                 <h3 className="text-xl font-bold text-[#F97316] mb-3">{process.title}</h3>
-                <p className="text-gray-600 text-sm">{process.description}</p>
+                <p className="text-black text-sm">{process.description}</p>
               </motion.div>
             ))}
           </div>
@@ -248,7 +248,7 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl font-bold text-[#8B4513] mb-6">
               Meet Our Team
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg text-black max-w-2xl mx-auto">
               The passionate individuals behind Dfoods who work tirelessly to bring you the best jaggery.
             </p>
           </motion.div>
@@ -276,7 +276,7 @@ export default function AboutPage() {
                 <div className="p-6">
                   <h4 className="text-xl font-bold text-[#F97316] mb-2">{member.name}</h4>
                   <p className="text-[#F97316] font-semibold mb-3">{member.role}</p>
-                  <p className="text-gray-600 text-sm leading-relaxed">{member.bio}</p>
+                  <p className="text-black text-sm leading-relaxed">{member.bio}</p>
                 </div>
               </motion.div>
             ))}

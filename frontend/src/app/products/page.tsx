@@ -224,8 +224,9 @@ export default function ProductsPage() {
           src="/images/bannerimage.png"
           alt="Products Banner"
           fill
-          className="object-cover"
+          className="object-cover object-center"
           sizes="100vw"
+          priority
         />
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 text-right">
@@ -257,65 +258,68 @@ export default function ProductsPage() {
                 )}
               </button>
               
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black font-medium">
                 {filteredAndSortedProducts.length} products
               </p>
             </div>
 
-            <div className="flex items-center gap-4 w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
               {/* Grid View Toggle */}
-              <div className="flex items-center gap-2 pr-4">
-                <span className="text-sm text-gray-600 font-medium mr-2">View:</span>
+              <div className="flex items-center gap-2">
                 {/* Desktop Grid Options */}
-                <div className="hidden lg:flex items-center gap-1 bg-gray-100 p-1">
+                <div className="hidden lg:flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, desktop: 3 }))}
-                    className={`p-2 transition-colors ${
+                    className={`p-2 rounded transition-colors ${
                       gridCols.desktop === 3 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
+                    title="3 columns"
                   >
                     <Squares2X2Icon className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, desktop: 4 }))}
-                    className={`p-2 transition-colors ${
+                    className={`p-2 rounded transition-colors ${
                       gridCols.desktop === 4 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
+                    title="4 columns"
                   >
                     <Squares2X2Icon className="w-5 h-5" />
                   </button>
                 </div>
                 {/* Mobile Grid Options */}
-                <div className="flex lg:hidden items-center gap-1 bg-gray-100 p-1">
+                <div className="flex lg:hidden items-center gap-1 bg-gray-100 p-1 rounded-lg">
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, mobile: 1 }))}
-                    className={`p-2 transition-colors ${
+                    className={`p-2 rounded transition-colors ${
                       gridCols.mobile === 1 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
+                    title="1 column"
                   >
                     <Squares2X2Icon className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, mobile: 2 }))}
-                    className={`p-2 transition-colors ${
+                    className={`p-2 rounded transition-colors ${
                       gridCols.mobile === 2 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
                     }`}
+                    title="2 columns"
                   >
                     <Squares2X2Icon className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
-              {/* Sort */}
-              <div className="flex items-center gap-2">
-                <label htmlFor="sort" className="text-sm text-gray-700 font-medium">
+              {/* Sort Dropdown */}
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <label htmlFor="sort" className="text-sm text-black font-medium whitespace-nowrap">
                   Sort:
                 </label>
                 <select
                   id="sort"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-gray-50 px-3 py-2 text-sm focus:ring-2 focus:ring-[#F97316] focus:bg-white rounded-lg"
+                  className="bg-gray-50 px-3 py-2 text-sm text-black focus:ring-2 focus:ring-[#F97316] focus:bg-white rounded-lg flex-1 sm:flex-none"
                 >
                   {sortOptions.map((option) => (
                     <option key={option.value} value={option.value}>
