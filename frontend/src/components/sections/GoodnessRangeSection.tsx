@@ -3,6 +3,10 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 const categories = [
   {
@@ -47,15 +51,70 @@ export default function GoodnessRangeSection() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="mb-10 sm:mb-12"
+          className="mb-8 sm:mb-10"
         >
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#F97316] mb-2">
             The Güdness Range
           </h2>
         </motion.div>
 
-        {/* Category Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-6">
+        {/* Mobile Swiper */}
+        <div className="block md:hidden">
+          <Swiper
+            modules={[Autoplay, Pagination]}
+            spaceBetween={20}
+            slidesPerView={2.5}
+            centeredSlides={false}
+            loop={true}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+              dynamicBullets: true,
+            }}
+            breakpoints={{
+              0: {
+                slidesPerView: 2.2,
+                spaceBetween: 15,
+              },
+              480: {
+                slidesPerView: 2.5,
+                spaceBetween: 20,
+              },
+            }}
+            className="goodness-swiper pb-10"
+          >
+            {categories.map((category, index) => (
+              <SwiperSlide key={category.name}>
+                <Link href={category.href} className="group flex flex-col items-center">
+                  <motion.div 
+                    className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full overflow-hidden shadow-lg mb-3 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300"
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  >
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </motion.div>
+                  
+                  <h3 className="text-center text-[#F97316] font-semibold text-xs group-hover:text-[#F59E0B] transition-colors">
+                    {category.name}
+                  </h3>
+                </Link>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+
+        {/* Desktop Grid */}
+        <div className="hidden md:grid grid-cols-3 lg:grid-cols-5 gap-6">
           {categories.map((category, index) => (
             <motion.div
               key={category.name}
@@ -69,12 +128,11 @@ export default function GoodnessRangeSection() {
               }}
               viewport={{ once: true }}
               whileHover={{ scale: 1.05, y: -5 }}
-              className="flex flex-col items-center w-full"
+              className="flex flex-col items-center"
             >
-              <Link href={category.href} className="group w-full flex flex-col items-center">
-                {/* Circular Image - Fixed equal size */}
+              <Link href={category.href} className="group flex flex-col items-center">
                 <motion.div 
-                  className="relative w-32 h-32 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden shadow-lg mb-3 sm:mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300"
+                  className="relative w-36 h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-lg mb-4 ring-2 ring-gray-100 group-hover:ring-4 group-hover:ring-amber-300 transition-all duration-300"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
@@ -83,13 +141,12 @@ export default function GoodnessRangeSection() {
                     alt={category.name}
                     fill
                     className="object-cover group-hover:scale-110 transition-transform duration-500"
-                    sizes="(max-width: 640px) 128px, (max-width: 1024px) 144px, 176px"
+                    sizes="160px"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </motion.div>
                 
-                {/* Category Label */}
-                <h3 className="text-center text-[#F97316] font-semibold text-xs sm:text-sm group-hover:text-[#F59E0B] transition-colors w-full">
+                <h3 className="text-center text-[#F97316] font-semibold text-sm group-hover:text-[#F59E0B] transition-colors">
                   {category.name}
                 </h3>
               </Link>
@@ -97,7 +154,17 @@ export default function GoodnessRangeSection() {
           ))}
         </div>
       </div>
+
+      <style jsx global>{`
+        .goodness-swiper .swiper-pagination-bullet {
+          background: #F97316;
+          opacity: 0.4;
+        }
+        .goodness-swiper .swiper-pagination-bullet-active {
+          opacity: 1;
+          background: #F97316;
+        }
+      `}</style>
     </section>
   );
 }
-

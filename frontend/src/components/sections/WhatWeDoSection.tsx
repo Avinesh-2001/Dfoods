@@ -7,21 +7,26 @@ import {
   ShieldCheckIcon, 
   TruckIcon 
 } from '@heroicons/react/24/outline';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 
 const whatWeDoItems = [
   {
     title: 'Traditional Methods',
     icon: SparklesIcon,
-    description: 'Time-honored techniques passed down through generations, ensuring authentic taste and quality in every batch.',
-    arcColor: 'from-amber-400 via-orange-500 to-amber-600',
-    lineColor: 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600'
+    description: 'Authentic jaggery made using age-old traditional techniques passed down through generations.',
+    arcColor: 'from-amber-300 via-orange-400 to-amber-500',
+    lineColor: 'bg-gradient-to-r from-amber-300 via-orange-400 to-amber-500'
   },
   {
     title: 'Quality Assurance',
     icon: ShieldCheckIcon,
-    description: 'Rigorous quality testing ensures purity, authenticity, and safety standards that exceed industry requirements.',
-    arcColor: 'from-amber-600 via-orange-700 to-amber-800',
-    lineColor: 'bg-gradient-to-r from-amber-600 via-orange-700 to-amber-800'
+    description: 'Rigorous testing and certification to ensure the highest quality standards for every batch.',
+    arcColor: 'from-amber-400 via-orange-500 to-amber-600',
+    lineColor: 'bg-gradient-to-r from-amber-400 via-orange-500 to-amber-600'
   },
   {
     title: 'Farm-to-Table',
@@ -84,19 +89,12 @@ export default function WhatWeDoSection() {
           height: 100%;
           display: flex;
           flex-direction: column;
+          min-height: 280px;
         }
 
         .what-we-do-card:hover {
           transform: translateY(-5px);
           box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-up {
-          transform: translateY(-30px) !important;
-        }
-
-        .card-down {
-          transform: translateY(30px) !important;
         }
 
         .icon-circle {
@@ -119,7 +117,7 @@ export default function WhatWeDoSection() {
         }
 
         .card-title {
-          font-size: 1rem;
+          font-size: 1.1rem;
           font-weight: 700;
           color: #000000;
           text-transform: uppercase;
@@ -128,21 +126,16 @@ export default function WhatWeDoSection() {
         }
 
         .card-description {
-          font-size: 0.85rem;
+          font-size: 0.9rem;
           color: #333333;
-          line-height: 1.5;
+          line-height: 1.6;
           margin-bottom: 15px;
           flex-grow: 1;
         }
 
-
         .section-header {
           text-align: center;
           margin-bottom: 40px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
         }
 
         .section-title {
@@ -150,16 +143,12 @@ export default function WhatWeDoSection() {
           font-weight: 700;
           color: #000000;
           margin-bottom: 10px;
-          text-align: center;
-          width: 100%;
         }
 
         .section-subtitle {
-          font-size: 0.9rem;
+          font-size: 0.95rem;
           color: #666666;
-          text-align: center;
-          width: 100%;
-          margin-bottom:40px;
+          margin-bottom: 40px;
         }
 
         @media (max-width: 768px) {
@@ -169,12 +158,7 @@ export default function WhatWeDoSection() {
 
           .what-we-do-card {
             padding: 25px 20px;
-            margin-bottom: 15px;
-          }
-
-          .card-up,
-          .card-down {
-            margin-top: 0;
+            min-height: 260px;
           }
 
           .icon-circle {
@@ -198,55 +182,95 @@ export default function WhatWeDoSection() {
         <div className="background-bottom"></div>
         
         <div className="what-we-do-content">
-          <div className="container mx-auto px-4 max-w-7xl">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.7 }}
               className="section-header"
             >
               <h2 className="section-title">What We Do</h2>
               <p className="section-subtitle">
-                Our commitment to quality and tradition drives everything we do
+                Delivering excellence in every step of our jaggery production process
               </p>
             </motion.div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-              {whatWeDoItems.map((item, index) => {
-                const IconComponent = item.icon;
-                // Wave effect: cards 1 & 3 (index 0, 2) go up, cards 2 & 4 (index 1, 3) go down
-                const waveOffset = index % 2 === 0 ? -30 : 30;
-                
-                return (
-                  <motion.div
-                    key={item.title}
-                    initial={{ opacity: 0, y: 30 + waveOffset }}
-                    whileInView={{ opacity: 1, y: waveOffset }}
-                    transition={{ 
-                      duration: 0.6, 
-                      delay: index * 0.1 
-                    }}
-                    viewport={{ once: true }}
-                  >
-                    <div className="what-we-do-card">
-                      <div className="icon-circle">
-                        <IconComponent />
+            {/* Mobile Swiper */}
+            <div className="block md:hidden">
+              <Swiper
+                modules={[Autoplay, Pagination, Navigation]}
+                spaceBetween={20}
+                slidesPerView={1.1}
+                centeredSlides={true}
+                loop={true}
+                autoplay={{
+                  delay: 3500,
+                  disableOnInteraction: false,
+                }}
+                pagination={{
+                  clickable: true,
+                  dynamicBullets: true,
+                }}
+                className="what-we-do-swiper pb-12"
+              >
+                {whatWeDoItems.map((item, index) => (
+                  <SwiperSlide key={index}>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="px-2"
+                    >
+                      <div className="what-we-do-card">
+                        <div className="icon-circle">
+                          <item.icon />
+                        </div>
+                        <h3 className="card-title">{item.title}</h3>
+                        <p className="card-description">{item.description}</p>
                       </div>
-                      
-                      <h3 className="card-title">{item.title}</h3>
-                      
-                      <p className="card-description">
-                        {item.description}
-                      </p>
+                    </motion.div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+
+            {/* Desktop Grid */}
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {whatWeDoItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                >
+                  <div className="what-we-do-card">
+                    <div className="icon-circle">
+                      <item.icon />
                     </div>
-                  </motion.div>
-                );
-              })}
+                    <h3 className="card-title">{item.title}</h3>
+                    <p className="card-description">{item.description}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
+
+      <style jsx global>{`
+        .what-we-do-swiper .swiper-pagination-bullet {
+          background: #F97316;
+          opacity: 0.5;
+        }
+        .what-we-do-swiper .swiper-pagination-bullet-active {
+          opacity: 1;
+          background: #F97316;
+        }
+      `}</style>
     </>
   );
 }
