@@ -47,7 +47,7 @@ router.post(
 
 // Remove product from wishlist
 router.delete(
-  "/:productId",
+  "/remove/:productId",
   userAuth,
   async (req, res) => {
     try {
