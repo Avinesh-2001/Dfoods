@@ -1,21 +1,39 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import store, { setUser } from '../../store';
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
+import { useWishlistStore } from '@/lib/store/wishlistStore';
 
 interface ClientProviderProps {
   children: React.ReactNode;
 }
 
-// Component to restore user from localStorage on mount
+function WishlistInitializer({ children }: { children: React.ReactNode }) {
+  const user = useSelector((state: any) => state.user.user);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const clearWishlist = useWishlistStore((state) => state.clearWishlist);
+  const initialized = useWishlistStore((state) => state.initialized);
+
+  useEffect(() => {
+    if (user) {
+      if (!initialized) {
+        fetchWishlist();
+      }
+    } else {
+      clearWishlist();
+    }
+  }, [user, initialized, fetchWishlist, clearWishlist]);
+
+  return <>{children}</>;
+}
+
 function UserStateRestorer({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
   const [isRestored, setIsRestored] = useState(false);
 
   useEffect(() => {
-    // Restore user state from localStorage
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
       const userStr = localStorage.getItem('user');
@@ -45,7 +63,7 @@ function UserStateRestorer({ children }: { children: React.ReactNode }) {
     );
   }
 
-  return <>{children}</>;
+  return <WishlistInitializer>{children}</WishlistInitializer>;
 }
 
 export default function ClientProvider({ children }: ClientProviderProps) {
