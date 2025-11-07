@@ -780,22 +780,23 @@ export default function ProductDetailPage() {
               </button>
             </div>
 
-            {/* Share - Icon button triggers popup */}
+            {/* Share - Icon button with text triggers popup */}
             <div className="pt-3 border-t border-gray-200 relative share-popup-container">
               <button
                 onClick={() => setShowSharePopup(!showSharePopup)}
-                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                 aria-label="Share"
                 title="Share"
               >
                 {/* Custom share SVG */}
-                <svg width="20" height="20" viewBox="-0.5 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#a3a3a3">
+                <svg width="18" height="18" viewBox="-0.5 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor">
                   <g strokeWidth="0"/>
                   <g strokeLinecap="round" strokeLinejoin="round"/>
                   <g>
-                    <path d="M13.47 4.13998C12.74 4.35998 12.28 5.96 12.09 7.91C6.77997 7.91 2 13.4802 2 20.0802C4.19 14.0802 8.99995 12.45 12.14 12.45C12.34 14.21 12.79 15.6202 13.47 15.8202C15.57 16.4302 22 12.4401 22 9.98006C22 7.52006 15.57 3.52998 13.47 4.13998Z" stroke="#a3a3a3" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M13.47 4.13998C12.74 4.35998 12.28 5.96 12.09 7.91C6.77997 7.91 2 13.4802 2 20.0802C4.19 14.0802 8.99995 12.45 12.14 12.45C12.34 14.21 12.79 15.6202 13.47 15.8202C15.57 16.4302 22 12.4401 22 9.98006C22 7.52006 15.57 3.52998 13.47 4.13998Z" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </g>
                 </svg>
+                <span className="text-sm font-medium">Share</span>
               </button>
               
               {/* Share Popup - Opens below icon */}
@@ -882,7 +883,7 @@ export default function ProductDetailPage() {
               </div>
             {expandedSections.Description && (
               <div className="px-4 pb-6">
-                <p className="text-gray-600 font-normal leading-relaxed text-sm">
+                <p className="text-gray-600 body-text leading-relaxed text-xs">
                   {product.description || 'Premium quality product made with care and expertise. Looking for that comforting taste of tradition? Every drop of our premium jaggery is crafted from the finest sugarcane, offering you authentic, wholesome flavors of India.'}
                 </p>
               </div>
@@ -906,7 +907,7 @@ export default function ProductDetailPage() {
               </div>
               {expandedSections.Ingredients && (
                 <div className="px-4 pb-6">
-                  <ul className="list-disc list-inside space-y-2 text-gray-600 font-normal text-sm">
+                  <ul className="list-disc list-inside space-y-2 text-gray-600 body-text text-xs">
                   {product.ingredients.map((ingredient: string, index: number) => (
                       <li key={index}>{ingredient}</li>
                   ))}
@@ -933,7 +934,7 @@ export default function ProductDetailPage() {
               </div>
               {expandedSections.Benefits && (
                 <div className="px-4 pb-6">
-                  <ul className="space-y-2 text-gray-600 font-normal text-sm">
+                  <ul className="space-y-2 text-gray-600 body-text text-xs">
                     {product.benefits ? (
                       product.benefits.map((benefit: string, index: number) => (
                         <li key={index} className="flex items-start">
