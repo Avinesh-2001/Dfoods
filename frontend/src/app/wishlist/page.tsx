@@ -63,7 +63,7 @@ export default function WishlistPage() {
       <div className="min-h-screen bg-[#FFF9F3] flex items-center justify-center pt-20">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-[#E67E22] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-          <p className="text-gray-600 text-sm">Loading wishlist...</p>
+          <p className="text-black text-sm">Loading wishlist...</p>
         </div>
       </div>
     );
@@ -82,8 +82,8 @@ export default function WishlistPage() {
               <HeartIcon className="w-5 h-5" style={{ color: THEME_ORANGE }} />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">My Wishlist</h1>
-              <p className="text-sm text-gray-500">
+              <h1 className="text-xl sm:text-2xl font-semibold text-black">My Wishlist</h1>
+              <p className="text-sm text-black/70">
                 {Array.isArray(wishlistItems) ? wishlistItems.length : 0} {wishlistItems.length === 1 ? 'item saved' : 'items saved'}
               </p>
             </div>
@@ -151,7 +151,7 @@ export default function WishlistPage() {
                           {item.category.replace(/-/g, ' ')}
                         </span>
                       )}
-                      <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
+                      <h3 className="text-sm font-semibold text-black line-clamp-2">
                         {item?.name || 'Product'}
                       </h3>
                     </Link>
@@ -188,8 +188,8 @@ export default function WishlistPage() {
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG }}>
                 <HeartIcon className="w-8 h-8" style={{ color: THEME_ORANGE }} />
               </div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Your wishlist is empty</h2>
-              <p className="text-gray-600 text-sm mb-6">Tap the heart on products you love to save them here.</p>
+              <h2 className="text-xl font-semibold text-black mb-2">Your wishlist is empty</h2>
+              <p className="text-black text-sm mb-6">Tap the heart on products you love to save them here.</p>
               <Link
                 href="/products"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white"

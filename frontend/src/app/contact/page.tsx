@@ -282,7 +282,7 @@ export default function ContactPage() {
           <h2 className="text-2xl font-bold text-[#F97316] mb-6 text-center">Find Us</h2>
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="h-96 bg-gray-200 flex items-center justify-center">
-              <div className="text-center text-gray-500">
+              <div className="text-center text-black">
                 <MapPinIcon className="w-16 h-16 mx-auto mb-4 text-[#F97316]" />
                 <p className="text-lg font-semibold">Interactive Map</p>
                 <p className="text-sm">B-12, Part-2, MIDC, Waluj, UIT, 431136 Bhiwadi, India</p>

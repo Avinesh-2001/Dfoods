@@ -130,7 +130,7 @@ export default function ProfilePage() {
               borderColor: `${THEME_ORANGE} transparent ${THEME_ORANGE} ${THEME_ORANGE}`,
             }}
           ></div>
-          <p className="text-gray-600 text-sm">Loading profile...</p>
+          <p className="text-black text-sm">Loading profile...</p>
         </div>
       </div>
     );
@@ -166,9 +166,9 @@ export default function ProfilePage() {
           <div className="flex flex-col gap-4">
             <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-start">
               <div className="flex-1 text-center sm:text-left space-y-1">
-                <p className="text-xs uppercase tracking-wide text-gray-500">Account</p>
-                <h1 className="text-2xl font-semibold text-gray-900">Welcome back, {user.name}</h1>
-                <p className="text-sm text-gray-600">Manage your personal information, orders and saved items.</p>
+                <p className="text-xs uppercase tracking-wide text-black/70">Account</p>
+                <h1 className="text-2xl font-semibold text-black">Welcome back, {user.name}</h1>
+                <p className="text-sm text-black">Manage your personal information, orders and saved items.</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-semibold" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
@@ -197,15 +197,15 @@ export default function ProfilePage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {stats.map((stat) => (
             <div key={stat.label} className="bg-white rounded-xl border border-orange-100 p-4 text-center shadow-sm">
-              <div className="text-xs uppercase tracking-wide text-gray-500 mb-1">{stat.label}</div>
-              <div className="text-xl font-semibold text-gray-900">{stat.value}</div>
+              <div className="text-xs uppercase tracking-wide text-black/70 mb-1">{stat.label}</div>
+              <div className="text-xl font-semibold text-black">{stat.value}</div>
             </div>
           ))}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
           <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-4 h-fit">
-            <p className="text-xs uppercase text-gray-500 mb-3">Quick links</p>
+            <p className="text-xs uppercase text-black/70 mb-3">Quick links</p>
             <nav className="space-y-1">
               {menuItems.map((item) => (
                 <button
@@ -214,7 +214,7 @@ export default function ProfilePage() {
                   className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     activeTab === item.id
                       ? 'bg-[#FCE8D8] text-[#E67E22]'
-                      : 'text-gray-600 hover:bg-gray-100'
+                      : 'text-black hover:bg-gray-100'
                   }`}
                 >
                   <item.icon className="w-4 h-4" />
@@ -229,8 +229,8 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-gray-900">Personal information</h2>
-                    <p className="text-xs text-gray-500">Basic details associated with your account</p>
+                    <h2 className="text-lg font-semibold text-black">Personal information</h2>
+                    <p className="text-xs text-black/70">Basic details associated with your account</p>
                   </div>
                   {!isEditing && (
                     <button 
@@ -246,7 +246,7 @@ export default function ProfilePage() {
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <p className="text-xs uppercase text-gray-500">Full name</p>
+                        <p className="text-xs uppercase text-black/70">Full name</p>
                         <input
                           type="text"
                           value={editForm.name}
@@ -255,7 +255,7 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <p className="text-xs uppercase text-gray-500">Email address</p>
+                        <p className="text-xs uppercase text-black/70">Email address</p>
                         <input
                           type="email"
                           value={editForm.email}
@@ -264,7 +264,7 @@ export default function ProfilePage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <p className="text-xs uppercase text-gray-500">Phone number</p>
+                        <p className="text-xs uppercase text-black/70">Phone number</p>
                         <input
                           type="tel"
                           value={editForm.phone}
@@ -284,7 +284,7 @@ export default function ProfilePage() {
                             phone: user.phone || ''
                           });
                         }}
-                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                        className="px-4 py-2 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200"
                       >
                         Cancel
                       </button>
@@ -300,29 +300,29 @@ export default function ProfilePage() {
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <p className="text-xs uppercase text-gray-500">Full name</p>
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
+                      <p className="text-xs uppercase text-black/70">Full name</p>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
                         <UserIcon className="w-4 h-4 text-gray-400" />
                         {user.name}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs uppercase text-gray-500">Email address</p>
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 break-all">
+                      <p className="text-xs uppercase text-black/70">Email address</p>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black break-all">
                         <EnvelopeIcon className="w-4 h-4 text-gray-400" />
                         {user.email}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs uppercase text-gray-500">Phone number</p>
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
+                      <p className="text-xs uppercase text-black/70">Phone number</p>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
                         <PhoneIcon className="w-4 h-4 text-gray-400" />
                         {user.phone || 'Not provided'}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <p className="text-xs uppercase text-gray-500">Password</p>
-                      <div className="flex items-center justify-between px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
+                      <p className="text-xs uppercase text-black/70">Password</p>
+                      <div className="flex items-center justify-between px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
                         ••••••••
                         <button className="text-xs font-medium text-[#E67E22]">Change</button>
                       </div>
@@ -334,15 +334,15 @@ export default function ProfilePage() {
 
             {activeTab === 'orders' && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">My Orders</h2>
+                <h2 className="text-lg font-semibold text-black mb-4">My Orders</h2>
                 {orders.length > 0 ? (
                   <div className="space-y-4">
                     {orders.map((order) => (
                       <div key={order._id} className="border border-gray-200 rounded-lg p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="text-sm font-semibold text-gray-900">Order #{order._id?.slice(-8)}</p>
-                            <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                            <p className="text-sm font-semibold text-black">Order #{order._id?.slice(-8)}</p>
+                            <p className="text-xs text-black/70">{new Date(order.createdAt).toLocaleDateString()}</p>
                           </div>
                           <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                             order.orderStatus === 'delivered' ? 'bg-green-100 text-green-700' :
@@ -354,7 +354,7 @@ export default function ProfilePage() {
                           </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <p className="text-sm text-gray-600">{order.items?.length || 0} items</p>
+                          <p className="text-sm text-black">{order.items?.length || 0} items</p>
                           <p className="text-base font-semibold" style={{ color: THEME_ORANGE }}>
                             ₹{order.totalAmount?.toLocaleString()}
                           </p>
@@ -367,8 +367,8 @@ export default function ProfilePage() {
                     <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
                       <ShoppingBagIcon className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No orders yet</h3>
-                    <p className="text-sm text-gray-500 mb-4">Start shopping to view your orders here.</p>
+                    <h3 className="text-lg font-semibold text-black mb-2">No orders yet</h3>
+                    <p className="text-sm text-black/70 mb-4">Start shopping to view your orders here.</p>
                     <Link href="/products" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
                       Browse products
                     </Link>
@@ -379,7 +379,7 @@ export default function ProfilePage() {
 
             {activeTab === 'wishlist' && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-4">My Wishlist</h2>
+                <h2 className="text-lg font-semibold text-black mb-4">My Wishlist</h2>
                 {wishlistItems.length > 0 ? (
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {wishlistItems.slice(0, 6).map((item) => (
@@ -391,8 +391,8 @@ export default function ProfilePage() {
                     <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
                       <HeartIcon className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your wishlist is empty</h3>
-                    <p className="text-sm text-gray-500 mb-4">Save items by tapping the heart icon on products.</p>
+                    <h3 className="text-lg font-semibold text-black mb-2">Your wishlist is empty</h3>
+                    <p className="text-sm text-black/70 mb-4">Save items by tapping the heart icon on products.</p>
                     <Link href="/products" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
                       Browse products
                     </Link>
@@ -410,11 +410,11 @@ export default function ProfilePage() {
 
             {activeTab === 'addresses' && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-black/70">
                   <MapPinIcon className="w-7 h-7" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses</h3>
-                <p className="text-sm text-gray-500 mb-4">Add your address for faster checkout.</p>
+                <h3 className="text-lg font-semibold text-black mb-2">No saved addresses</h3>
+                <p className="text-sm text-black/70 mb-4">Add your address for faster checkout.</p>
                 <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
                   Add address
                 </button>
@@ -424,13 +424,13 @@ export default function ProfilePage() {
             {activeTab === 'rewards' && (
               <div className="space-y-5">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Rewards</h2>
-                  <p className="text-xs text-gray-500">Earn points every time you shop with Dfoods.</p>
+                  <h2 className="text-lg font-semibold text-black">Rewards</h2>
+                  <p className="text-xs text-black/70">Earn points every time you shop with Dfoods.</p>
                 </div>
                 <div className="rounded-xl border border-orange-100 bg-[#FFF4EA] p-6 text-center">
-                  <p className="text-sm text-gray-600 mb-2">Available points</p>
-                  <p className="text-3xl font-semibold text-gray-900">0</p>
-                  <p className="text-xs text-gray-500 mt-3">Earn 10 points for every ₹100 spent</p>
+                  <p className="text-sm text-black mb-2">Available points</p>
+                  <p className="text-3xl font-semibold text-black">0</p>
+                  <p className="text-xs text-black/70 mt-3">Earn 10 points for every ₹100 spent</p>
                 </div>
               </div>
             )}

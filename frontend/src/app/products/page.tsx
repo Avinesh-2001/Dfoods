@@ -210,7 +210,7 @@ export default function ProductsPage() {
       <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center pt-20">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-amber-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <h1 className="text-xl font-semibold text-gray-900">Loading Products...</h1>
+          <h1 className="text-xl font-semibold text-black">Loading Products...</h1>
         </div>
       </div>
     );
@@ -271,7 +271,7 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, desktop: 3 }))}
                     className={`p-2 rounded transition-colors ${
-                      gridCols.desktop === 3 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                      gridCols.desktop === 3 ? 'bg-white text-amber-600 shadow-sm' : 'text-black hover:text-black'
                     }`}
                     title="3 columns"
                   >
@@ -280,7 +280,7 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, desktop: 4 }))}
                     className={`p-2 rounded transition-colors ${
-                      gridCols.desktop === 4 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                      gridCols.desktop === 4 ? 'bg-white text-amber-600 shadow-sm' : 'text-black hover:text-black'
                     }`}
                     title="4 columns"
                   >
@@ -292,7 +292,7 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, mobile: 1 }))}
                     className={`p-2 rounded transition-colors ${
-                      gridCols.mobile === 1 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                      gridCols.mobile === 1 ? 'bg-white text-amber-600 shadow-sm' : 'text-black hover:text-black'
                     }`}
                     title="1 column"
                   >
@@ -301,7 +301,7 @@ export default function ProductsPage() {
                   <button
                     onClick={() => setGridCols(prev => ({ ...prev, mobile: 2 }))}
                     className={`p-2 rounded transition-colors ${
-                      gridCols.mobile === 2 ? 'bg-white text-amber-600 shadow-sm' : 'text-gray-600 hover:text-gray-900'
+                      gridCols.mobile === 2 ? 'bg-white text-amber-600 shadow-sm' : 'text-black hover:text-black'
                     }`}
                     title="2 columns"
                   >
@@ -350,7 +350,7 @@ export default function ProductsPage() {
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-black"
                 >
                   <XMarkIcon className="w-5 h-5" />
                 </button>
@@ -415,8 +415,8 @@ export default function ProductsPage() {
             <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 flex items-center justify-center">
               <span className="text-4xl">🔍</span>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No products found</h3>
-            <p className="text-gray-500 mb-6">Try adjusting your filters to see more products.</p>
+            <h3 className="text-lg font-medium text-black mb-2">No products found</h3>
+            <p className="text-black/70 mb-6">Try adjusting your filters to see more products.</p>
             <button
               onClick={clearFilters}
               className="px-6 py-2 bg-amber-600 text-white hover:bg-amber-700 transition-colors text-sm font-medium"
@@ -452,7 +452,7 @@ export default function ProductsPage() {
               <div className="p-6">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6 pb-4">
-                  <h2 className="text-xl font-semibold text-gray-900">Filters</h2>
+                  <h2 className="text-xl font-semibold text-black">Filters</h2>
                   <button
                     onClick={() => setShowFilters(false)}
                     className="p-2 hover:bg-gray-50 transition-colors"
@@ -464,7 +464,7 @@ export default function ProductsPage() {
                 {/* Active Filters */}
                 {hasActiveFilters && (
                   <div className="mb-6 pb-4">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Applied Filters:</h3>
+                    <h3 className="text-sm font-semibold text-black mb-3">Applied Filters:</h3>
                     <div className="flex flex-wrap gap-2">
                       {filters.category !== 'all' && (
                         <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-800 text-xs font-medium">
@@ -505,7 +505,7 @@ export default function ProductsPage() {
 
                 {/* Category Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Category</h3>
+                  <h3 className="text-sm font-semibold text-black mb-3">Category</h3>
                   <div className="space-y-2">
                     {categories.map((category) => (
                       <label key={category.value} className="flex items-center cursor-pointer">
@@ -517,7 +517,7 @@ export default function ProductsPage() {
                           onChange={(e) => handleFilterChange('category', e.target.value)}
                           className="mr-3 text-amber-600 focus:ring-amber-500"
                         />
-                        <span className="text-sm text-gray-700">{category.label}</span>
+                        <span className="text-sm text-black">{category.label}</span>
                       </label>
                     ))}
                   </div>
@@ -525,18 +525,18 @@ export default function ProductsPage() {
 
                 {/* Availability Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Availability</h3>
+                  <h3 className="text-sm font-semibold text-black mb-3">Availability</h3>
                   <div className="relative">
                     <button
                       onClick={() => setShowAvailability(!showAvailability)}
                       className="w-full flex items-center justify-between px-4 py-2 bg-gray-50 hover:bg-gray-100 transition-colors rounded-lg"
                     >
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm text-black">
                         {filters.availability.length > 0 
                           ? `${filters.availability.length} selected`
                           : 'Select availability'}
                       </span>
-                      <ChevronDownIcon className={`w-4 h-4 text-gray-500 transition-transform ${showAvailability ? 'rotate-180' : ''}`} />
+                      <ChevronDownIcon className={`w-4 h-4 text-black/70 transition-transform ${showAvailability ? 'rotate-180' : ''}`} />
                     </button>
                     
                     {showAvailability && (
@@ -552,7 +552,7 @@ export default function ProductsPage() {
                               onChange={() => handleAvailabilityToggle(option.value)}
                               className="mr-3 text-amber-600 focus:ring-amber-500"
                             />
-                            <span className="text-sm text-gray-700">{option.label}</span>
+                            <span className="text-sm text-black">{option.label}</span>
                             {filters.availability.includes(option.value) && (
                               <CheckIcon className="w-4 h-4 text-amber-600 ml-auto" />
                             )}
@@ -565,7 +565,7 @@ export default function ProductsPage() {
 
                 {/* Price Range Filter */}
                 <div className="mb-6">
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">Price Range</h3>
+                  <h3 className="text-sm font-semibold text-black mb-3">Price Range</h3>
                   <div className="space-y-3">
                     <input
                       type="range"
@@ -576,7 +576,7 @@ export default function ProductsPage() {
                       onChange={(e) => handleFilterChange('priceRange', [0, parseInt(e.target.value)])}
                       className="w-full h-2 bg-gray-200 appearance-none cursor-pointer accent-amber-600"
                     />
-                    <div className="flex justify-between text-xs text-gray-600">
+                    <div className="flex justify-between text-xs text-black">
                       <span>₹0</span>
                       <span>₹{filters.priceRange[1]}</span>
                     </div>
@@ -586,7 +586,7 @@ export default function ProductsPage() {
                 {/* Clear Filters */}
                 <button
                   onClick={clearFilters}
-                  className="w-full py-3 px-4 bg-gray-50 text-gray-700 hover:bg-gray-100 transition-colors font-medium text-sm rounded-lg"
+                  className="w-full py-3 px-4 bg-gray-50 text-black hover:bg-gray-100 transition-colors font-medium text-sm rounded-lg"
                 >
                   Clear All Filters
                 </button>
