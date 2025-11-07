@@ -129,7 +129,7 @@ export default function Header() {
             <nav className="hidden md:flex space-x-8">
               {navigation.map((item) => (
                 <Link
-                  key={item.name}
+                  key={item.name} 
                   href={item.href}
                   className={`text-sm font-medium transition-colors hover:text-white ${
                     pathname === item.href

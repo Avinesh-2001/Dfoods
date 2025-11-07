@@ -912,16 +912,16 @@ export default function ProductDetailPage() {
           {/* Description */}
           <div className="border-b border-gray-200 group">
               <button
-              onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
-              className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
-            >
-              <span className="font-bold text-[#1a472a] text-base">DESCRIPTION</span>
-              {expandedSections.Description ? (
-                <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
-              ) : (
-                <PlusIcon className="w-5 h-5 text-[#1a472a]" />
-              )}
-              </div>
+                onClick={() => setExpandedSections(prev => ({ ...prev, Description: !prev.Description }))}
+                className="w-full flex items-center justify-between py-4 px-4 text-left hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <span className="font-bold text-[#1a472a] text-base">DESCRIPTION</span>
+                {expandedSections.Description ? (
+                  <XMarkIcon className="w-5 h-5 text-[#1a472a]" />
+                ) : (
+                  <PlusIcon className="w-5 h-5 text-[#1a472a]" />
+                )}
+              </button>
             {expandedSections.Description && (
               <div className="px-4 pb-6">
                 <p className="text-gray-600 body-text leading-relaxed text-xs">
