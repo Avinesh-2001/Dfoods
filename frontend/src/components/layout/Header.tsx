@@ -101,17 +101,25 @@ export default function Header() {
   return (
     <>
       <motion.header
-        className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${
-          isScrolled ? "shadow-lg" : ""
-        }`}
-        style={{
-          background: headerBackground,
-          backdropFilter: "blur(10px)",
-        }}
+        className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 shadow-lg`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Mobile: White background, Desktop: Orange gradient */}
+        <div 
+          className="w-full h-full absolute inset-0 -z-10 bg-white md:bg-transparent"
+          style={{
+            background: 'linear-gradient(to right, white 0%, white 100%)',
+          }}
+        />
+        <div 
+          className="hidden md:block w-full h-full absolute inset-0 -z-10"
+          style={{
+            background: headerBackground,
+            backdropFilter: "blur(10px)",
+          }}
+        />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -253,14 +261,13 @@ export default function Header() {
 
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-3 bg-white rounded-xl shadow-2xl hover:shadow-2xl transition-all z-[60] border-2 border-black/20"
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-all z-[60]"
                 aria-label="Menu"
-                style={{ backgroundColor: '#FFFFFF' }}
               >
                 {isOpen ? (
-                  <XMarkIcon className="w-8 h-8 text-black" strokeWidth={3.5} />
+                  <XMarkIcon className="w-8 h-8 text-black" strokeWidth={3} />
                 ) : (
-                  <Bars3Icon className="w-8 h-8 text-black" strokeWidth={3.5} />
+                  <Bars3Icon className="w-8 h-8 text-black" strokeWidth={3} />
                 )}
               </button>
             </div>

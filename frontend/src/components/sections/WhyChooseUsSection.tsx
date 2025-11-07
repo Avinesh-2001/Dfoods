@@ -71,11 +71,6 @@ export default function WhyChooseUsSection() {
 
   return (
     <>
-      <Script
-        src="https://kit.fontawesome.com/your-font-awesome-kit.js"
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
 
       <style jsx>{`
         @keyframes fadeInUp {
