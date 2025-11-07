@@ -16,8 +16,13 @@ import {
   MapPinIcon,
   GiftIcon,
   ClockIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  XMarkIcon,
+  CheckIcon
 } from '@heroicons/react/24/outline';
+import { useWishlistStore } from '@/lib/store/wishlistStore';
+import toast from 'react-hot-toast';
+import ProductCard from '@/components/ui/ProductCard';
 
 const THEME_ORANGE = '#E67E22';
 const THEME_BADGE_BG = '#FCE8D8';
@@ -27,14 +32,93 @@ export default function ProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('profile');
+  const [isEditing, setIsEditing] = useState(false);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    phone: ''
+  });
+
+  const wishlistItems = useWishlistStore((state) => state.items || []);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const wishlistInitialized = useWishlistStore((state) => state.initialized);
 
   useEffect(() => {
     if (!user) {
       router.push('/login');
     } else {
       setLoading(false);
+      setEditForm({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      });
+      
+      // Fetch wishlist if not initialized
+      if (!wishlistInitialized) {
+        fetchWishlist();
+      }
+      
+      // Fetch user orders
+      fetchOrders();
     }
-  }, [user, router]);
+  }, [user, router, wishlistInitialized, fetchWishlist]);
+
+  const fetchOrders = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/orders`
+        : `${API_BASE}/api/orders`;
+      
+      const response = await fetch(endpoint, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setOrders(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      // Silent fail
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/users/profile`
+        : `${API_BASE}/api/users/profile`;
+      
+      const response = await fetch(endpoint, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editForm)
+      });
+
+      if (response.ok) {
+        toast.success('Profile updated successfully!');
+        setIsEditing(false);
+        // Update local storage
+        const updatedUser = { ...user, ...editForm };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload();
+      } else {
+        toast.error('Failed to update profile');
+      }
+    } catch (error) {
+      toast.error('Failed to update profile');
+    }
+  };
 
   if (loading) {
     return (
@@ -65,8 +149,8 @@ export default function ProfilePage() {
   ];
 
   const stats = [
-    { label: 'Orders', value: '0', icon: ShoppingBagIcon },
-    { label: 'Wishlist', value: '0', icon: HeartIcon },
+    { label: 'Orders', value: orders.length.toString(), icon: ShoppingBagIcon },
+    { label: 'Wishlist', value: wishlistItems.length.toString(), icon: HeartIcon },
     { label: 'Points', value: '0', icon: GiftIcon },
     { label: 'Addresses', value: '0', icon: MapPinIcon },
   ];
@@ -90,8 +174,12 @@ export default function ProfilePage() {
                 <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-semibold" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
-                <button className="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md" style={{ backgroundColor: THEME_ORANGE }}>
-                  <PencilIcon className="w-4 h-4" /> Edit profile
+                <button 
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md"
+                  style={{ backgroundColor: THEME_ORANGE }}
+                >
+                  <PencilIcon className="w-4 h-4" /> {isEditing ? 'Cancel' : 'Edit profile'}
                 </button>
               </div>
             </div>
@@ -144,82 +232,189 @@ export default function ProfilePage() {
                     <h2 className="text-lg font-semibold text-gray-900">Personal information</h2>
                     <p className="text-xs text-gray-500">Basic details associated with your account</p>
                   </div>
-                  <button className="text-sm font-medium text-[#E67E22]">Edit</button>
+                  {!isEditing && (
+                    <button 
+                      onClick={() => setIsEditing(true)}
+                      className="text-sm font-medium text-[#E67E22]"
+                    >
+                      Edit
+                    </button>
+                  )}
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <p className="text-xs uppercase text-gray-500">Full name</p>
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
-                      <UserIcon className="w-4 h-4 text-gray-400" />
-                      {user.name}
+                
+                {isEditing ? (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-xs uppercase text-gray-500">Full name</p>
+                        <input
+                          type="text"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs uppercase text-gray-500">Email address</p>
+                        <input
+                          type="email"
+                          value={editForm.email}
+                          onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-xs uppercase text-gray-500">Phone number</p>
+                        <input
+                          type="tel"
+                          value={editForm.phone}
+                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                          placeholder="Enter phone number"
+                          className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-3 justify-end">
+                      <button
+                        onClick={() => {
+                          setIsEditing(false);
+                          setEditForm({
+                            name: user.name || '',
+                            email: user.email || '',
+                            phone: user.phone || ''
+                          });
+                        }}
+                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleUpdateProfile}
+                        className="px-4 py-2 text-sm font-medium text-white rounded-md"
+                        style={{ backgroundColor: THEME_ORANGE }}
+                      >
+                        Save changes
+                      </button>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-xs uppercase text-gray-500">Email address</p>
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 break-all">
-                      <EnvelopeIcon className="w-4 h-4 text-gray-400" />
-                      {user.email}
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase text-gray-500">Full name</p>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
+                        <UserIcon className="w-4 h-4 text-gray-400" />
+                        {user.name}
+                      </div>
                     </div>
-                  </div>
-                  {user.phone && (
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase text-gray-500">Email address</p>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800 break-all">
+                        <EnvelopeIcon className="w-4 h-4 text-gray-400" />
+                        {user.email}
+                      </div>
+                    </div>
                     <div className="space-y-2">
                       <p className="text-xs uppercase text-gray-500">Phone number</p>
                       <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
                         <PhoneIcon className="w-4 h-4 text-gray-400" />
-                        {user.phone}
+                        {user.phone || 'Not provided'}
                       </div>
                     </div>
-                  )}
-                  <div className="space-y-2">
-                    <p className="text-xs uppercase text-gray-500">Password</p>
-                    <div className="flex items-center justify-between px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
-                      ••••••••
-                      <button className="text-xs font-medium text-[#E67E22]">Change</button>
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase text-gray-500">Password</p>
+                      <div className="flex items-center justify-between px-3 py-2 rounded-md border border-gray-200 text-sm text-gray-800">
+                        ••••••••
+                        <button className="text-xs font-medium text-[#E67E22]">Change</button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
             {activeTab === 'orders' && (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
-                  <ShoppingBagIcon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">No orders yet</h3>
-                  <p className="text-sm text-gray-500">Your recent orders will appear here.</p>
-                </div>
-                <Link href="/products" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
-                  Start shopping
-                </Link>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">My Orders</h2>
+                {orders.length > 0 ? (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div key={order._id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <p className="text-sm font-semibold text-gray-900">Order #{order._id?.slice(-8)}</p>
+                            <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+                          </div>
+                          <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                            order.orderStatus === 'delivered' ? 'bg-green-100 text-green-700' :
+                            order.orderStatus === 'shipped' ? 'bg-blue-100 text-blue-700' :
+                            order.orderStatus === 'cancelled' ? 'bg-red-100 text-red-700' :
+                            'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {order.orderStatus}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <p className="text-sm text-gray-600">{order.items?.length || 0} items</p>
+                          <p className="text-base font-semibold" style={{ color: THEME_ORANGE }}>
+                            ₹{order.totalAmount?.toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
+                      <ShoppingBagIcon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No orders yet</h3>
+                    <p className="text-sm text-gray-500 mb-4">Start shopping to view your orders here.</p>
+                    <Link href="/products" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
+                      Browse products
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === 'wishlist' && (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
-                  <HeartIcon className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Wishlist is empty</h3>
-                  <p className="text-sm text-gray-500">Save your favorite products to view them here.</p>
-                </div>
-                <Link href="/wishlist" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
-                  View wishlist
-                </Link>
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">My Wishlist</h2>
+                {wishlistItems.length > 0 ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {wishlistItems.slice(0, 6).map((item) => (
+                      <ProductCard key={item._id || item.id} product={item} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
+                      <HeartIcon className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Your wishlist is empty</h3>
+                    <p className="text-sm text-gray-500 mb-4">Save items by tapping the heart icon on products.</p>
+                    <Link href="/products" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
+                      Browse products
+                    </Link>
+                  </div>
+                )}
+                {wishlistItems.length > 6 && (
+                  <div className="mt-4 text-center">
+                    <Link href="/wishlist" className="text-sm font-medium text-[#E67E22] hover:underline">
+                      View all {wishlistItems.length} items →
+                    </Link>
+                  </div>
+                )}
               </div>
             )}
 
             {activeTab === 'addresses' && (
-              <div className="text-center py-12 space-y-4">
-                <div className="w-14 h-14 mx-auto flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
-                  <MapPinIcon className="w-6 h-6" />
+              <div className="text-center py-12">
+                <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
+                  <MapPinIcon className="w-7 h-7" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">No saved addresses</h3>
-                  <p className="text-sm text-gray-500">Add delivery addresses for quicker checkout.</p>
-                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved addresses</h3>
+                <p className="text-sm text-gray-500 mb-4">Add your address for faster checkout.</p>
                 <button className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md text-sm font-medium text-white" style={{ backgroundColor: THEME_ORANGE }}>
                   Add address
                 </button>
@@ -235,6 +430,7 @@ export default function ProfilePage() {
                 <div className="rounded-xl border border-orange-100 bg-[#FFF4EA] p-6 text-center">
                   <p className="text-sm text-gray-600 mb-2">Available points</p>
                   <p className="text-3xl font-semibold text-gray-900">0</p>
+                  <p className="text-xs text-gray-500 mt-3">Earn 10 points for every ₹100 spent</p>
                 </div>
               </div>
             )}
