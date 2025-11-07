@@ -41,7 +41,12 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/otp/send-password-reset-otp`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/auth/otp/send-password-reset-otp`
+        : `${API_BASE}/api/auth/otp/send-password-reset-otp`;
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,7 +60,7 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
         toast.success('OTP sent to your email!');
         setStep('otp');
       } else {
-        toast.error(data.message || 'Failed to send OTP');
+        toast.error(data.error || data.message || 'Failed to send OTP');
       }
     } catch (error) {
       toast.error('Failed to send OTP. Please try again.');
@@ -74,7 +79,12 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/otp/verify-password-reset-otp`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/auth/otp/verify-password-reset-otp`
+        : `${API_BASE}/api/auth/otp/verify-password-reset-otp`;
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,7 +128,12 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
 
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/users/reset-password/${otpToken}`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/users/reset-password/${otpToken}`
+        : `${API_BASE}/api/users/reset-password/${otpToken}`;
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,7 +163,12 @@ export default function ForgotPasswordModal({ isOpen, onClose }: ForgotPasswordM
   const handleResendOTP = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/otp/send-password-reset-otp`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/auth/otp/send-password-reset-otp`
+        : `${API_BASE}/api/auth/otp/send-password-reset-otp`;
+      
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

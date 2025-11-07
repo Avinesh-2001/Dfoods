@@ -36,7 +36,12 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
     if (!token) return;
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist`, {
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/wishlist`
+        : `${API_BASE}/api/wishlist`;
+      
+      const response = await fetch(endpoint, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -66,11 +71,16 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
 
     setIsLoading(true);
     const productId = product._id || product.id;
+    const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
 
     try {
       if (isInWishlist) {
         // Remove from wishlist
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/remove/${productId}`, {
+        const endpoint = API_BASE.includes('/api') 
+          ? `${API_BASE}/wishlist/remove/${productId}`
+          : `${API_BASE}/api/wishlist/remove/${productId}`;
+        
+        const response = await fetch(endpoint, {
           method: 'DELETE',
           headers: {
             'Authorization': `Bearer ${token}`
@@ -83,7 +93,11 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
         }
       } else {
         // Add to wishlist
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/wishlist/add`, {
+        const endpoint = API_BASE.includes('/api') 
+          ? `${API_BASE}/wishlist/add`
+          : `${API_BASE}/api/wishlist/add`;
+        
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
