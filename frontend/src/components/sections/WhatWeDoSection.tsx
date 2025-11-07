@@ -8,10 +8,9 @@ import {
   TruckIcon 
 } from '@heroicons/react/24/outline';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import 'swiper/css/navigation';
 
 const whatWeDoItems = [
   {
@@ -199,7 +198,7 @@ export default function WhatWeDoSection() {
             {/* Mobile Swiper */}
             <div className="block md:hidden">
               <Swiper
-                modules={[Autoplay, Pagination, Navigation]}
+                modules={[Autoplay, Pagination]}
                 spaceBetween={20}
                 slidesPerView={1.1}
                 centeredSlides={true}
@@ -216,13 +215,7 @@ export default function WhatWeDoSection() {
               >
                 {whatWeDoItems.map((item, index) => (
                   <SwiperSlide key={index}>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                      className="px-2"
-                    >
+                    <div className="px-2">
                       <div className="what-we-do-card">
                         <div className="icon-circle">
                           <item.icon />
@@ -230,13 +223,13 @@ export default function WhatWeDoSection() {
                         <h3 className="card-title">{item.title}</h3>
                         <p className="card-description">{item.description}</p>
                       </div>
-                    </motion.div>
+                    </div>
                   </SwiperSlide>
                 ))}
               </Swiper>
             </div>
 
-            {/* Desktop Grid */}
+            {/* Desktop Grid - ORIGINAL LAYOUT */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {whatWeDoItems.map((item, index) => (
                 <motion.div
