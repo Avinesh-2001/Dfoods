@@ -20,21 +20,12 @@ export default function WishlistPage() {
   const router = useRouter();
   const { addItem } = useCartStore();
 
-  const {
-    items: wishlistItems,
-    loading,
-    initialized,
-    fetchWishlist,
-    removeFromWishlist,
-    clearWishlist,
-  } = useWishlistStore((state) => ({
-    items: state.items,
-    loading: state.loading,
-    initialized: state.initialized,
-    fetchWishlist: state.fetchWishlist,
-    removeFromWishlist: state.removeFromWishlist,
-    clearWishlist: state.clearWishlist,
-  }));
+  const wishlistItems = useWishlistStore((state) => state.items || []);
+  const loading = useWishlistStore((state) => state.loading);
+  const initialized = useWishlistStore((state) => state.initialized);
+  const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
+  const removeFromWishlist = useWishlistStore((state) => state.removeFromWishlist);
+  const clearWishlist = useWishlistStore((state) => state.clearWishlist);
 
   useEffect(() => {
     if (!user) {
@@ -93,7 +84,7 @@ export default function WishlistPage() {
             <div>
               <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">My Wishlist</h1>
               <p className="text-sm text-gray-500">
-                {wishlistItems.length} {wishlistItems.length === 1 ? 'item saved' : 'items saved'}
+                {Array.isArray(wishlistItems) ? wishlistItems.length : 0} {wishlistItems.length === 1 ? 'item saved' : 'items saved'}
               </p>
             </div>
           </div>
@@ -117,13 +108,13 @@ export default function WishlistPage() {
         </div>
 
         <AnimatePresence mode="wait">
-          {wishlistItems.length > 0 ? (
+          {Array.isArray(wishlistItems) && wishlistItems.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
               {wishlistItems.filter(item => item && (item._id || item.id)).map((item) => (
-                <motion.div
-                  key={item._id || item.id}
+              <motion.div
+                key={item._id || item.id}
                   initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="bg-white border border-gray-100 rounded-xl shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden"
                 >
@@ -152,7 +143,7 @@ export default function WishlistPage() {
 
                   <div className="p-4 space-y-3">
                     <Link href={`/products/${item._id || item.id}`}>
-                      {item?.category && (
+                      {item?.category && typeof item.category === 'string' && (
                         <span
                           className="inline-block px-2 py-0.5 rounded-full text-[10px] font-medium mb-2"
                           style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}
@@ -184,14 +175,14 @@ export default function WishlistPage() {
                       Add to cart
                     </button>
                   </div>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            <motion.div
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
               key="empty"
               initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
               className="text-center py-12"
             >
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: THEME_BADGE_BG }}>
@@ -207,8 +198,8 @@ export default function WishlistPage() {
                 Browse products
                 <ArrowRightIcon className="w-4 h-4" />
               </Link>
-            </motion.div>
-          )}
+          </motion.div>
+        )}
         </AnimatePresence>
       </div>
     </div>
