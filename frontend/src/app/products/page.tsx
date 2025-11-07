@@ -230,10 +230,10 @@ export default function ProductsPage() {
         />
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="absolute bottom-6 right-6 md:bottom-8 md:right-8 text-right">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-white mb-2 drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-black mb-2 drop-shadow-lg bg-white/80 px-4 py-2 rounded-lg">
             Our Products
           </h1>
-          <p className="text-sm sm:text-base md:text-lg text-white/90 drop-shadow-md">
+          <p className="text-sm sm:text-base md:text-lg text-black drop-shadow-md bg-white/80 px-4 py-1 rounded-lg mt-2">
             Discover our premium collection of organic jaggery products
           </p>
         </div>

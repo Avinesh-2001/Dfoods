@@ -53,7 +53,7 @@ export default function GoodnessRangeSection() {
           viewport={{ once: true }}
           className="mb-8 sm:mb-10"
         >
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-[#F97316] mb-2">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-display font-bold text-black mb-2">
             The Güdness Range
           </h2>
         </motion.div>
@@ -104,7 +104,7 @@ export default function GoodnessRangeSection() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </motion.div>
                   
-                  <h3 className="text-center text-[#F97316] font-semibold text-xs group-hover:text-[#F59E0B] transition-colors">
+                  <h3 className="text-center text-black font-semibold text-xs group-hover:text-[#F59E0B] transition-colors">
                     {category.name}
                   </h3>
                 </Link>
@@ -146,7 +146,7 @@ export default function GoodnessRangeSection() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </motion.div>
                 
-                <h3 className="text-center text-[#F97316] font-semibold text-sm group-hover:text-[#F59E0B] transition-colors">
+                <h3 className="text-center text-black font-semibold text-sm group-hover:text-[#F59E0B] transition-colors">
                   {category.name}
                 </h3>
               </Link>

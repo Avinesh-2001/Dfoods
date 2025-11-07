@@ -108,12 +108,12 @@ export default function TestimonialsSection() {
                   <div className="flex justify-center gap-1 mb-4">
                     {renderStars(testimonial.rating)}
                   </div>
-                  <p className="text-gray-700 text-sm leading-relaxed mb-6 flex-grow">
+                  <p className="text-black text-sm leading-relaxed mb-6 flex-grow">
                     "{testimonial.comment}"
                   </p>
                   <div className="flex flex-col items-center gap-3">
                     {getUserAvatar(testimonial.name)}
-                    <div className="text-xs font-semibold tracking-wide text-gray-900 uppercase">{testimonial.name}</div>
+                    <div className="text-xs font-semibold tracking-wide text-black uppercase">{testimonial.name}</div>
                   </div>
                 </div>
               </SwiperSlide>
@@ -158,11 +158,11 @@ export default function TestimonialsSection() {
                     {renderStars(t.rating)}
                   </div>
                   {/* Quote */}
-                  <p className="text-gray-700 text-sm leading-relaxed mb-6">{t.comment}</p>
+                  <p className="text-black text-sm leading-relaxed mb-6">{t.comment}</p>
                   {/* Avatar */}
                   <div className="flex flex-col items-center gap-3">
                     {getUserAvatar(t.name)}
-                    <div className="text-xs font-semibold tracking-wide text-gray-900 uppercase">{t.name}</div>
+                    <div className="text-xs font-semibold tracking-wide text-black uppercase">{t.name}</div>
                   </div>
                 </motion.div>
               );

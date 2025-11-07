@@ -253,13 +253,13 @@ export default function Header() {
 
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="md:hidden p-2 bg-white/90 rounded-lg shadow-md hover:bg-white transition-all z-50"
+                className="md:hidden p-2.5 bg-white rounded-lg shadow-lg hover:shadow-xl transition-all z-50 border-2 border-gray-200"
                 aria-label="Menu"
               >
                 {isOpen ? (
-                  <XMarkIcon className="w-6 h-6 text-black" />
+                  <XMarkIcon className="w-7 h-7 text-black font-bold" strokeWidth={3} />
                 ) : (
-                  <Bars3Icon className="w-6 h-6 text-black" />
+                  <Bars3Icon className="w-7 h-7 text-black font-bold" strokeWidth={3} />
                 )}
               </button>
             </div>

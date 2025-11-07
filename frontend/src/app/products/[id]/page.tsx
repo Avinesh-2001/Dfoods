@@ -1101,7 +1101,7 @@ export default function ProductDetailPage() {
           {(relatedProducts.length > 0 || allProducts.length > 0) && (
             <div className="my-12">
               <div className="mb-8">
-                <h2 className="text-2xl font-bold text-[#1a472a] mb-2 text-center">Recommended Products</h2>
+                <h2 className="text-2xl font-bold text-black mb-2 text-center">Recommended Products</h2>
                 <div className="w-16 h-1 bg-[#1a472a] mx-auto rounded-full"></div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
