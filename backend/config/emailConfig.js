@@ -208,7 +208,8 @@ export {
   sendReturnReceivedEmail,
   sendReturnApprovedEmail,
   sendReturnDeclinedEmail,
-  sendPromotionalEmail
+  sendPromotionalEmail,
+  sendPasswordChangedEmail
 } from '../utils/mailers.js';
 
 export default { sendEmailViaSendGrid: sendEmail };

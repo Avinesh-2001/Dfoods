@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { body, validationResult } from "express-validator";
 import userAuth from "../middlewares/userAuth.js";
-import { sendWelcomeEmail } from "../config/emailConfig.js";
+import { sendWelcomeEmail, sendPasswordChangedEmail } from "../config/emailConfig.js";
 
 const router = express.Router();
 
@@ -158,6 +158,14 @@ router.post(
 
       user.password = password;
       await user.save();
+      
+      // Send password changed confirmation email
+      try {
+        await sendPasswordChangedEmail(user);
+      } catch (emailError) {
+        // Don't fail if email fails
+      }
+      
       res.json({ message: "Password reset successfully" });
     } catch (error) {
       res.status(400).json({ message: "Invalid or expired token", error: error.message });

@@ -585,5 +585,34 @@ export const sendPromotionalEmail = async (to, subject, htmlContent) => {
   }
 };
 
+// Send password changed confirmation email
+export const sendPasswordChangedEmail = async (user) => {
+  const html = `
+    <div style="text-align: center; margin-bottom: 30px;">
+      <h2 style="color: #10b981; margin-bottom: 10px;">✅ Password Successfully Changed</h2>
+    </div>
+    <p>Dear ${user.name},</p>
+    <div style="background-color: #d1fae5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+      <h3 style="color: #065f46; margin-top: 0;">Your password has been successfully updated!</h3>
+      <p style="color: #047857; margin-bottom: 0;">Your account is now secured with your new password.</p>
+    </div>
+    <p style="color: #666;">If you did not make this change, please contact our support team immediately.</p>
+    <p style="color: #666;">For security reasons, we recommend:</p>
+    <ul style="color: #666;">
+      <li>Using a strong, unique password</li>
+      <li>Not sharing your password with anyone</li>
+      <li>Changing your password regularly</li>
+    </ul>
+    <p>Best regards,<br><strong>The Dfoods Team</strong></p>
+  `;
+
+  try {
+    const result = await sendEmail(user.email, '🔐 Password Changed Successfully - Dfoods', html);
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default { sendEmail };
  

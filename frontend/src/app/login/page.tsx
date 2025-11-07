@@ -9,6 +9,7 @@ import { UserIcon, LockClosedIcon } from '@heroicons/react/24/outline';
 import { authApi, adminApi } from '@/lib/api/api';
 import { setUser } from '@/store';
 import toast from 'react-hot-toast';
+import ForgotPasswordModal from '@/components/ForgotPasswordModal';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ export default function LoginPage() {
     password: '',
   });
   const [error, setError] = useState('');
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
   const dispatch = useDispatch();
   const router = useRouter();
 
@@ -124,9 +126,13 @@ export default function LoginPage() {
             </div>
 
             <div className="flex items-center justify-end">
-              <Link href="/forgot-password" className="text-sm text-[#E67E22] hover:underline">
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
+                className="text-sm text-[#E67E22] hover:underline font-medium"
+              >
                 Forgot password?
-              </Link>
+              </button>
             </div>
 
             <motion.button
@@ -148,6 +154,12 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </div>
+
+      {/* Forgot Password Modal */}
+      <ForgotPasswordModal
+        isOpen={showForgotPassword}
+        onClose={() => setShowForgotPassword(false)}
+      />
     </div>
   );
 }

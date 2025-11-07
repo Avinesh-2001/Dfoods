@@ -292,4 +292,103 @@ router.post('/resend-otp', async (req, res) => {
   }
 });
 
+// ---------------- SEND PASSWORD RESET OTP ----------------
+router.post('/send-password-reset-otp', async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ error: 'Email is required' });
+
+    // Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'No account found with this email' });
+    }
+
+    const otp = crypto.randomInt(100000, 999999).toString();
+    otpStore.set(email, { otp, expiresAt: Date.now() + 10 * 60 * 1000, attempts: 0 });
+
+    const html = `
+      <div style="font-family: Arial; max-width:600px; margin:auto; padding: 20px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h2 style="color: #d97706; margin-bottom: 10px;">Password Reset Request</h2>
+          <p style="color: #666;">You requested to reset your password</p>
+        </div>
+        <div style="background: #fef3c7; padding: 30px; border-radius: 10px; text-align: center;">
+          <p style="color: #78350f; margin-bottom: 15px; font-size: 14px;">Your verification code is:</p>
+          <h1 style="color: #d97706; font-size: 48px; letter-spacing: 8px; margin: 0;">${otp}</h1>
+        </div>
+        <p style="color: #666; margin-top: 20px; font-size: 14px;">This code expires in 10 minutes.</p>
+        <p style="color: #666; font-size: 14px;">If you didn't request this, please ignore this email.</p>
+      </div>
+    `;
+
+    // Send response immediately
+    res.json({ 
+      message: 'OTP sent successfully', 
+      expiresIn: 600
+    });
+
+    // Send email in background
+    sendEmail(email, 'Password Reset OTP - Dfoods', html)
+      .then((result) => {
+        if (result.success) {
+          // Email sent successfully
+        } else {
+          // Email failed but OTP is still valid
+        }
+      })
+      .catch(() => {
+        // Email exception but OTP is still valid
+      });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to send OTP' });
+  }
+});
+
+// ---------------- VERIFY PASSWORD RESET OTP ----------------
+router.post('/verify-password-reset-otp', async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ error: 'Email and OTP are required' });
+    }
+
+    const otpData = otpStore.get(email);
+    if (!otpData) {
+      return res.status(400).json({ error: 'OTP not found or expired' });
+    }
+
+    if (Date.now() > otpData.expiresAt) {
+      return res.status(400).json({ error: 'OTP has expired' });
+    }
+
+    if (otpData.otp !== otp) {
+      return res.status(400).json({ error: 'Invalid OTP' });
+    }
+
+    // OTP verified, create a reset token
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const resetToken = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET || 'your-secret-key',
+      { expiresIn: '15m' }
+    );
+
+    // Keep OTP valid for a bit longer in case they need to resend
+    otpStore.delete(email);
+
+    res.json({
+      message: 'OTP verified successfully',
+      resetToken
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to verify OTP' });
+  }
+});
+
 export default router;
