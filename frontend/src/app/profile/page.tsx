@@ -118,10 +118,33 @@ export default function ProfilePage() {
     
     setSendingOtp(true);
     try {
-      // Simulate OTP sending - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('OTP sent to your mobile number!');
-      setShowOtpModal(true);
+      const token = localStorage.getItem('token');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/auth/phone-otp/send-phone-otp`
+        : `${API_BASE}/api/auth/phone-otp/send-phone-otp`;
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ phone: user.phone })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success('OTP sent to your mobile number!');
+        setShowOtpModal(true);
+        // Log OTP for development (remove in production)
+        if (data.debugOtp) {
+          console.log('OTP for testing:', data.debugOtp);
+        }
+      } else {
+        toast.error(data.error || 'Failed to send OTP');
+      }
     } catch (error) {
       toast.error('Failed to send OTP');
     } finally {
@@ -136,12 +159,34 @@ export default function ProfilePage() {
     }
     
     try {
-      // Simulate OTP verification - replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Mobile number verified successfully!');
-      setShowOtpModal(false);
-      setOtp('');
-      // Update user verification status in localStorage/state
+      const token = localStorage.getItem('token');
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
+      const endpoint = API_BASE.includes('/api') 
+        ? `${API_BASE}/auth/phone-otp/verify-phone-otp`
+        : `${API_BASE}/api/auth/phone-otp/verify-phone-otp`;
+      
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ phone: user.phone, otp })
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success('Mobile number verified successfully!');
+        setShowOtpModal(false);
+        setOtp('');
+        // Update user in localStorage
+        const updatedUser = { ...user, phoneVerified: true };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        window.location.reload();
+      } else {
+        toast.error(data.error || 'Invalid OTP. Please try again');
+      }
     } catch (error) {
       toast.error('Invalid OTP. Please try again');
     }

@@ -5,6 +5,9 @@ export interface User {
   name: string;
   email: string;
   role?: 'user' | 'admin';
+  phone?: string;
+  profilePhoto?: string;
+  phoneVerified?: boolean;
   isBlocked?: boolean;
   wishlist?: string[];
   createdAt?: string;

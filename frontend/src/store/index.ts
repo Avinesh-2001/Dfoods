@@ -6,6 +6,8 @@ interface User {
   email: string;
   role: 'user' | 'admin';
   phone?: string;
+  profilePhoto?: string;
+  phoneVerified?: boolean;
 }
 
 interface UserState {
