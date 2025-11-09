@@ -706,15 +706,15 @@ export default function ProductDetailPage() {
                     <button
                       key={index}
                       onClick={() => setSelectedVariant(variant)}
-                        className={`relative p-4 rounded-lg border-2 text-left transition-all ${
+                        className={`relative p-3 rounded-lg border-2 text-left transition-all ${
                           isSelected
                             ? 'border-[#1a472a] bg-[#1a472a]/5'
                           : 'border-gray-300 hover:border-gray-400'
                       }`}
                     >
-                        <div className="font-bold text-base text-black mb-1">{variant.size || variant.name}</div>
-                        <div className="font-semibold text-lg text-[#1a472a] mb-1">₹{variantPrice}</div>
-                        <div className="text-xs text-gray-500">(Rs.{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</div>
+                        <div className="font-bold text-sm text-black mb-1">{variant.size || variant.name}</div>
+                        <div className="font-semibold text-base text-[#1a472a] mb-1">₹{variantPrice}</div>
+                        <div className="text-[10px] text-gray-500">(Rs.{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</div>
                         {isSelected && (
                           <div className="absolute top-2 right-2">
                             <CheckCircleIcon className="w-5 h-5 text-[#1a472a]" />
