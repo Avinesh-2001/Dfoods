@@ -37,8 +37,14 @@ export default function ProfilePage() {
   const [editForm, setEditForm] = useState({
     name: '',
     email: '',
-    phone: ''
+    phone: '',
+    profilePhoto: ''
   });
+  const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string>('');
+  const [showOtpModal, setShowOtpModal] = useState(false);
+  const [otp, setOtp] = useState('');
+  const [sendingOtp, setSendingOtp] = useState(false);
 
   const wishlistItems = useWishlistStore((state) => state.items || []);
   const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
@@ -52,8 +58,10 @@ export default function ProfilePage() {
       setEditForm({
         name: user.name || '',
         email: user.email || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        profilePhoto: user.profilePhoto || ''
       });
+      setPhotoPreview(user.profilePhoto || '');
       
       // Fetch wishlist if not initialized
       if (!wishlistInitialized) {
@@ -85,6 +93,57 @@ export default function ProfilePage() {
       }
     } catch (error) {
       // Silent fail
+    }
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setPhotoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = reader.result as string;
+        setPhotoPreview(result);
+        setEditForm({ ...editForm, profilePhoto: result });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSendOtp = async () => {
+    if (!user.phone) {
+      toast.error('Please add a phone number first');
+      return;
+    }
+    
+    setSendingOtp(true);
+    try {
+      // Simulate OTP sending - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('OTP sent to your mobile number!');
+      setShowOtpModal(true);
+    } catch (error) {
+      toast.error('Failed to send OTP');
+    } finally {
+      setSendingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      toast.error('Please enter a valid 6-digit OTP');
+      return;
+    }
+    
+    try {
+      // Simulate OTP verification - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success('Mobile number verified successfully!');
+      setShowOtpModal(false);
+      setOtp('');
+      // Update user verification status in localStorage/state
+    } catch (error) {
+      toast.error('Invalid OTP. Please try again');
     }
   };
 
@@ -171,8 +230,12 @@ export default function ProfilePage() {
                 <p className="text-sm text-black">Manage your personal information, orders and saved items.</p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-semibold" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
-                  {user.name?.charAt(0).toUpperCase()}
+                <div className="relative w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-2xl font-semibold" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
+                  {photoPreview || user.profilePhoto ? (
+                    <img src={photoPreview || user.profilePhoto} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    user.name?.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <button 
                   onClick={() => setIsEditing(!isEditing)}
@@ -244,6 +307,37 @@ export default function ProfilePage() {
                 
                 {isEditing ? (
                   <div className="space-y-4">
+                    {/* Profile Photo Upload */}
+                    <div className="space-y-2">
+                      <p className="text-xs uppercase text-black/70">Profile Photo</p>
+                      <div className="flex items-center gap-4">
+                        <div className="relative w-20 h-20 rounded-full overflow-hidden flex items-center justify-center" style={{ backgroundColor: THEME_BADGE_BG, color: THEME_ORANGE }}>
+                          {photoPreview ? (
+                            <img src={photoPreview} alt="Profile Preview" className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-3xl font-semibold">{user.name?.charAt(0).toUpperCase()}</span>
+                          )}
+                        </div>
+                        <div>
+                          <input
+                            type="file"
+                            id="profile-photo"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor="profile-photo"
+                            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-md cursor-pointer"
+                            style={{ backgroundColor: THEME_ORANGE }}
+                          >
+                            Upload Photo
+                          </label>
+                          <p className="text-xs text-gray-500 mt-1">JPG, PNG or GIF (MAX. 5MB)</p>
+                        </div>
+                      </div>
+                    </div>
+                    
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <p className="text-xs uppercase text-black/70">Full name</p>
@@ -281,8 +375,11 @@ export default function ProfilePage() {
                           setEditForm({
                             name: user.name || '',
                             email: user.email || '',
-                            phone: user.phone || ''
+                            phone: user.phone || '',
+                            profilePhoto: user.profilePhoto || ''
                           });
+                          setPhotoPreview(user.profilePhoto || '');
+                          setPhotoFile(null);
                         }}
                         className="px-4 py-2 text-sm font-medium text-black bg-gray-100 rounded-md hover:bg-gray-200"
                       >
@@ -315,9 +412,20 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-2">
                       <p className="text-xs uppercase text-black/70">Phone number</p>
-                      <div className="flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
-                        <PhoneIcon className="w-4 h-4 text-gray-400" />
-                        {user.phone || 'Not provided'}
+                      <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
+                        <div className="flex items-center gap-2">
+                          <PhoneIcon className="w-4 h-4 text-gray-400" />
+                          {user.phone || 'Not provided'}
+                        </div>
+                        {user.phone && (
+                          <button 
+                            onClick={handleSendOtp}
+                            disabled={sendingOtp}
+                            className="text-xs font-medium text-[#E67E22] hover:underline disabled:opacity-50"
+                          >
+                            {sendingOtp ? 'Sending...' : 'Verify number'}
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
@@ -437,6 +545,74 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* OTP Verification Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-black">Verify Mobile Number</h3>
+              <button
+                onClick={() => {
+                  setShowOtpModal(false);
+                  setOtp('');
+                }}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600">
+                Enter the 6-digit OTP sent to <span className="font-semibold text-[#E67E22]">{user.phone}</span>
+              </p>
+              
+              <div>
+                <label className="block text-sm font-semibold text-black mb-2">Enter OTP</label>
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md text-center text-2xl tracking-widest focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
+                  placeholder="000000"
+                  maxLength={6}
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowOtpModal(false);
+                    setOtp('');
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-semibold rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleVerifyOtp}
+                  disabled={otp.length !== 6}
+                  className="flex-1 px-4 py-2 text-sm font-semibold rounded-md text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ backgroundColor: THEME_ORANGE }}
+                >
+                  Verify
+                </button>
+              </div>
+              
+              <div className="text-center">
+                <button
+                  onClick={handleSendOtp}
+                  disabled={sendingOtp}
+                  className="text-sm text-[#E67E22] hover:underline disabled:opacity-50"
+                >
+                  {sendingOtp ? 'Sending...' : 'Resend OTP'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

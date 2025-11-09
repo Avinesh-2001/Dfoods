@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lora:wght@400;500;600;700&display=swap');
 
 :root {
   --background: #fefdfb;
@@ -16,8 +15,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-serif: 'Lora', Georgia, serif;
+  --font-sans: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  --font-serif: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -33,15 +32,16 @@
 body {
   background: var(--background);
   color: var(--text-primary);
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  font-weight: 300;
-  line-height: 1.7;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.6;
   letter-spacing: 0.01em;
 }
 
 /* Typography Hierarchy - Light & Elegant */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Lora', Georgia, serif;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -49,44 +49,44 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 1.875rem;
   font-weight: 700;
 }
 
 h2 {
-  font-size: 2rem;
-  font-weight: 600;
-}
-
-h3 {
   font-size: 1.5rem;
   font-weight: 600;
 }
 
+h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
 p, span, div, li {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 300;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
 /* Button text */
 button {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
   letter-spacing: 0.03em;
 }
 
 /* Labels and inputs */
 label {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Links */
 a {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
   color: var(--text-primary);
   transition: all 0.3s ease;
 }
@@ -97,27 +97,27 @@ a:hover {
 
 /* Price text - slightly bolder */
 .price-text {
-  font-family: 'Lora', serif;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
   font-weight: 600;
   color: var(--primary-dark);
 }
 
 /* Card titles */
 .card-title {
-  font-family: 'Lora', serif;
-  font-weight: 500;
+  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  font-weight: 600;
   color: var(--text-primary);
 }
 
 /* Body text */
 .body-text {
-  font-weight: 300;
+  font-weight: 600;
   color: var(--text-secondary);
 }
 
 /* Light text */
 .text-light {
-  font-weight: 300;
+  font-weight: 600;
   color: var(--text-light);
 }
 

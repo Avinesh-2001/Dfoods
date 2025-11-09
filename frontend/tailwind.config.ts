@@ -22,8 +22,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['var(--font-poppins)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-playfair)', 'serif'],
+        sans: ['Inter', 'fallback-inter_semi_bold', 'Arial', 'sans-serif'],
+        display: ['Inter', 'fallback-inter_semi_bold', 'Arial', 'sans-serif'],
       },
     },
   },

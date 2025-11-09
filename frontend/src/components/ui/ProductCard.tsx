@@ -108,12 +108,12 @@ export default function ProductCard({ product, className = '' }: ProductCardProp
             </div>
           )}
 
-          <h3 className="text-sm font-medium text-gray-900 line-clamp-1">
+          <h3 className="text-xs font-medium text-gray-900 line-clamp-1">
             {product.name}
           </h3>
 
           <div className="flex items-baseline">
-            <span className="text-sm font-semibold" style={{ color: THEME_ORANGE }}>₹{currentPrice}</span>
+            <span className="text-xs font-semibold" style={{ color: THEME_ORANGE }}>₹{currentPrice}</span>
           </div>
 
           <div className="pt-0.5">
