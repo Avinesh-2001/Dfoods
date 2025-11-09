@@ -702,7 +702,7 @@ export default function ProfilePage() {
               
               <div className="text-center">
                 <button
-                  onClick={handleSendOtp}
+                  onClick={() => handleSendOtp()}
                   disabled={sendingOtp}
                   className="text-sm text-[#E67E22] hover:underline disabled:opacity-50"
                 >
