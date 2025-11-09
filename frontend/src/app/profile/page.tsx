@@ -111,7 +111,7 @@ export default function ProfilePage() {
   };
 
   const handleSendOtp = async () => {
-    if (!user.phone) {
+    if (!user || !user.phone) {
       toast.error('Please add a phone number first');
       return;
     }
@@ -155,6 +155,11 @@ export default function ProfilePage() {
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
       toast.error('Please enter a valid 6-digit OTP');
+      return;
+    }
+    
+    if (!user || !user.phone) {
+      toast.error('User phone number not found');
       return;
     }
     
@@ -610,7 +615,7 @@ export default function ProfilePage() {
             
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                Enter the 6-digit OTP sent to <span className="font-semibold text-[#E67E22]">{user.phone}</span>
+                Enter the 6-digit OTP sent to <span className="font-semibold text-[#E67E22]">{user?.phone}</span>
               </p>
               
               <div>
