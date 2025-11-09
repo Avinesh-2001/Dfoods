@@ -510,11 +510,16 @@ export default function ProfilePage() {
                       <div className="flex items-center justify-between gap-2 px-3 py-2 rounded-md border border-gray-200 text-sm text-black">
                         <div className="flex items-center gap-2">
                           <PhoneIcon className="w-4 h-4 text-gray-400" />
-                          {user.phone || 'Not provided'}
+                          <span>{user.phone || 'Not provided'}</span>
+                          {user.phone && user.phoneVerified && (
+                            <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                              Verified
+                            </span>
+                          )}
                         </div>
-                        {user.phone && (
+                        {user.phone && !user.phoneVerified && (
                           <button 
-                            onClick={handleSendOtp}
+                            onClick={() => handleSendOtp(user.phone)}
                             disabled={sendingOtp}
                             className="text-xs font-medium text-[#E67E22] hover:underline disabled:opacity-50"
                           >

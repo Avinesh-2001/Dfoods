@@ -156,22 +156,43 @@ export default function Header() {
               <div className="hidden md:block relative z-[100] profile-dropdown">
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
-                  className="p-2 text-white/90 hover:text-white transition-colors"
+                  className="p-1 text-white/90 hover:text-white transition-colors"
                 >
-                  <UserIcon className="w-5 h-5" />
+                  {user && (user as any).profilePhoto ? (
+                    <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-white/90">
+                      <img 
+                        src={(user as any).profilePhoto} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <UserIcon className="w-5 h-5" />
+                  )}
                 </button>
                 {isProfileOpen && (
                   <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-2xl border border-gray-200 z-[200] animate-fadeIn">
                     <div className="py-2">
-                      <div className="px-4 py-2 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-[#F97316]">
-                          {user ? `Hi, ${user.name}` : "Welcome!"}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {user
-                            ? "Manage your account"
-                            : "Sign in to your account"}
-                        </p>
+                      <div className="px-4 py-2 border-b border-gray-100 flex items-center gap-2">
+                        {user && (user as any).profilePhoto && (
+                          <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <img 
+                              src={(user as any).profilePhoto} 
+                              alt="Profile" 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-semibold text-[#F97316]">
+                            {user ? `Hi, ${user.name}` : "Welcome!"}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {user
+                              ? "Manage your account"
+                              : "Sign in to your account"}
+                          </p>
+                        </div>
                       </div>
                       {user ? (
                         <>
@@ -280,11 +301,22 @@ export default function Header() {
               <div className="px-4 py-4 space-y-1">
                 {/* User Info Section */}
                 {user && (
-                  <div className="px-3 py-3 mb-2 rounded-lg" style={{ backgroundColor: '#FFF4EA' }}>
-                    <p className="text-sm font-semibold" style={{ color: THEME_ORANGE }}>
-                      Hi, {user.name}
-                    </p>
-                    <p className="text-xs text-black/70">{user.email}</p>
+                  <div className="px-3 py-3 mb-2 rounded-lg flex items-center gap-3" style={{ backgroundColor: '#FFF4EA' }}>
+                    {(user as any).profilePhoto && (
+                      <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0">
+                        <img 
+                          src={(user as any).profilePhoto} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate" style={{ color: THEME_ORANGE }}>
+                        Hi, {user.name}
+                      </p>
+                      <p className="text-xs text-black/70 truncate">{user.email}</p>
+                    </div>
                   </div>
                 )}
 
