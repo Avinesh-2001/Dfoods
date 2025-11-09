@@ -376,19 +376,53 @@ export default function ProductDetailPage() {
       // Auto-fill title with product name if empty
       const finalTitle = reviewTitle || product.name;
       
-      // Convert images to base64 data URLs
+      // Convert and compress images to base64 data URLs
       const imagePromises = reviewImages.map((file) => {
         return new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            resolve(reader.result as string); // base64 data URL
+            const img = new Image();
+            img.src = reader.result as string;
+            
+            img.onload = () => {
+              // Create canvas to resize
+              const canvas = document.createElement('canvas');
+              const ctx = canvas.getContext('2d');
+              
+              // Resize to max 400x400 for review images
+              const maxSize = 400;
+              let width = img.width;
+              let height = img.height;
+              
+              if (width > height) {
+                if (width > maxSize) {
+                  height = (height * maxSize) / width;
+                  width = maxSize;
+                }
+              } else {
+                if (height > maxSize) {
+                  width = (width * maxSize) / height;
+                  height = maxSize;
+                }
+              }
+              
+              canvas.width = width;
+              canvas.height = height;
+              ctx?.drawImage(img, 0, 0, width, height);
+              
+              // Convert to base64 with compression
+              const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6);
+              resolve(compressedBase64);
+            };
+            
+            img.onerror = reject;
           };
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
       });
       
-      // Wait for all images to be converted
+      // Wait for all images to be converted and compressed
       const imageBase64Array = await Promise.all(imagePromises);
       
       // Use logged-in user's info
@@ -459,9 +493,24 @@ export default function ProductDetailPage() {
     }
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      
+      // Limit to 3 images max
+      if (reviewImages.length + files.length > 3) {
+        toast.error('Maximum 3 images allowed');
+        return;
+      }
+      
+      // Check file sizes
+      for (const file of files) {
+        if (file.size > 2 * 1024 * 1024) {
+          toast.error('Each image must be less than 2MB');
+          return;
+        }
+      }
+      
       setReviewImages(prev => [...prev, ...files]);
     }
   };
@@ -1323,16 +1372,16 @@ export default function ProductDetailPage() {
                         />
                       </div>
 
-                      {/* Picture/Video Upload (Optional) */}
+                      {/* Picture Upload (Optional) */}
                       <div>
                         <label className="block text-sm font-semibold text-gray-700 mb-2">
-                          Picture/Video <span className="text-gray-500 text-xs">(optional)</span>
+                          Pictures <span className="text-gray-500 text-xs">(optional, max 3 images, 2MB each)</span>
                         </label>
                         <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-[#1a472a] transition-colors">
                           <input
                             type="file"
                             id="review-images"
-                            accept="image/*,video/*"
+                            accept="image/*"
                             multiple
                             onChange={handleImageUpload}
                             className="hidden"
@@ -1344,7 +1393,8 @@ export default function ProductDetailPage() {
                             <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                             </svg>
-                            <span className="text-sm text-gray-600">Click to upload images or videos</span>
+                            <span className="text-sm text-gray-600">Click to upload images</span>
+                            <span className="text-xs text-gray-400 mt-1">Images will be compressed</span>
                           </label>
                         </div>
                         {reviewImages.length > 0 && (

@@ -105,7 +105,17 @@ router.put(
       if (email) user.email = email;
       if (password) user.password = password;
       if (phone !== undefined) user.phone = phone;
-      if (profilePhoto !== undefined) user.profilePhoto = profilePhoto;
+      
+      // Handle profilePhoto with size check
+      if (profilePhoto !== undefined) {
+        // Check if base64 image is too large (limit to ~500KB)
+        if (profilePhoto && profilePhoto.length > 700000) {
+          return res.status(400).json({ 
+            message: "Image too large. Please use an image smaller than 500KB" 
+          });
+        }
+        user.profilePhoto = profilePhoto;
+      }
 
       await user.save();
       res.json({ 
@@ -115,10 +125,12 @@ router.put(
           email: user.email,
           phone: user.phone,
           profilePhoto: user.profilePhoto,
-          phoneVerified: user.phoneVerified
+          phoneVerified: user.phoneVerified,
+          role: user.role || 'user'
         } 
       });
     } catch (error) {
+      console.error('Profile update error:', error);
       res.status(500).json({ message: "Server error", error: error.message });
     }
   }

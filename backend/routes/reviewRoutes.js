@@ -105,6 +105,23 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Rating must be between 1 and 5' });
     }
 
+    // Validate images size (if provided)
+    if (images && Array.isArray(images)) {
+      // Limit to 3 images
+      if (images.length > 3) {
+        return res.status(400).json({ message: 'Maximum 3 images allowed' });
+      }
+      
+      // Check each image size (base64 length)
+      for (const img of images) {
+        if (img && img.length > 700000) { // ~500KB limit
+          return res.status(400).json({ 
+            message: 'Images too large. Please compress images to under 500KB each' 
+          });
+        }
+      }
+    }
+
     // Check if product exists
     const product = await Product.findById(productId);
     if (!product) {

@@ -100,12 +100,51 @@ export default function ProfilePage() {
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Check file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Image size must be less than 2MB');
+        return;
+      }
+      
       setPhotoFile(file);
+      
+      // Compress and resize image
       const reader = new FileReader();
       reader.onloadend = () => {
-        const result = reader.result as string;
-        setPhotoPreview(result);
-        setEditForm({ ...editForm, profilePhoto: result });
+        const img = new Image();
+        img.src = reader.result as string;
+        
+        img.onload = () => {
+          // Create canvas to resize
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          
+          // Resize to max 200x200 for profile photo
+          const maxSize = 200;
+          let width = img.width;
+          let height = img.height;
+          
+          if (width > height) {
+            if (width > maxSize) {
+              height = (height * maxSize) / width;
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = (width * maxSize) / height;
+              height = maxSize;
+            }
+          }
+          
+          canvas.width = width;
+          canvas.height = height;
+          ctx?.drawImage(img, 0, 0, width, height);
+          
+          // Convert to base64 with lower quality
+          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+          setPhotoPreview(compressedBase64);
+          setEditForm({ ...editForm, profilePhoto: compressedBase64 });
+        };
       };
       reader.readAsDataURL(file);
     }
