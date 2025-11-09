@@ -712,9 +712,11 @@ export default function ProductDetailPage() {
                           : 'border-gray-300 hover:border-gray-400'
                       }`}
                     >
-                        <div className="font-bold text-sm text-black mb-1">{variant.size || variant.name}</div>
-                        <div className="font-semibold text-base text-[#1a472a] mb-1">₹{variantPrice}</div>
-                        <div className="text-[10px] text-gray-500">(Rs.{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</div>
+                        <div className="font-medium text-sm text-black mb-0.5">{variant.size || variant.name}</div>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="font-bold text-base text-[#1a472a]">₹{variantPrice}</span>
+                          <span className="text-[10px] text-gray-500">(₹{((variantPrice) / parseFloat(variant.size?.match(/\d+/)?.[0] || '1')).toFixed(2)}/{variant.size?.includes('ml') ? 'ml' : variant.size?.includes('kg') ? 'kg' : 'unit'})</span>
+                        </div>
                         {isSelected && (
                           <div className="absolute top-2 right-2">
                             <CheckCircleIcon className="w-5 h-5 text-[#1a472a]" />

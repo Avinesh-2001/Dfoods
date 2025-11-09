@@ -15,8 +15,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  --font-serif: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  --font-serif: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,17 +32,17 @@
 body {
   background: var(--background);
   color: var(--text-primary);
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 400;
   font-size: 14px;
-  line-height: 1.6;
-  letter-spacing: 0.01em;
+  line-height: 1.5;
+  letter-spacing: 0;
 }
 
 /* Typography Hierarchy - Light & Elegant */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 500;
   color: var(--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.3;
@@ -64,29 +64,29 @@ h3 {
 }
 
 p, span, div, li {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
 /* Button text */
 button {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 /* Labels and inputs */
 label {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
 /* Links */
 a {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 400;
   color: var(--text-primary);
   transition: all 0.3s ease;
 }
@@ -97,27 +97,27 @@ a:hover {
 
 /* Price text - slightly bolder */
 .price-text {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 700;
   color: var(--primary-dark);
 }
 
 /* Card titles */
 .card-title {
-  font-family: 'Inter', fallback-inter_semi_bold, Arial, sans-serif;
-  font-weight: 600;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', Arial, sans-serif;
+  font-weight: 500;
   color: var(--text-primary);
 }
 
 /* Body text */
 .body-text {
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-secondary);
 }
 
 /* Light text */
 .text-light {
-  font-weight: 600;
+  font-weight: 400;
   color: var(--text-light);
 }
 

@@ -45,6 +45,7 @@ export default function ProfilePage() {
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [otp, setOtp] = useState('');
   const [sendingOtp, setSendingOtp] = useState(false);
+  const [pendingPhone, setPendingPhone] = useState<string>('');
 
   const wishlistItems = useWishlistStore((state) => state.items || []);
   const fetchWishlist = useWishlistStore((state) => state.fetchWishlist);
@@ -110,13 +111,17 @@ export default function ProfilePage() {
     }
   };
 
-  const handleSendOtp = async () => {
-    if (!user || !user.phone) {
+  const handleSendOtp = async (phoneNumber?: string) => {
+    const phoneToVerify = phoneNumber || pendingPhone || editForm.phone;
+    
+    if (!phoneToVerify) {
       toast.error('Please add a phone number first');
       return;
     }
     
     setSendingOtp(true);
+    setPendingPhone(phoneToVerify);
+    
     try {
       const token = localStorage.getItem('token');
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
@@ -130,7 +135,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ phone: user.phone })
+        body: JSON.stringify({ phone: phoneToVerify })
       });
 
       const data = await response.json();
@@ -140,7 +145,8 @@ export default function ProfilePage() {
         setShowOtpModal(true);
         // Log OTP for development (remove in production)
         if (data.debugOtp) {
-          console.log('OTP for testing:', data.debugOtp);
+          console.log('🔐 OTP for testing:', data.debugOtp);
+          toast.success(`OTP: ${data.debugOtp}`, { duration: 5000 });
         }
       } else {
         toast.error(data.error || 'Failed to send OTP');
@@ -158,8 +164,8 @@ export default function ProfilePage() {
       return;
     }
     
-    if (!user || !user.phone) {
-      toast.error('User phone number not found');
+    if (!pendingPhone) {
+      toast.error('Phone number not found');
       return;
     }
     
@@ -176,7 +182,7 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ phone: user.phone, otp })
+        body: JSON.stringify({ phone: pendingPhone, otp })
       });
 
       const data = await response.json();
@@ -185,9 +191,12 @@ export default function ProfilePage() {
         toast.success('Mobile number verified successfully!');
         setShowOtpModal(false);
         setOtp('');
-        // Update user in localStorage
-        const updatedUser = { ...user, phoneVerified: true };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setPendingPhone('');
+        // Update user in localStorage with verified phone
+        if (user) {
+          const updatedUser = { ...user, phone: pendingPhone, phoneVerified: true };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
         window.location.reload();
       } else {
         toast.error(data.error || 'Invalid OTP. Please try again');
@@ -199,6 +208,14 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async () => {
     try {
+      // Don't include unverified phone in update
+      const updateData = {
+        name: editForm.name,
+        email: editForm.email,
+        profilePhoto: editForm.profilePhoto
+        // Phone is only updated via OTP verification
+      };
+      
       const token = localStorage.getItem('token');
       const API_BASE = process.env.NEXT_PUBLIC_API_URL || '';
       const endpoint = API_BASE.includes('/api') 
@@ -211,20 +228,30 @@ export default function ProfilePage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(editForm)
+        body: JSON.stringify(updateData)
       });
 
       if (response.ok) {
+        const data = await response.json();
         toast.success('Profile updated successfully!');
         setIsEditing(false);
-        // Update local storage
-        const updatedUser = { ...user, ...editForm };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        // Update local storage with response data
+        if (user && data.user) {
+          const updatedUser = { 
+            ...user, 
+            name: data.user.name,
+            email: data.user.email,
+            profilePhoto: data.user.profilePhoto
+          };
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
         window.location.reload();
       } else {
-        toast.error('Failed to update profile');
+        const errorData = await response.json();
+        toast.error(errorData.message || 'Failed to update profile');
       }
     } catch (error) {
+      console.error('Profile update error:', error);
       toast.error('Failed to update profile');
     }
   };
@@ -409,13 +436,31 @@ export default function ProfilePage() {
                       </div>
                       <div className="space-y-2">
                         <p className="text-xs uppercase text-black/70">Phone number</p>
-                        <input
-                          type="tel"
-                          value={editForm.phone}
-                          onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                          placeholder="Enter phone number"
-                          className="w-full px-3 py-2 rounded-md border border-gray-300 text-sm focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            type="tel"
+                            value={editForm.phone}
+                            onChange={(e) => {
+                              const phone = e.target.value;
+                              setEditForm({ ...editForm, phone });
+                              setPendingPhone(phone);
+                            }}
+                            placeholder="Enter phone number"
+                            className="flex-1 px-3 py-2 rounded-md border border-gray-300 text-sm focus:ring-2 focus:ring-[#E67E22] focus:border-transparent"
+                          />
+                          {editForm.phone && editForm.phone.length >= 10 && (
+                            <button
+                              type="button"
+                              onClick={() => handleSendOtp(editForm.phone)}
+                              disabled={sendingOtp}
+                              className="px-4 py-2 text-sm font-medium text-white rounded-md disabled:opacity-50"
+                              style={{ backgroundColor: THEME_ORANGE }}
+                            >
+                              {sendingOtp ? 'Sending...' : 'Verify'}
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-gray-500">Phone will be saved only after OTP verification</p>
                       </div>
                     </div>
                     <div className="flex gap-3 justify-end">
@@ -615,7 +660,7 @@ export default function ProfilePage() {
             
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                Enter the 6-digit OTP sent to <span className="font-semibold text-[#E67E22]">{user?.phone}</span>
+                Enter the 6-digit OTP sent to <span className="font-semibold text-[#E67E22]">{pendingPhone}</span>
               </p>
               
               <div>
