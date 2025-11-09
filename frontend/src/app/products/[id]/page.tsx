@@ -381,7 +381,13 @@ export default function ProductDetailPage() {
         return new Promise<string>((resolve, reject) => {
           const reader = new FileReader();
           reader.onloadend = () => {
-            const img = new Image();
+            if (typeof window === 'undefined') {
+              // Server-side: just convert to base64 without compression
+              resolve(reader.result as string);
+              return;
+            }
+            
+            const img = document.createElement('img') as HTMLImageElement;
             img.src = reader.result as string;
             
             img.onload = () => {

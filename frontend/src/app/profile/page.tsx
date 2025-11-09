@@ -111,7 +111,7 @@ export default function ProfilePage() {
       // Compress and resize image
       const reader = new FileReader();
       reader.onloadend = () => {
-        const img = new Image();
+        const img = document.createElement('img') as HTMLImageElement;
         img.src = reader.result as string;
         
         img.onload = () => {
