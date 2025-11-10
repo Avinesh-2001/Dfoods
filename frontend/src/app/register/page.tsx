@@ -46,9 +46,7 @@ export default function RegisterPage() {
     
     setLoading(true);
     try {
-      console.log('Sending OTP to:', formData.email);
-      
-      // Set registration data first so we can show OTP screen even if sending fails
+      // Set registration data
       const registrationInfo = {
         name: `${formData.firstName} ${formData.lastName}`,
         email: formData.email,
@@ -56,46 +54,32 @@ export default function RegisterPage() {
       };
       setRegistrationData(registrationInfo);
       
-      // Try to send OTP with timeout handling
+      // Send OTP
       try {
-        // Reduced timeout since backend responds immediately (5 seconds should be enough)
         const otpPromise = authApi.sendOTP(formData.email);
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Request timeout. OTP may still be sent. Please check your email.')), 8000)
+          setTimeout(() => reject(new Error('Timeout')), 8000)
         );
         
-        const response = await Promise.race([otpPromise, timeoutPromise]) as any;
+        await Promise.race([otpPromise, timeoutPromise]);
         setOtpSent(true);
-        
-        // Log OTP if provided in response (temporary for debugging)
-        if (response?.data?.debugOtp) {
-          console.log(`🔐 ========================================`);
-          console.log(`🔐 OTP for ${formData.email}: ${response.data.debugOtp}`);
-          console.log(`🔐 ========================================`);
-          console.warn('⚠️ Email delivery may have failed. Use OTP from console above.');
-          toast.success(`OTP generated: ${response.data.debugOtp}`, { duration: 10000 });
-        } else {
-          toast.success('OTP sent! Please check your email and spam folder.', { duration: 5000 });
-        }
+        toast.success('Verification code sent to your email!', { duration: 5000 });
       } catch (otpError: any) {
-        console.error('Send OTP error:', otpError);
-        // If timeout or network error, assume OTP might have been sent (backend responds immediately)
-        if (otpError.message?.includes('timeout') || otpError.code === 'ECONNABORTED' || otpError.code === 'ERR_NETWORK') {
+        // Handle timeout gracefully
+        if (otpError.message?.includes('Timeout') || otpError.code === 'ECONNABORTED' || otpError.code === 'ERR_NETWORK') {
           setOtpSent(true);
-          toast.success('OTP request processed. Please check your email and spam folder. Check backend console if needed.', { duration: 6000 });
+          toast.success('Verification code sent! Please check your email.', { duration: 6000 });
         } else {
-          const message = otpError.response?.data?.error || otpError.message || 'Failed to send OTP. You can still verify manually or retry.';
+          const message = otpError.response?.data?.error || 'Failed to send verification code';
           setError(message);
-          toast.error(message, { duration: 5000 });
+          toast.error(message);
           setOtpSent(false);
         }
-        // Still show OTP screen so user can manually enter or retry
       }
       
-      // Show OTP screen regardless of whether sending succeeded
+      // Show OTP verification screen
       setShowOTPVerification(true);
     } catch (err: any) {
-      console.error('Registration error:', err);
       const message = err.response?.data?.error || 'Registration failed. Please try again.';
       setError(message);
       toast.error(message);
@@ -126,15 +110,14 @@ export default function RegisterPage() {
       
       await Promise.race([otpPromise, timeoutPromise]);
       setOtpSent(true);
-      toast.success('OTP sent again! Please check your email.');
+      toast.success('New code sent! Please check your email.');
     } catch (err: any) {
-      console.error('Resend OTP error:', err);
-      // If timeout, assume OTP was sent (backend responds immediately now)
-      if (err.message?.includes('timeout')) {
+      // Handle timeout gracefully
+      if (err.message?.includes('Timeout')) {
         setOtpSent(true);
-        toast.success('OTP request processed. Please check your email.', { duration: 5000 });
+        toast.success('Code sent! Please check your email.', { duration: 5000 });
       } else {
-        toast.error(err.response?.data?.error || err.message || 'Failed to resend OTP. Please check your email or try again later.');
+        toast.error(err.response?.data?.error || 'Failed to resend code');
         setOtpSent(false);
       }
     }
@@ -142,28 +125,16 @@ export default function RegisterPage() {
 
   if (showOTPVerification) {
     return (
-      <div className="min-h-screen bg-[#FDF6E3] py-12">
-        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
-        <OTPVerification
-          email={formData.email}
-          name={`${formData.firstName} ${formData.lastName}`}
-          password={formData.password}
-          onVerificationSuccess={handleOTPVerificationSuccess}
-          onVerificationFailed={handleOTPVerificationFailed}
-          onResendOTP={handleResendOTP}
-        />
-        {!otpSent && (
-          <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <p className="text-sm text-yellow-800">
-              ⚠️ OTP email may not have been sent due to a timeout. You can:
-            </p>
-            <ul className="mt-2 text-sm text-yellow-700 list-disc list-inside">
-              <li>Check your email spam folder</li>
-              <li>Wait a moment and click "Resend OTP"</li>
-              <li>Contact support if the issue persists</li>
-            </ul>
-          </div>
-        )}
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 py-12 flex items-center">
+        <div className="max-w-md mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <OTPVerification
+            email={formData.email}
+            name={`${formData.firstName} ${formData.lastName}`}
+            password={formData.password}
+            onVerificationSuccess={handleOTPVerificationSuccess}
+            onVerificationFailed={handleOTPVerificationFailed}
+            onResendOTP={handleResendOTP}
+          />
         </div>
       </div>
     );
