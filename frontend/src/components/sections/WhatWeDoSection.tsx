@@ -166,43 +166,23 @@ export default function WhatWeDoSection() {
         }
 
         .card-up {
-          transform: translateY(-50px);
+          transform: translateY(-60px);
           transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-          animation: floatUp 3s ease-in-out infinite;
         }
 
         .card-down {
-          transform: translateY(50px);
+          transform: translateY(60px);
           transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-          animation: floatDown 3s ease-in-out infinite;
-        }
-
-        @keyframes floatUp {
-          0%, 100% {
-            transform: translateY(-50px);
-          }
-          50% {
-            transform: translateY(-60px);
-          }
-        }
-
-        @keyframes floatDown {
-          0%, 100% {
-            transform: translateY(50px);
-          }
-          50% {
-            transform: translateY(60px);
-          }
         }
 
         .what-we-do-card:hover {
-          transform: translateY(0px) scale(1.05) !important;
-          box-shadow: 0 15px 40px rgba(245, 158, 11, 0.3);
-          animation: none !important;
+          transform: translateY(0px) scale(1.08) !important;
+          box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
         }
 
         .what-we-do-card:hover .icon-circle {
-          transform: rotateY(360deg) scale(1.1);
+          transform: rotateY(360deg) scale(1.15);
+          box-shadow: 0 5px 20px rgba(245, 158, 11, 0.6);
         }
 
         @media (max-width: 768px) {
@@ -213,6 +193,11 @@ export default function WhatWeDoSection() {
           .what-we-do-card {
             padding: 25px 20px;
             min-height: 260px;
+          }
+
+          .card-up,
+          .card-down {
+            transform: translateY(0) !important;
           }
 
           .icon-circle {

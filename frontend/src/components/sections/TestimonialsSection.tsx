@@ -135,7 +135,7 @@ export default function TestimonialsSection() {
 
         {/* Desktop: Enhanced sliding with collapsible cards */}
         <div
-          className="hidden md:block relative"
+          className="hidden md:block relative px-16"
           onMouseEnter={() => setIsAutoPlaying(false)}
           onMouseLeave={() => setIsAutoPlaying(true)}
         >
@@ -143,7 +143,7 @@ export default function TestimonialsSection() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={prevSlide}
-            className="absolute -left-4 top-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full p-3 shadow-xl hover:shadow-2xl z-10 transition-all"
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full p-3 shadow-xl hover:shadow-2xl z-20 transition-all"
             aria-label="Previous"
           >
             <ChevronLeftIcon className="w-6 h-6" />
@@ -153,7 +153,7 @@ export default function TestimonialsSection() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={nextSlide}
-            className="absolute -right-4 top-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full p-3 shadow-xl hover:shadow-2xl z-10 transition-all"
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-full p-3 shadow-xl hover:shadow-2xl z-20 transition-all"
             aria-label="Next"
           >
             <ChevronRightIcon className="w-6 h-6" />
