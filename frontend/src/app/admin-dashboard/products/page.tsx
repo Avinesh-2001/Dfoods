@@ -535,10 +535,13 @@ export default function ProductsPage() {
                 </label>
                 <input
                   type="file"
-                  accept=".csv"
+                  accept=".csv,text/csv,application/vnd.ms-excel"
                   onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                 />
+                {csvFile && (
+                  <p className="mt-2 text-sm text-green-600">✓ {csvFile.name}</p>
+                )}
               </div>
               <div className="text-sm text-gray-600">
                 <p className="font-medium">CSV Format:</p>

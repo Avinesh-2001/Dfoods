@@ -153,16 +153,18 @@ export default function WhatWeDoSection() {
         }
 
         .card-up {
-          transform: translateY(-30px);
+          transform: translateY(-40px);
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .card-down {
-          transform: translateY(30px);
+          transform: translateY(40px);
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .what-we-do-card:hover {
           transform: translateY(0px) !important;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 768px) {
@@ -249,7 +251,7 @@ export default function WhatWeDoSection() {
               </Swiper>
             </div>
 
-            {/* Desktop Grid - Wave Effect */}
+            {/* Desktop Grid - Wave Effect: 1 above, 2 below, 3 above, 4 below */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {whatWeDoItems.map((item, index) => (
                 <motion.div
@@ -258,7 +260,7 @@ export default function WhatWeDoSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={index % 2 === 0 ? 'card-down' : 'card-up'}
+                  className={index % 2 === 0 ? 'card-up' : 'card-down'}
                 >
                   <div className="what-we-do-card">
                     <div className="icon-circle">
