@@ -182,7 +182,6 @@ export default function WhatWeDoSection() {
 
         .card-up:hover .what-we-do-card,
         .card-down:hover .what-we-do-card {
-          transform: scale(1.08);
           box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
         }
 
