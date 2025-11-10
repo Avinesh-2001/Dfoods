@@ -175,8 +175,14 @@ export default function WhatWeDoSection() {
           transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .what-we-do-card:hover {
-          transform: translateY(0px) scale(1.08) !important;
+        .card-up:hover,
+        .card-down:hover {
+          transform: translateY(0px) !important;
+        }
+
+        .card-up:hover .what-we-do-card,
+        .card-down:hover .what-we-do-card {
+          transform: scale(1.08);
           box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
         }
 
@@ -279,8 +285,8 @@ export default function WhatWeDoSection() {
               {whatWeDoItems.map((item, index) => (
                 <motion.div
                   key={index}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                   className={index % 2 === 0 ? 'card-up' : 'card-down'}
