@@ -165,39 +165,17 @@ export default function WhatWeDoSection() {
           text-align: center;
         }
 
-        .card-up {
-          transform: translateY(-80px);
-          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .wave-card-wrapper {
+          cursor: pointer;
         }
 
-        .card-down {
-          transform: translateY(80px);
-          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .wave-card-wrapper:hover .what-we-do-card {
+          box-shadow: 0 20px 50px rgba(245, 158, 11, 0.5);
         }
 
-        .card-up:hover,
-        .card-down:hover {
-          transform: translateY(0px) !important;
-        }
-
-        .card-up:hover .what-we-do-card,
-        .card-down:hover .what-we-do-card {
-          box-shadow: 0 20px 50px rgba(245, 158, 11, 0.4);
-        }
-
-        .what-we-do-card:hover .icon-circle {
+        .wave-card-wrapper:hover .icon-circle {
           transform: rotateY(360deg) scale(1.15);
           box-shadow: 0 5px 20px rgba(245, 158, 11, 0.6);
-        }
-
-        @media (min-width: 1024px) {
-          .card-up {
-            transform: translateY(-80px) !important;
-          }
-
-          .card-down {
-            transform: translateY(80px) !important;
-          }
         }
 
         @media (max-width: 768px) {
@@ -208,11 +186,6 @@ export default function WhatWeDoSection() {
           .what-we-do-card {
             padding: 25px 20px;
             min-height: 260px;
-          }
-
-          .card-up,
-          .card-down {
-            transform: translateY(0) !important;
           }
 
           .icon-circle {
@@ -291,24 +264,39 @@ export default function WhatWeDoSection() {
 
             {/* Desktop Grid - Wave Effect: 1 above, 2 below, 3 above, 4 below */}
             <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {whatWeDoItems.map((item, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className={index % 2 === 0 ? 'card-up' : 'card-down'}
-                >
-                  <div className="what-we-do-card">
-                    <div className="icon-circle">
-                      <item.icon />
+              {whatWeDoItems.map((item, index) => {
+                const isUp = index % 2 === 0; // 0, 2 = up | 1, 3 = down
+                const verticalOffset = isUp ? -70 : 70;
+                
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ 
+                      y: -verticalOffset, 
+                      scale: 1.05,
+                      transition: { duration: 0.4, ease: "easeOut" }
+                    }}
+                    style={{
+                      position: 'relative',
+                      y: verticalOffset,
+                    }}
+                    className="wave-card-wrapper"
+                  >
+                    <div className="what-we-do-card">
+                      <div className="icon-circle">
+                        <item.icon />
+                      </div>
+                      <h3 className="card-title">{item.title}</h3>
+                      <p className="card-description">{item.description}</p>
                     </div>
-                    <h3 className="card-title">{item.title}</h3>
-                    <p className="card-description">{item.description}</p>
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                );
+              })}
             </div>
           </div>
         </div>
