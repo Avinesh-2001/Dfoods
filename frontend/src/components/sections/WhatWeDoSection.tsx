@@ -75,7 +75,7 @@ export default function WhatWeDoSection() {
         .what-we-do-content {
           position: relative;
           z-index: 1;
-          padding: 60px 0;
+          padding: 120px 0;
         }
 
         .what-we-do-card {
@@ -166,12 +166,12 @@ export default function WhatWeDoSection() {
         }
 
         .card-up {
-          transform: translateY(-60px);
+          transform: translateY(-80px);
           transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .card-down {
-          transform: translateY(60px);
+          transform: translateY(80px);
           transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
@@ -189,6 +189,16 @@ export default function WhatWeDoSection() {
         .what-we-do-card:hover .icon-circle {
           transform: rotateY(360deg) scale(1.15);
           box-shadow: 0 5px 20px rgba(245, 158, 11, 0.6);
+        }
+
+        @media (min-width: 1024px) {
+          .card-up {
+            transform: translateY(-80px) !important;
+          }
+
+          .card-down {
+            transform: translateY(80px) !important;
+          }
         }
 
         @media (max-width: 768px) {
