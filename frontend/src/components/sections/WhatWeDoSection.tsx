@@ -75,7 +75,7 @@ export default function WhatWeDoSection() {
         .what-we-do-content {
           position: relative;
           z-index: 1;
-          padding: 120px 0;
+          padding: 30px 0 120px 0;
         }
 
         .what-we-do-card {
@@ -263,7 +263,7 @@ export default function WhatWeDoSection() {
             </div>
 
             {/* Desktop Grid - Wave Effect: 1 above, 2 below, 3 above, 4 below */}
-            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="hidden md:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-[100px]">
               {whatWeDoItems.map((item, index) => {
                 const isUp = index % 2 === 0; // 0, 2 = up | 1, 3 = down
                 const verticalOffset = isUp ? -70 : 70;
