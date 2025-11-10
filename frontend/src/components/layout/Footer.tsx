@@ -17,15 +17,15 @@ export default function Footer() {
       }}
     >
       {/* Main Footer Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Company Info with Logo */}
-          <div className="space-y-4">
-            <div className="mb-4">
+          <div className="space-y-2">
+            <div className="mb-0">
               <img
                 src="/images/Dfood_logo.png"
                 alt="Dfoods"
-                className="h-12 w-auto object-contain"
+                className="h-30 w-auto object-contain"
               />
             </div>
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Contact Information</h3>
@@ -63,7 +63,7 @@ export default function Footer() {
           </div>
 
           {/* Navigation Links */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">Quick Links</h3>
             <div className="grid grid-cols-2 gap-2">
               <Link href="/" className="text-xs sm:text-sm text-black hover:text-[#F97316] transition-colors">
@@ -91,7 +91,7 @@ export default function Footer() {
           </div>
 
           {/* Newsletter & Social */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <h3 className="text-base sm:text-lg font-semibold text-gray-900">
               Subscribe to our newsletter
             </h3>
@@ -163,8 +163,8 @@ export default function Footer() {
           background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.9) 0%, rgba(249, 115, 22, 0.95) 100%)',
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             {/* Legal Links */}
             <div className="flex flex-wrap justify-center md:justify-start space-x-6 text-xs sm:text-sm">
               <Link href="/privacy" className="text-black hover:text-[#F97316] transition-colors">
