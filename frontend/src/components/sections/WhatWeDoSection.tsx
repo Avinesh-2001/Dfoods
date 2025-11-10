@@ -84,16 +84,28 @@ export default function WhatWeDoSection() {
           padding: 30px 25px;
           text-align: center;
           box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
           height: 100%;
           display: flex;
           flex-direction: column;
           min-height: 280px;
+          position: relative;
+          overflow: hidden;
         }
 
-        .what-we-do-card:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        .what-we-do-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+          transition: left 0.5s ease;
+        }
+
+        .what-we-do-card:hover::before {
+          left: 100%;
         }
 
         .icon-circle {
@@ -106,6 +118,7 @@ export default function WhatWeDoSection() {
           justify-content: center;
           margin: 0 auto 15px;
           box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+          transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         .icon-circle svg {
@@ -153,18 +166,43 @@ export default function WhatWeDoSection() {
         }
 
         .card-up {
-          transform: translateY(-40px);
-          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transform: translateY(-50px);
+          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation: floatUp 3s ease-in-out infinite;
         }
 
         .card-down {
-          transform: translateY(40px);
-          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+          transform: translateY(50px);
+          transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+          animation: floatDown 3s ease-in-out infinite;
+        }
+
+        @keyframes floatUp {
+          0%, 100% {
+            transform: translateY(-50px);
+          }
+          50% {
+            transform: translateY(-60px);
+          }
+        }
+
+        @keyframes floatDown {
+          0%, 100% {
+            transform: translateY(50px);
+          }
+          50% {
+            transform: translateY(60px);
+          }
         }
 
         .what-we-do-card:hover {
-          transform: translateY(0px) !important;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+          transform: translateY(0px) scale(1.05) !important;
+          box-shadow: 0 15px 40px rgba(245, 158, 11, 0.3);
+          animation: none !important;
+        }
+
+        .what-we-do-card:hover .icon-circle {
+          transform: rotateY(360deg) scale(1.1);
         }
 
         @media (max-width: 768px) {
